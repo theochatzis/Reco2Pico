@@ -1,0 +1,1 @@
+# Replace with real miniAOD files, one per line.

@@ -1,0 +1,12 @@
+universe              = vanilla
+executable            = JOB_WRAPPER
+arguments             = $(ProcId) INPUT_LIST CFG OUTPUT_DIR TABLES GLOBAL_TAG MAX_EVENTS
+output                = logs/job_$(ClusterId)_$(ProcId).out
+error                 = logs/job_$(ClusterId)_$(ProcId).err
+log                   = logs/job_$(ClusterId).log
+request_cpus          = 1
+request_memory        = 2500MB
++JobFlavour           = "workday"
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+queue INPUT_LIST from JOB_LIST

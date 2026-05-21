@@ -1,0 +1,15 @@
+tree: Events
+threads: 4
+selection: "nMuon >= 1"
+histograms:
+  - name: h_nMuon
+    title: "Muon multiplicity;nMuon;Events"
+    bins: [10, 0, 10]
+    column: nMuon
+  - name: h_leadMuonPt
+    title: "Leading muon pT;Muon pT [GeV];Events"
+    bins: [50, 0, 200]
+    column: LeadMuon_pt
+    define:
+      name: LeadMuon_pt
+      expression: "nMuon > 0 ? Muon_pt[0] : -1.0"
