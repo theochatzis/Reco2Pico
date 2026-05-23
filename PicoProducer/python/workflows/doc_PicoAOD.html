@@ -1,0 +1,730 @@
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+
+<title>PicoAOD Doc</title>
+
+<link rel="stylesheet"
+href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<style>
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 2rem;
+    max-width: 1600px;
+}
+
+h1 {
+    margin-bottom: 0.3rem;
+}
+
+.subtitle {
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    margin-top: 3rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid #cccccc;
+}
+
+table {
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+td, th {
+    vertical-align: top;
+    padding: 6px;
+}
+
+code {
+    background: #f3f3f3;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.dataTables_filter {
+    margin-bottom: 1rem;
+}
+
+.size-summary {
+    font-size: 0.95rem;
+    color: #333;
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.chart-box {
+    width: 100%;
+    max-width: 900px;
+    height: 520px;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>PicoAOD Doc</h1>
+
+<p class="subtitle">
+Automatically generated variable documentation from PicoAOD ROOT file "Events" TTree.<br>
+Number of events: 1000
+</p>
+
+
+    <h2>Event</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.005842 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>bunchCrossing</code></td>
+              <td><code>uint32_t</code></td>
+              <td>0.000175</td>
+              <td>bunchCrossing/i</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>event</code></td>
+              <td><code>uint64_t</code></td>
+              <td>0.001144</td>
+              <td>event/l</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>luminosityBlock</code></td>
+              <td><code>uint32_t</code></td>
+              <td>0.000181</td>
+              <td>luminosityBlock/i</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>nElectron</code></td>
+              <td><code>int32_t</code></td>
+              <td>0.000632</td>
+              <td>minimal slimmedElectrons table</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>nJet</code></td>
+              <td><code>int32_t</code></td>
+              <td>0.000807</td>
+              <td>AK4 PUPPI jets for PicoAOD</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>nMuon</code></td>
+              <td><code>int32_t</code></td>
+              <td>0.000827</td>
+              <td>Muons for PicoAOD</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>nPFCand</code></td>
+              <td><code>int32_t</code></td>
+              <td>0.001735</td>
+              <td>selected packed PF candidates for PicoAOD</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>orbitNumber</code></td>
+              <td><code>uint32_t</code></td>
+              <td>0.000173</td>
+              <td>orbitNumber/i</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>run</code></td>
+              <td><code>uint32_t</code></td>
+              <td>0.000169</td>
+              <td>run/i</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>Electron</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.025040 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>Electron_charge</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001075</td>
+              <td>electric charge</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_cutBasedID_loose</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001952</td>
+              <td>RunIIIWinter22 V1 loose cut-based electron ID</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_cutBasedID_medium</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001996</td>
+              <td>RunIIIWinter22 V1 medium cut-based electron ID</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_cutBasedID_tight</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001964</td>
+              <td>RunIIIWinter22 V1 tight cut-based electron ID</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_cutBasedID_veto</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001830</td>
+              <td>RunIIIWinter22 V1 veto cut-based electron ID</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_eta</code></td>
+              <td><code>float[]</code></td>
+              <td>0.003822</td>
+              <td>eta</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_mass</code></td>
+              <td><code>float[]</code></td>
+              <td>0.002347</td>
+              <td>mass</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_pdgId</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.001078</td>
+              <td>PDG code assigned by the event reconstruction (not by MC truth)</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_phi</code></td>
+              <td><code>float[]</code></td>
+              <td>0.003818</td>
+              <td>phi</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Electron_pt</code></td>
+              <td><code>float[]</code></td>
+              <td>0.005157</td>
+              <td>pt</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>Jet</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.064884 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>Jet_area</code></td>
+              <td><code>float[]</code></td>
+              <td>0.004107</td>
+              <td>jet area</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_chEmEF</code></td>
+              <td><code>float[]</code></td>
+              <td>0.001336</td>
+              <td>charged EM energy fraction</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_chHEF</code></td>
+              <td><code>float[]</code></td>
+              <td>0.004804</td>
+              <td>charged hadron energy fraction</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_eta</code></td>
+              <td><code>float[]</code></td>
+              <td>0.009884</td>
+              <td>eta</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_mass</code></td>
+              <td><code>float[]</code></td>
+              <td>0.007814</td>
+              <td>mass</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_muEF</code></td>
+              <td><code>float[]</code></td>
+              <td>0.001357</td>
+              <td>muon energy fraction</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_neEmEF</code></td>
+              <td><code>float[]</code></td>
+              <td>0.003711</td>
+              <td>neutral EM energy fraction</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_neHEF</code></td>
+              <td><code>float[]</code></td>
+              <td>0.004640</td>
+              <td>neutral hadron energy fraction</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_phi</code></td>
+              <td><code>float[]</code></td>
+              <td>0.009821</td>
+              <td>phi</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_pt</code></td>
+              <td><code>float[]</code></td>
+              <td>0.012973</td>
+              <td>pt</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Jet_rawFactor</code></td>
+              <td><code>float[]</code></td>
+              <td>0.004437</td>
+              <td>1 - Factor to get back to raw pT</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>Muon</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.046437 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>Muon_charge</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.002036</td>
+              <td>electric charge</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_eta</code></td>
+              <td><code>float[]</code></td>
+              <td>0.009506</td>
+              <td>eta</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_mass</code></td>
+              <td><code>float[]</code></td>
+              <td>0.001776</td>
+              <td>mass</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_pdgId</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.002035</td>
+              <td>PDG code assigned by the event reconstruction (not by MC truth)</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_pfRelIso04_all</code></td>
+              <td><code>float[]</code></td>
+              <td>0.005575</td>
+              <td>PF relative isolation, dR=0.4, delta-beta corrected</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_phi</code></td>
+              <td><code>float[]</code></td>
+              <td>0.010424</td>
+              <td>phi</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_pt</code></td>
+              <td><code>float[]</code></td>
+              <td>0.014103</td>
+              <td>pt</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>Muon_tightId</code></td>
+              <td><code>bool[]</code></td>
+              <td>0.000982</td>
+              <td>cut-based ID, tight WP</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>PFCand</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 4.490930 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>PFCand_charge</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.225442</td>
+              <td>electric charge</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_eta</code></td>
+              <td><code>float[]</code></td>
+              <td>1.200082</td>
+              <td>PF candidate eta</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_fromPV</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.215544</td>
+              <td>packed candidate fromPV flag</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_mass</code></td>
+              <td><code>float[]</code></td>
+              <td>0.112663</td>
+              <td>PF candidate mass</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_pdgId</code></td>
+              <td><code>int32_t[]</code></td>
+              <td>0.260248</td>
+              <td>PF candidate PDG ID</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_phi</code></td>
+              <td><code>float[]</code></td>
+              <td>1.350547</td>
+              <td>PF candidate phi</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_pt</code></td>
+              <td><code>float[]</code></td>
+              <td>1.011837</td>
+              <td>PF candidate pT</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PFCand_puppiWeight</code></td>
+              <td><code>float[]</code></td>
+              <td>0.114566</td>
+              <td>PUPPI weight</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>PV</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.014171 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>PV_chi2</code></td>
+              <td><code>float</code></td>
+              <td>0.000978</td>
+              <td>main primary vertex reduced chi2</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_ndof</code></td>
+              <td><code>float</code></td>
+              <td>0.001298</td>
+              <td>main primary vertex number of degree of freedom</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_npvs</code></td>
+              <td><code>uint8_t</code></td>
+              <td>0.001036</td>
+              <td>total number of reconstructed primary vertices</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_npvsGood</code></td>
+              <td><code>uint8_t</code></td>
+              <td>0.001021</td>
+              <td>number of good reconstructed primary vertices. selection: !isFake &amp;&amp; ndof &gt; 4 &amp;&amp; abs(z) &lt;= 24 &amp;&amp; position.Rho &lt;= 2</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_score</code></td>
+              <td><code>float</code></td>
+              <td>0.001369</td>
+              <td>main primary vertex score, i.e. sum pt2 of clustered objects</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_sumpt2</code></td>
+              <td><code>float</code></td>
+              <td>0.001339</td>
+              <td>sum pt2 of pf charged candidates for the main primary vertex</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_sumpx</code></td>
+              <td><code>float</code></td>
+              <td>0.001600</td>
+              <td>sum px of pf charged candidates for the main primary vertex</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_sumpy</code></td>
+              <td><code>float</code></td>
+              <td>0.001604</td>
+              <td>sum py of pf charged candidates for the main primary vertex</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_x</code></td>
+              <td><code>float</code></td>
+              <td>0.000990</td>
+              <td>main primary vertex position x coordinate</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_y</code></td>
+              <td><code>float</code></td>
+              <td>0.001162</td>
+              <td>main primary vertex position y coordinate</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PV_z</code></td>
+              <td><code>float</code></td>
+              <td>0.001775</td>
+              <td>main primary vertex position z coordinate</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+    <h2>PuppiMET</h2>
+
+    <p class="size-summary">
+      <b>Total size:</b> 0.006347 KB/event
+    </p>
+
+    <table class="display compact cell-border">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Size [KB/event]</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+            <tr>
+              <td><code>PuppiMET_phi</code></td>
+              <td><code>float</code></td>
+              <td>0.002654</td>
+              <td>phi</td>
+            </tr>
+            
+
+            <tr>
+              <td><code>PuppiMET_pt</code></td>
+              <td><code>float</code></td>
+              <td>0.003692</td>
+              <td>pt</td>
+            </tr>
+            
+      </tbody>
+    </table>
+    
+
+<h2>Size by collection</h2>
+<div id="collection-size-pie" class="chart-box"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+<script>
+
+$(document).ready(function() {
+
+    $('table.display').DataTable({
+        paging: false,
+        searching: true,
+        info: false,
+        order: [[2, 'desc']]
+    });
+
+    Plotly.newPlot('collection-size-pie', [{
+        type: 'pie',
+        labels: ["PFCand", "Jet", "Muon", "Electron", "PV", "PuppiMET", "Event"],
+        values: [4.4909296875, 0.0648837890625, 0.0464375, 0.0250400390625, 0.0141708984375, 0.0063466796875000005, 0.005841796875],
+        textinfo: 'label+percent',
+        hovertemplate: '%{label}<br>%{value:.6f} KB/event<extra></extra>'
+    }], {
+        title: 'Total size by collection [KB/event]',
+        height: 520
+    });
+
+});
+
+</script>
+
+</body>
+</html>

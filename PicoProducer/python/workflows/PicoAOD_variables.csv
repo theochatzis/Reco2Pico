@@ -1,0 +1,60 @@
+collection,variable,type,size_kb_per_event,doc
+Electron,Electron_charge,int32_t[],0.0010751953125,electric charge
+Electron,Electron_cutBasedID_loose,int32_t[],0.0019521484375,RunIIIWinter22 V1 loose cut-based electron ID
+Electron,Electron_cutBasedID_medium,int32_t[],0.00199609375,RunIIIWinter22 V1 medium cut-based electron ID
+Electron,Electron_cutBasedID_tight,int32_t[],0.0019638671875,RunIIIWinter22 V1 tight cut-based electron ID
+Electron,Electron_cutBasedID_veto,int32_t[],0.001830078125,RunIIIWinter22 V1 veto cut-based electron ID
+Electron,Electron_eta,float[],0.003822265625,eta
+Electron,Electron_mass,float[],0.0023466796875,mass
+Electron,Electron_pdgId,int32_t[],0.001078125,PDG code assigned by the event reconstruction (not by MC truth)
+Electron,Electron_phi,float[],0.003818359375,phi
+Electron,Electron_pt,float[],0.0051572265625,pt
+Event,bunchCrossing,uint32_t,0.0001748046875,bunchCrossing/i
+Event,event,uint64_t,0.0011435546875,event/l
+Event,luminosityBlock,uint32_t,0.0001806640625,luminosityBlock/i
+Event,nElectron,int32_t,0.0006318359375,minimal slimmedElectrons table
+Event,nJet,int32_t,0.000806640625,AK4 PUPPI jets for PicoAOD
+Event,nMuon,int32_t,0.0008271484375,Muons for PicoAOD
+Event,nPFCand,int32_t,0.0017353515625,selected packed PF candidates for PicoAOD
+Event,orbitNumber,uint32_t,0.0001728515625,orbitNumber/i
+Event,run,uint32_t,0.0001689453125,run/i
+Jet,Jet_area,float[],0.004107421875,jet area
+Jet,Jet_chEmEF,float[],0.0013359375,charged EM energy fraction
+Jet,Jet_chHEF,float[],0.0048037109375,charged hadron energy fraction
+Jet,Jet_eta,float[],0.0098837890625,eta
+Jet,Jet_mass,float[],0.007814453125,mass
+Jet,Jet_muEF,float[],0.001357421875,muon energy fraction
+Jet,Jet_neEmEF,float[],0.0037109375,neutral EM energy fraction
+Jet,Jet_neHEF,float[],0.0046396484375,neutral hadron energy fraction
+Jet,Jet_phi,float[],0.0098212890625,phi
+Jet,Jet_pt,float[],0.01297265625,pt
+Jet,Jet_rawFactor,float[],0.0044365234375,1 - Factor to get back to raw pT
+Muon,Muon_charge,int32_t[],0.0020361328125,electric charge
+Muon,Muon_eta,float[],0.009505859375,eta
+Muon,Muon_mass,float[],0.0017763671875,mass
+Muon,Muon_pdgId,int32_t[],0.00203515625,PDG code assigned by the event reconstruction (not by MC truth)
+Muon,Muon_pfRelIso04_all,float[],0.0055751953125,"PF relative isolation, dR=0.4, delta-beta corrected"
+Muon,Muon_phi,float[],0.010423828125,phi
+Muon,Muon_pt,float[],0.0141025390625,pt
+Muon,Muon_tightId,bool[],0.000982421875,"cut-based ID, tight WP"
+PFCand,PFCand_charge,int32_t[],0.2254423828125,electric charge
+PFCand,PFCand_eta,float[],1.20008203125,PF candidate eta
+PFCand,PFCand_fromPV,int32_t[],0.2155439453125,packed candidate fromPV flag
+PFCand,PFCand_mass,float[],0.1126630859375,PF candidate mass
+PFCand,PFCand_pdgId,int32_t[],0.260248046875,PF candidate PDG ID
+PFCand,PFCand_phi,float[],1.350546875,PF candidate phi
+PFCand,PFCand_pt,float[],1.0118369140625,PF candidate pT
+PFCand,PFCand_puppiWeight,float[],0.11456640625,PUPPI weight
+PV,PV_chi2,float,0.0009775390625,main primary vertex reduced chi2
+PV,PV_ndof,float,0.0012978515625,main primary vertex number of degree of freedom
+PV,PV_npvs,uint8_t,0.0010361328125,total number of reconstructed primary vertices
+PV,PV_npvsGood,uint8_t,0.0010205078125,number of good reconstructed primary vertices. selection: !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2
+PV,PV_score,float,0.001369140625,"main primary vertex score, i.e. sum pt2 of clustered objects"
+PV,PV_sumpt2,float,0.0013388671875,sum pt2 of pf charged candidates for the main primary vertex
+PV,PV_sumpx,float,0.001599609375,sum px of pf charged candidates for the main primary vertex
+PV,PV_sumpy,float,0.001603515625,sum py of pf charged candidates for the main primary vertex
+PV,PV_x,float,0.000990234375,main primary vertex position x coordinate
+PV,PV_y,float,0.001162109375,main primary vertex position y coordinate
+PV,PV_z,float,0.001775390625,main primary vertex position z coordinate
+PuppiMET,PuppiMET_phi,float,0.002654296875,phi
+PuppiMET,PuppiMET_pt,float,0.0036923828125,pt

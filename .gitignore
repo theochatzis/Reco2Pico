@@ -1,0 +1,8 @@
+*.root
+*.log
+*.err
+*.out
+__pycache__/
+.pytest_cache/
+condor/work/
+.DS_Store
