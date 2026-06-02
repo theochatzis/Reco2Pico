@@ -5,6 +5,7 @@ def _parse_enabled_tables(enabled_tables):
     if enabled_tables is None:
         return [
             "event",
+            "pfRhoStrip",
             "vertices",
             "muons",
             "electrons",
@@ -38,6 +39,13 @@ def buildPicoSequence(process, enabled_tables=None):
         process = vertexTables(process, pvSrc="offlineSlimmedPrimaryVertices", pfcSrc="packedPFCandidates")
 
         process.picoTask.add(process.picoVertexTableTask)
+    
+    if "pfRhoStrip" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.pfRhoStripTable_cff import pfRhoStripTables
+
+        process = pfRhoStripTables(process, pfcSrc="packedPFCandidates")
+
+        process.picoTask.add(process.pfRhoStripTableTask)
 
     if "muons" in enabled_tables:
         from Reco2Pico.PicoProducer.tables.muons_cff import muonTables
