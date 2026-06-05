@@ -239,30 +239,85 @@ def style_hist(hist, flavor, marker=True, fill=False):
     hist.SetLineWidth(2)
     if marker:
         hist.SetMarkerStyle(20)
-        hist.SetMarkerSize(0.75)
+        hist.SetMarkerSize(2.0)
+        hist.SetMarkerSize(2.0)
+        #hist.SetMarkerSize(0.75)
     if fill:
         hist.SetFillColor(color)
         hist.SetFillStyle(1001)
 
 
+def make_eta_display_edges(eta_info):
+    """Build non-overlapping display edges for eta plots.
+
+    The HCAL geometry can contain overlapping eta ranges in transition rings,
+    e.g. one iEta ring may have etaMax that extends over the next iEta ring.
+    A TH1 cannot represent overlapping bins, so for plotting we use the lower
+    edge of the next ring as the upper edge of the current ring.
+
+    This keeps the last rings visually separated:
+      bin i     : [etaMin_i, etaMin_{i+1})
+      last bin  : [etaMin_last, etaMax_last]
+
+    If duplicate/non-monotonic etaMin values appear, fall back locally to
+    center-midpoint boundaries.
+    """
+    ordered = sorted(eta_info, key=lambda x: x[1])  # etaMin ordering
+
+    if len(ordered) == 1:
+        _, eta_min, eta_max, eta = ordered[0]
+        if eta_max > eta_min:
+            return [float(eta_min), float(eta_max)], ordered
+        return [float(eta) - 0.5, float(eta) + 0.5], ordered
+
+    edges = [float(ordered[0][1])]
+
+    for i in range(1, len(ordered)):
+        prev_eta = float(ordered[i - 1][3])
+        this_eta = float(ordered[i][3])
+        this_eta_min = float(ordered[i][1])
+
+        # Preferred display boundary: lower edge of the next ring.
+        boundary = this_eta_min
+
+        # If the lower edge is not monotonic, use midpoint of centers.
+        if boundary <= edges[-1]:
+            boundary = 0.5 * (prev_eta + this_eta)
+
+        # Final protection against exactly duplicate edges.
+        if boundary <= edges[-1]:
+            boundary = edges[-1] + 1e-5
+
+        edges.append(boundary)
+
+    last_eta_max = float(ordered[-1][2])
+    if last_eta_max <= edges[-1]:
+        last_eta = float(ordered[-1][3])
+        prev_eta = float(ordered[-2][3])
+        last_eta_max = last_eta + 0.5 * abs(last_eta - prev_eta)
+
+    if last_eta_max <= edges[-1]:
+        last_eta_max = edges[-1] + 1e-5
+
+    edges.append(last_eta_max)
+
+    return edges, ordered
+
+
 def make_eta_hist(name, title, eta_info, values, errors=None, ytitle=""):
-    edges = []
-    for i, (_, eta_min, eta_max, _) in enumerate(eta_info):
-        if i == 0:
-            edges.append(float(eta_min))
-        edges.append(float(eta_max))
-    clean_edges = [edges[0]]
-    for e in edges[1:]:
-        if e <= clean_edges[-1]:
-            e = clean_edges[-1] + 1e-5
-        clean_edges.append(e)
+    # Use non-overlapping display bins. This fixes the HCAL transition-region
+    # plotting artifact where etaBin 28 can visually cover etaBin 29.
+    clean_edges, ordered_eta_info = make_eta_display_edges(eta_info)
+
     hist = ROOT.TH1D(name, title, len(clean_edges) - 1, array("d", clean_edges))
     hist.Sumw2()
     hist.SetStats(False)
-    for ibin, (eta_bin, _, _, _) in enumerate(eta_info, start=1):
+
+    for ibin, (eta_bin, _, _, _) in enumerate(ordered_eta_info, start=1):
         hist.SetBinContent(ibin, values.get(eta_bin, 0.0))
         if errors is not None:
             hist.SetBinError(ibin, errors.get(eta_bin, 0.0))
+
     hist.GetXaxis().SetTitle("#eta")
     hist.GetYaxis().SetTitle(ytitle)
     return hist
@@ -595,7 +650,7 @@ def draw_asymmetry(graph, flavor, out_dir, name, formats):
     graph.SetLineColor(color)
     graph.SetMarkerColor(color)
     graph.SetMarkerStyle(20)
-    graph.SetMarkerSize(0.85)
+    graph.SetMarkerSize(2)
     graph.SetLineWidth(2)
     graph.Draw("AP")
     graph.GetYaxis().SetRangeUser(-1.0, 1.0)
