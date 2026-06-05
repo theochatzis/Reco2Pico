@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <limits>
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
@@ -204,21 +205,45 @@ bool PFRhoStripTableProducer::insidePhi(const Strip& strip, float phi) {
 }
 
 int PFRhoStripTableProducer::findStrip(const std::vector<Strip>& strips, float eta, float phi) const {
+  int bestIdx = -1;
+
+  float bestArea = std::numeric_limits<float>::max();
+  float bestScore = std::numeric_limits<float>::max();
+
+  phi = wrapPhi(phi);
+
   for (unsigned int i = 0; i < strips.size(); ++i) {
     const auto& strip = strips[i];
 
-    if (eta < strip.etaMin || eta >= strip.etaMax)
+    const bool inEta =
+        (eta >= strip.etaMin && eta < strip.etaMax) ||
+        (std::abs(strip.etaMax - 3.0f) < 1e-5f && eta >= strip.etaMin && eta <= strip.etaMax) ||
+        (std::abs(strip.etaMin + 3.0f) < 1e-5f && eta >= strip.etaMin && eta <= strip.etaMax);
+
+    if (!inEta)
       continue;
 
     if (!insidePhi(strip, phi))
       continue;
 
-    return static_cast<int>(i);
+    const float area = strip.area > 0.f ? strip.area : std::abs(strip.dEta * strip.dPhi);
+
+    const float dEtaNorm = std::abs(eta - strip.eta) / std::max(std::abs(strip.dEta), 1e-6f);
+    const float dPhiNorm = std::abs(wrapPhi(phi - strip.phi)) / std::max(std::abs(strip.dPhi), 1e-6f);
+    const float score = dEtaNorm * dEtaNorm + dPhiNorm * dPhiNorm;
+
+    const bool betterArea = area < bestArea - 1e-7f;
+    const bool sameAreaBetterScore = std::abs(area - bestArea) < 1e-7f && score < bestScore;
+
+    if (betterArea || sameAreaBetterScore) {
+      bestArea = area;
+      bestScore = score;
+      bestIdx = static_cast<int>(i);
+    }
   }
 
-  return -1;
+  return bestIdx;
 }
-
 std::vector<PFRhoStripTableProducer::Strip> PFRhoStripTableProducer::makeCustomStrips() const {
   std::vector<Strip> strips;
   strips.reserve((etaBins_.size() - 1) * (phiBins_.size() - 1));
@@ -412,6 +437,10 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
 
   auto table = std::make_unique<nanoaod::FlatTable>(nRows, tableName_, false, false);
   table->setDoc("PF rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE segmentation");
+  
+  constexpr int coordBits = 4;
+  constexpr int rhoBits   = 4;
+  constexpr int ptBits    = 6;
 
   table->addColumn<int>(
       "etaBin", etaBin, "generic eta-bin id: signed HCAL ieta if useHCALGeometry, otherwise custom eta-bin index");
@@ -421,50 +450,79 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
   table->addColumn<int>("zside", zside, "HCAL zside when useHCALGeometry=true, otherwise sign of eta center");
   table->addColumn<int>("iPhi", iphi, "HCAL iphi when useHCALGeometry=true, otherwise 0");
 
-  table->addColumn<float>("etaMin", etaMin, "lower eta edge");
-  table->addColumn<float>("etaMax", etaMax, "upper eta edge");
-  table->addColumn<float>("eta", eta, "eta center");
-  table->addColumn<float>("phiMin", phiMin, "lower phi edge for custom bins; 0 for HCAL geometry bins");
-  table->addColumn<float>("phiMax", phiMax, "upper phi edge for custom bins; 0 for HCAL geometry bins");
-  table->addColumn<float>("phi", phi, "phi center");
-  table->addColumn<float>("dEta", dEta, "eta bin width");
-  table->addColumn<float>("dPhi", dPhi, "phi bin width");
-  table->addColumn<float>("area", area, "eta-phi strip area");
+  table->addColumn<float>("etaMin", etaMin, "lower eta edge", coordBits);
+  table->addColumn<float>("etaMax", etaMax, "upper eta edge", coordBits);
+  table->addColumn<float>("eta", eta, "eta center", coordBits);
+  table->addColumn<float>("phiMin", phiMin, "lower phi edge for custom bins; 0 for HCAL geometry bins", coordBits);
+  table->addColumn<float>("phiMax", phiMax, "upper phi edge for custom bins; 0 for HCAL geometry bins", coordBits);
+  table->addColumn<float>("phi", phi, "phi center", coordBits);
+  table->addColumn<float>("dEta", dEta, "eta bin width", coordBits);
+  table->addColumn<float>("dPhi", dPhi, "phi bin width", coordBits);
+  table->addColumn<float>("area", area, "eta-phi strip area", coordBits);
 
-  table->addColumn<float>("sumPt", sumPt[kAll], "scalar PF pT sum in this eta-phi strip");
-  table->addColumn<float>("rho", rho[kAll], "median PF rho over phi strips in this eta bin");
+  table->addColumn<float>("sumPt", sumPt[kAll], "scalar PF pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>("rho", rho[kAll], "median PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>("n", n[kAll], "number of PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
-      "sumPtChargedHadron", sumPt[kChargedHadron], "charged-hadron PF scalar pT sum in this eta-phi strip");
+      "sumPtChargedHadron", sumPt[kChargedHadron],
+      "charged-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
-      "rhoChargedHadron", rho[kChargedHadron], "median charged-hadron PF rho over phi strips in this eta bin");
+      "rhoChargedHadron", rho[kChargedHadron],
+      "median charged-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
-      "nChargedHadron", n[kChargedHadron], "number of charged-hadron PF candidates in this eta-phi strip");
+      "nChargedHadron", n[kChargedHadron],
+      "number of charged-hadron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
-      "sumPtNeutralHadron", sumPt[kNeutralHadron], "neutral-hadron PF scalar pT sum in this eta-phi strip");
+      "sumPtNeutralHadron", sumPt[kNeutralHadron],
+      "neutral-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
-      "rhoNeutralHadron", rho[kNeutralHadron], "median neutral-hadron PF rho over phi strips in this eta bin");
+      "rhoNeutralHadron", rho[kNeutralHadron],
+      "median neutral-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
-      "nNeutralHadron", n[kNeutralHadron], "number of neutral-hadron PF candidates in this eta-phi strip");
+      "nNeutralHadron", n[kNeutralHadron],
+      "number of neutral-hadron PF candidates in this eta-phi strip");
 
-  table->addColumn<float>("sumPtPhoton", sumPt[kPhoton], "photon PF scalar pT sum in this eta-phi strip");
-  table->addColumn<float>("rhoPhoton", rho[kPhoton], "median photon PF rho over phi strips in this eta bin");
-  table->addColumn<uint16_t>("nPhoton", n[kPhoton], "number of photon PF candidates in this eta-phi strip");
+  table->addColumn<float>(
+      "sumPtPhoton", sumPt[kPhoton],
+      "photon PF scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>(
+      "rhoPhoton", rho[kPhoton],
+      "median photon PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<uint16_t>(
+      "nPhoton", n[kPhoton],
+      "number of photon PF candidates in this eta-phi strip");
 
-  table->addColumn<float>("sumPtElectron", sumPt[kElectron], "electron PF scalar pT sum in this eta-phi strip");
-  table->addColumn<float>("rhoElectron", rho[kElectron], "median electron PF rho over phi strips in this eta bin");
-  table->addColumn<uint16_t>("nElectron", n[kElectron], "number of electron PF candidates in this eta-phi strip");
+  table->addColumn<float>(
+      "sumPtElectron", sumPt[kElectron],
+      "electron PF scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>(
+      "rhoElectron", rho[kElectron],
+      "median electron PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<uint16_t>(
+      "nElectron", n[kElectron],
+      "number of electron PF candidates in this eta-phi strip");
 
-  table->addColumn<float>("sumPtMuon", sumPt[kMuon], "muon PF scalar pT sum in this eta-phi strip");
-  table->addColumn<float>("rhoMuon", rho[kMuon], "median muon PF rho over phi strips in this eta bin");
-  table->addColumn<uint16_t>("nMuon", n[kMuon], "number of muon PF candidates in this eta-phi strip");
+  table->addColumn<float>(
+      "sumPtMuon", sumPt[kMuon],
+      "muon PF scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>(
+      "rhoMuon", rho[kMuon],
+      "median muon PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<uint16_t>(
+      "nMuon", n[kMuon],
+      "number of muon PF candidates in this eta-phi strip");
 
-  table->addColumn<float>("sumPtOther", sumPt[kOther], "other PF scalar pT sum in this eta-phi strip");
-  table->addColumn<float>("rhoOther", rho[kOther], "median other PF rho over phi strips in this eta bin");
-  table->addColumn<uint16_t>("nOther", n[kOther], "number of other PF candidates in this eta-phi strip");
-
+  table->addColumn<float>(
+      "sumPtOther", sumPt[kOther],
+      "other PF scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>(
+      "rhoOther", rho[kOther],
+      "median other PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<uint16_t>(
+      "nOther", n[kOther],
+      "number of other PF candidates in this eta-phi strip");
   event.put(std::move(table));
 }
 
