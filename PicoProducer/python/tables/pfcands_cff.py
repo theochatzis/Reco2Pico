@@ -9,7 +9,7 @@ from PhysicsTools.NanoAOD.simplePATCandidateFlatTableProducer_cfi import (
 def pfCandidateTables(process, src="packedPFCandidates"):
     process.picoPFCandTable = simplePATCandidateFlatTableProducer.clone(
         src=cms.InputTag(src),
-        cut=cms.string("pt > 0.5 && abs(eta) < 2.5"),
+        cut=cms.string("pt > 0.5 && abs(eta) < 3.0"),
         name=cms.string("PFCand"),
         doc=cms.string("selected packed PF candidates for PicoAOD"),
         singleton=cms.bool(False),
