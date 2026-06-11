@@ -2,34 +2,40 @@ import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 from Configuration.AlCa.GlobalTag import GlobalTag
 
-options = VarParsing("analysis")
+opts = VarParsing("analysis")
 
-options.register("output",
+opts.register("output",
                 "pico.root",
                 VarParsing.multiplicity.singleton,
                 VarParsing.varType.string,
                 "Output PicoAOD file"
                 )
 
-options.register("globalTag",
+opts.register('skipEvents', 0,
+               VarParsing.multiplicity.singleton,
+               VarParsing.varType.int,
+               'number of events to be skipped'
+               )
+
+opts.register("globalTag",
                  "auto:run2_mc",
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "GlobalTag"
                  )
 
-options.register("tables", 
-                 "event,muons,electrons,jets,met,custom_objects",
+opts.register("tables", 
+                 "event,muons,electrons,jets,met,vertices",
                  VarParsing.multiplicity.singleton, VarParsing.varType.string,
                  "Comma-separated table groups"
                  )
 
-options.register('dumpPython', None,
+opts.register('dumpPython', None,
               VarParsing.multiplicity.singleton,
               VarParsing.varType.string,
               'path to python file with content of cms.Process')
 
-options.parseArguments()
+opts.parseArguments()
 
 process = cms.Process("PICO")
 
@@ -38,15 +44,16 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("Configuration.Geometry.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.GlobalTag = GlobalTag(process.GlobalTag, options.globalTag, "")
+process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, "")
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEvents))
-process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(options.inputFiles))
+process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(opts.inputFiles))
+process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(opts.maxEvents))
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 # input EDM files [primary]
-if options.inputFiles:
-  process.source.fileNames = options.inputFiles
+if opts.inputFiles:
+  process.source.fileNames = opts.inputFiles
 else:
   process.source.fileNames = [
     '/store/mc/RunIII2024Summer24MiniAODv6/SingleNeutrino_Par-E-10_gun/MINIAODSIM/FlatPU0to120_150X_mcRun3_2024_realistic_v2-v2/120000/7324e590-b0e6-4c31-90f7-b24c9a13d2a1.root'
@@ -56,12 +63,13 @@ else:
 if not hasattr(process.source, 'secondaryFileNames'):
   process.source.secondaryFileNames = cms.untracked.vstring()
 
-if options.secondaryInputFiles:
-  process.source.secondaryFileNames = options.secondaryInputFiles
+if opts.secondaryInputFiles:
+  process.source.secondaryFileNames = opts.secondaryInputFiles
 else:
   process.source.secondaryFileNames = [
     #'/store/mc/Run3Winter23Digi/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/GEN-SIM-RAW/FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/2560000/00d203d8-3ef3-4ca2-884d-a6b2f3bfbb6e.root',
   ]
+
 
 isMC=False
 if "/mc/" in process.source.fileNames[0]:
@@ -72,14 +80,14 @@ else:
 
 from Reco2Pico.PicoProducer.pico_cff import buildPicoSequence
 
-enabled_tables = [x.strip() for x in options.tables.split(",") if x.strip()]
+enabled_tables = [x.strip() for x in opts.tables.split(",") if x.strip()]
 process.picoSequence = buildPicoSequence(process, enabled_tables, isMC)
 
 process.p = cms.Path(process.picoSequence)
 
 process.out = cms.OutputModule(
     "NanoAODOutputModule",
-    fileName=cms.untracked.string(options.output),
+    fileName=cms.untracked.string(opts.output),
     outputCommands= cms.untracked.vstring(
     "drop *",
     "keep nanoaodFlatTable_*Table_*_*",
@@ -92,5 +100,5 @@ process.end = cms.EndPath(process.out)
 process.schedule = cms.Schedule(process.p, process.end)
 
 # dump content of cms.Process to python file
-if options.dumpPython is not None:
-   open(options.dumpPython, 'w').write(process.dumpPython())
+if opts.dumpPython is not None:
+   open(opts.dumpPython, 'w').write(process.dumpPython())

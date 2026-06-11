@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
 Create HTCondor job areas for Reco2Pico cmsRun production.
+Logic:
+  * run each job in a temporary scratch WORKDIR
+  * keep only small bookkeeping files in the persistent job directory
+  * validate and propagate the X509 proxy
+  * use CMSSW's xrootd tools when available
+  * stage out local ROOT output with xrdcp for EOS / root:// destinations
 """
-
-
 import argparse
 import datetime
 import json
@@ -13,453 +17,636 @@ import shlex
 import stat
 import sys
 
-from Reco2Pico.PicoProducer.utils.common import EXE, KILL, MKDIRP, colored_text, which
+from Reco2Pico.PicoProducer.utils.common import *
 from Reco2Pico.PicoProducer.utils.das import load_dataset_data, skim_das_jsondump
 
 
-def _quote(path_or_arg):
-    return shlex.quote(str(path_or_arg))
+def _quote(value):
+    return shlex.quote(str(value))
 
 
-def _runtime_to_seconds_and_hhmmss(value):
-    """Accept seconds or HH:MM:SS. Return (seconds_string, hhmmss_string)."""
-    value = str(value)
-    try:
-        total = int(value)
-        hours, rem = divmod(total, 3600)
-        minutes, seconds = divmod(rem, 60)
-        return str(total), f"{hours:d}:{minutes:02d}:{seconds:02d}"
-    except ValueError:
-        pass
-
-    pieces = value.split(':')
-    if len(pieces) != 3:
-        KILL(f'invalid format for maximum runtime [--time/-t]: {value}')
-    try:
-        hours, minutes, seconds = [int(x) for x in pieces]
-    except ValueError:
-        KILL(f'invalid format for maximum runtime [--time/-t]: {value}')
-    total = hours * 3600 + minutes * 60 + seconds
-    return str(total), f"{hours:d}:{minutes:02d}:{seconds:02d}"
+def _join_output_path(directory, basename):
+    directory = str(directory).rstrip('/')
+    return directory + '/' + basename
 
 
-def _memory_to_condor_mb(value):
-    """Convert values like 2000, 2000M, 2G to HTCondor RequestMemory in MB."""
-    value = str(value).strip()
-    if not value:
-        KILL('empty value for requested memory [--memory]')
-
-    try:
-        return str(int(value))
-    except ValueError:
-        pass
-
-    unit = value[-1].upper()
-    number = value[:-1]
-    try:
-        number = float(number)
-    except ValueError:
-        KILL(f'invalid format for requested memory [--memory]: {value}')
-
-    if unit == 'M':
-        return str(int(number))
-    if unit == 'G':
-        return str(int(number * 1000))
-
-    KILL(f'invalid format for requested memory [--memory]: {value}')
+def _is_forbidden_condor_submit_path(path):
+    """Return True for paths that standard CERN batch schedds reject in submit files."""
+    path = str(path)
+    return path.startswith('/eos/') or path.startswith('/store/') or path.startswith('root://')
 
 
-def _strip_quotes(value):
-    value = str(value)
-    while value.startswith(("'", '"')):
-        value = value[1:]
-    while value.endswith(("'", '"')):
-        value = value[:-1]
-    return value
+def _sanitize_path_fragment(path):
+    """Turn an absolute path into a safe single directory name."""
+    path = str(path).strip().strip('/')
+    if not path:
+        return 'jobs'
+    safe_chars = []
+    for char in path:
+        if char.isalnum() or char in ('-', '_', '.'):
+            safe_chars.append(char)
+        else:
+            safe_chars.append('_')
+    return ''.join(safe_chars)
 
 
-def _write_customized_cfg(cfg_path, customise_commands, driver_name):
+def _default_condor_workdir():
+    """Default non-EOS area used when the requested -o path resolves to EOS."""
+    user = os.environ.get('USER') or os.environ.get('LOGNAME')
+    if user:
+        return '/afs/cern.ch/user/{}/{}/condor_jobs_files'.format(user[0], user)
+    return None
+
+
+def _resolve_condor_output_dir(requested_output, condor_workdir, log_prx):
     """
-    Append the minimal Reco2Pico bdriver customization.
+    Return (submit_output_dir, requested_abs_dir, remapped).
 
-    Important: do NOT register outputFile. VarParsing('analysis') already
-    provides outputFile in CMSSW, and registering it again causes:
-      RuntimeError: Attempt to re-register variable
+    Standard CERN batch schedds reject /eos, /store and root:// paths in the
+    submit file.  If the user runs from an EOS-based CMSSW area, a relative
+    -o also becomes /eos/..., so mirror only the Condor bookkeeping area under
+    AFS while leaving --final-output unchanged.
     """
-    custom = f'''
+    requested_abs = os.path.abspath(requested_output)
 
-###
-### customization added by {driver_name} [time-stamp: {datetime.datetime.now()}]
-###
-import FWCore.ParameterSet.Config as cms
-import FWCore.ParameterSet.VarParsing as vpo
-opts = vpo.VarParsing('analysis')
+    if not _is_forbidden_condor_submit_path(requested_abs):
+        return requested_abs, requested_abs, False
 
-# VarParsing('analysis') already has maxEvents, inputFiles,
-# secondaryInputFiles, and outputFile. Register only skipEvents.
-try:
-    opts.register('skipEvents', 0,
-                  vpo.VarParsing.multiplicity.singleton,
-                  vpo.VarParsing.varType.int,
-                  'number of events to be skipped')
-except RuntimeError as err:
-    if 're-register' not in str(err):
-        raise
+    base = (condor_workdir
+            or os.environ.get('RECO2PICO_CONDOR_WORKDIR')
+            or os.environ.get('RECO2PICO_CONDOR_BASE')
+            or _default_condor_workdir())
 
-opts.parseArguments()
+    if not base:
+        KILL(log_prx+'could not choose a non-EOS Condor job area automatically. '
+             +'Pass --condor-workdir /afs/cern.ch/user/<x>/<user>/condor_jobs_files')
 
-# max number of events to be processed
-process.maxEvents.input = opts.maxEvents
+    base = os.path.abspath(os.path.expanduser(os.path.expandvars(base)))
 
-# number of events to be skipped
-process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
+    if _is_forbidden_condor_submit_path(base):
+        KILL(log_prx+'invalid --condor-workdir: '+base+'\n'
+             +'  The Condor bookkeeping area must not be under /eos, /store, or root://.')
 
-# input EDM files [primary]
-process.source.fileNames = opts.inputFiles
-
-# input EDM files [secondary]
-if hasattr(opts, 'secondaryInputFiles'):
-    process.source.secondaryFileNames = opts.secondaryInputFiles
-'''
-
-    if customise_commands:
-        custom += '\n' + '\n'.join(customise_commands) + '\n'
-
-    with open(cfg_path, 'a') as cfg_file:
-        cfg_file.write(custom)
-
-
-def _cmsrun_options(cfg_relpath, max_events, skip_events, input_file, secondary_files, output_file, extra_args):
-    opts = [
-        cfg_relpath,
-        f'maxEvents={max_events}',
-        f'skipEvents={skip_events}',
-        f'inputFiles={input_file}',
-        f'outputFile={output_file}',
-    ]
-
-    if secondary_files:
-        opts.insert(4, 'secondaryInputFiles=' + ','.join(secondary_files))
-
-    opts.extend(extra_args)
-    return opts
-
-
-def _write_condor_submit_file(path, output_dir, output_dir_final, opts, memory_mb, max_runtime_seconds):
-    lines = [
-        'BASEDIR = ' + output_dir_final,
-        'batch_name = ' + (opts.job_name if opts.job_name is not None else '$Fn(BASEDIR)'),
-        'initialdir = $DIRNAME(QFILE)',
-        'executable = $(initialdir)/exe.sh',
-        'output = logs/out.$(Cluster).$(Process)',
-        'error  = logs/err.$(Cluster).$(Process)',
-        'log    = logs/log.$(Cluster).$(Process)',
-        '#arguments =',
-        '#transfer_executable = True',
-        '#transfer_input_files =',
-        'universe = vanilla',
-        'getenv = True',
-        'should_transfer_files = IF_NEEDED',
-        'when_to_transfer_output = ON_EXIT',
-        'MY.WantOS = "el8"',
-        'RequestCpus = ' + str(opts.cpus),
-        'RequestMemory = ' + str(memory_mb),
-        '+MaxRuntime = ' + str(max_runtime_seconds),
-    ]
-
-    if opts.JobFlavour is not None:
-        lines.append('+JobFlavour = "{}"'.format(_strip_quotes(opts.JobFlavour)))
-
-    if opts.AccountingGroup is not None:
-        lines.append('+AccountingGroup = "{}"'.format(_strip_quotes(opts.AccountingGroup)))
-
-    lines += [
-        'x509userproxy = $(BASEDIR)/X509_USER_PROXY',
-        'queue QFILE matching files $(BASEDIR)/*/flag.queue',
-    ]
-
-    with open(path, 'w') as handle:
-        handle.write('\n'.join(lines) + '\n')
-
-
-def _write_job_executable(path, cmssw_base, job_dir, cmsrun_opts, export_ld_library_path=False):
-    with open(path, 'w') as handle:
-        handle.write('#!/bin/bash\n')
-        handle.write('set -e\n\n')
-
-        if export_ld_library_path and ('LD_LIBRARY_PATH' in os.environ):
-            handle.write('export LD_LIBRARY_PATH={}\n\n'.format(_quote(os.environ['LD_LIBRARY_PATH'])))
-
-        handle.write('echo "------------------------------------------------------------"\n')
-        handle.write('echo "[`date`] Job started"\n')
-        handle.write('echo "------------------------------------------------------------"\n')
-        handle.write('echo "HOSTNAME: ${HOSTNAME}"\n')
-        handle.write('echo "PWD: ${PWD}"\n')
-        handle.write('echo "USER: ${USER}"\n')
-        handle.write('echo "X509_USER_PROXY: ${X509_USER_PROXY}"\n\n')
-
-        handle.write('cd {}\n'.format(_quote(os.path.join(cmssw_base, 'src'))))
-        handle.write('eval `scram runtime -sh`\n')
-        handle.write('cd {}\n\n'.format(_quote(job_dir)))
-        handle.write('[ ! -f flag.done ] || exit 0\n\n')
-
-        handle.write('cmsRun')
-        for arg in cmsrun_opts:
-            handle.write(' \\\n  ' + _quote(arg))
-        handle.write('\n\n')
-
-        handle.write('touch flag.done\n\n')
-        handle.write('echo "------------------------------------------------------------"\n')
-        handle.write('echo "[`date`] Job completed successfully"\n')
-        handle.write('echo "------------------------------------------------------------"\n')
-
-    os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        prog='./' + os.path.basename(__file__),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=__doc__,
-    )
-
-    parser.add_argument('-c', '--cfg', dest='cmsRun_cfg', required=True,
-                        help='path to cmsRun cfg file')
-    parser.add_argument('-d', '--dataset', dest='dataset', required=True,
-                        help='DAS dataset name or path to dataset json dump')
-    parser.add_argument('-o', '--output', dest='output', required=True,
-                        help='path to local condor job directory')
-    parser.add_argument('-fo', '--final-output', dest='final_output', default='./',
-                        help='directory where output PicoAOD root files are written')
-    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
-                        help='append minimal customization to cmsRun cfg required by this driver')
-    parser.add_argument('-j', '--jobdirname', dest='jobdirname', default='job',
-                        help='prefix of batch-job subdirectories')
-    parser.add_argument('-f', '--max-files', dest='max_files', type=int, default=-1,
-                        help='maximum number of input files')
-    parser.add_argument('-m', '--max-events', dest='max_events', type=int, default=-1,
-                        help='maximum total number of events')
-    parser.add_argument('-n', '--n-events', dest='n_events', type=int, default=-1,
-                        help='maximum number of events per job')
-    parser.add_argument('-p', '--parentFiles-level', dest='parentFiles_level', type=int, default=0,
-                        help='parent file level for secondaryInputFiles: 0 disables, 1 or 2 enables')
-    parser.add_argument('-b', '--batch-system', dest='batch_system', default='htc', choices=['htc'],
-                        help='batch system; only HTCondor is supported in this Reco2Pico driver')
-    parser.add_argument('--cpus', dest='cpus', default='1',
-                        help='HTCondor RequestCpus')
-    parser.add_argument('--memory', dest='memory', default='2000M',
-                        help='HTCondor RequestMemory; accepts MB number, M, or G')
-    parser.add_argument('-t', '--time', dest='time', default='01:00:00',
-                        help='job runtime in seconds or HH:MM:SS')
-    parser.add_argument('--JobFlavour', dest='JobFlavour', default=None,
-                        help='HTCondor +JobFlavour')
-    parser.add_argument('--AccountingGroup', dest='AccountingGroup', default=None,
-                        help='HTCondor +AccountingGroup')
-    parser.add_argument('--name', dest='job_name', default=None,
-                        help='HTCondor batch_name')
-    parser.add_argument('--customise-commands', '--customize-commands', dest='customise_commands',
-                        nargs='+', default=[],
-                        help='python lines appended to final cmsRun cfg')
-    parser.add_argument('--submit', dest='submit', action='store_true', default=False,
-                        help='submit jobs with condor_submit')
-    parser.add_argument('--export-LD-LIBRARY-PATH', dest='export_LD_LIBRARY_PATH',
-                        action='store_true', default=False,
-                        help='export LD_LIBRARY_PATH explicitly inside job executable')
-    parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False,
-                        help='prepare nothing; only print commands where possible')
-    parser.add_argument('-v', '--verbosity', dest='verbosity', nargs='?', type=int,
-                        default=0, const=1,
-                        help='verbosity level')
-
-    opts, cmsrun_extra_args = parser.parse_known_args()
-    log_prx = os.path.basename(__file__) + ' -- '
-
-    if 'CMSSW_BASE' not in os.environ:
-        KILL(log_prx + 'CMSSW_BASE is not defined. Run cmsenv before using bdriver.')
-
-    cmssw_base = os.environ['CMSSW_BASE']
-
-    if not os.path.isfile(opts.cmsRun_cfg):
-        KILL(log_prx + 'invalid path to cmsRun cfg file [-c]: ' + str(opts.cmsRun_cfg))
-
-    if os.path.exists(opts.output):
-        KILL(log_prx + 'target output directory already exists [-o]: ' + str(opts.output))
-
-    if opts.n_events == 0:
-        KILL(log_prx + 'requesting zero events per job is invalid [-n]')
-    if opts.max_events == 0:
-        KILL(log_prx + 'requesting zero maximum input events is invalid [-m/--max-events]')
-    if opts.max_files == 0:
-        KILL(log_prx + 'requesting zero maximum input files is invalid [-f/--max-files]')
-
-    max_runtime_seconds, _ = _runtime_to_seconds_and_hhmmss(opts.time)
-    memory_mb = _memory_to_condor_mb(opts.memory)
-
-    which('condor_q')
-    if opts.submit and (not opts.dry_run):
-        which('condor_submit')
-
-    if opts.verbosity > 0 and cmsrun_extra_args:
-        print('-' * 50)
-        print(colored_text('additional cmsRun command-line arguments:', ['1']))
-        for arg in cmsrun_extra_args:
-            print(' ' + str(arg))
-        print('-' * 50)
-
-    if os.path.isfile(opts.dataset):
-        input_dset = skim_das_jsondump(
-            file_path=opts.dataset,
-            max_files=opts.max_files,
-            max_events=opts.max_events,
-            verbose=(opts.verbosity > 0),
-        )
+    if os.path.isabs(requested_output):
+        suffix = _sanitize_path_fragment(requested_abs)
     else:
-        which('dasgoclient')
-        input_dset = load_dataset_data(
-            das_name=opts.dataset,
-            max_files=opts.max_files,
-            max_events=opts.max_events,
-            parentFiles_levels=opts.parentFiles_level,
-            verbose=(opts.verbosity > 0),
-        )
+        suffix = requested_output.strip('/') or 'jobs'
 
-    n_jobs = 0
-    total_events = 0
-    stop = False
-    for fdict in input_dset['files']:
-        nevents = int(fdict['nevents'])
-        total_events += nevents
-        if opts.max_events > 0 and total_events >= opts.max_events:
-            nevents -= (total_events - opts.max_events)
-            stop = True
-        n_jobs += int(math.ceil(float(nevents) / opts.n_events)) if opts.n_events > 0 else 1
-        if stop:
-            break
+    return os.path.abspath(os.path.join(base, suffix)), requested_abs, True
 
-    if n_jobs == 0:
-        KILL(log_prx + 'expected number of jobs is zero; check dataset and event limits')
 
-    job_digits = max(1, len(str(n_jobs - 1)))
-    output_postfix = '_{:0' + str(job_digits) + 'd}'
+def htc_exe_prologue():
+    return r"""set -euo pipefail
 
-    output_dir = os.path.abspath(opts.output)
-    output_dir_final = output_dir
-    final_output = os.path.abspath(opts.final_output) if not opts.final_output.startswith('/store/') else opts.final_output
+# ----------------------------------------------------------------------
+# Run the whole job inside the CMS EL8 container when executed on EL9.
+# This avoids:
+#  - SCRAM el8-on-el9 runtime warnings/errors
+#  - xrootd clients picking host libraries, e.g. libreadline.so.7 issues
+# ----------------------------------------------------------------------
+if [[ -f /etc/redhat-release ]] && grep -qE 'AlmaLinux.*release 9|Red Hat.*release 9|CentOS Stream.*9' /etc/redhat-release; then
+  if [[ -z "${JME_CONDOR_INSIDE_EL8:-}" ]] && command -v cmssw-el8 >/dev/null 2>&1; then
+    echo "[INFO] Host is EL9; re-exec inside cmssw-el8 container..."
+    export JME_CONDOR_INSIDE_EL8=1
+    exec cmssw-el8 -- "$0" "$@"
+  fi
+fi
 
-    # VOMS proxy handling.
-    voms_proxy_path = os.environ.get('X509_USER_PROXY', '/tmp/x509up_u' + str(os.getuid()))
-    if not os.path.isfile(voms_proxy_path):
-        EXE('voms-proxy-init --voms cms', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
-    if not os.path.isfile(voms_proxy_path):
-        KILL(log_prx + 'invalid path to VOMS proxy: ' + voms_proxy_path)
+# Keep persistent job bookkeeping separate from large temporary ROOT files.
+# Condor starts the job in initialdir=$BASEDIR/job_N; never use that directory
+# as the cmsRun working area.
+JOBDIR="$(cd "$(dirname "$0")" && pwd -P)"
+INITIALDIR="$(pwd -P)"
 
-    MKDIRP(output_dir, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+_tmp_parent=""
+for _candidate in "${TMPDIR:-}" "${_CONDOR_SCRATCH_DIR:-}" /tmp /var/tmp; do
+  [[ -n "${_candidate}" ]] || continue
+  [[ -d "${_candidate}" && -w "${_candidate}" ]] || continue
+  # Avoid persistent job_N and its parent output directory.
+  _candidate_real="$(cd "${_candidate}" && pwd -P)"
+  [[ "${_candidate_real}" != "${JOBDIR}" ]] || continue
+  [[ "${_candidate_real}" != "$(cd "${JOBDIR}/.." && pwd -P)" ]] || continue
+  _tmp_parent="${_candidate_real}"
+  break
+done
 
-    if not opts.dry_run:
-        EXE('cp ' + _quote(voms_proxy_path) + ' ' + _quote(output_dir + '/X509_USER_PROXY'),
-            verbose=(opts.verbosity > 0), dry_run=False)
+if [[ -z "${_tmp_parent}" ]]; then
+  echo "[ERROR] Could not find a writable temporary area outside ${JOBDIR}"
+  exit 87
+fi
 
-    out_cfg = os.path.abspath(output_dir + '/cfg.py')
-    EXE('cp ' + _quote(opts.cmsRun_cfg) + ' ' + _quote(out_cfg),
-        verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+WORKDIR="$(mktemp -d -p "${_tmp_parent}" "jme_${USER:-user}_XXXXXX")"
+cleanup_workdir() {
+  local status=$?
+  if [[ -d "${WORKDIR}" ]]; then
+    echo "[INFO] Removing temporary workdir ${WORKDIR}"
+    rm -rf "${WORKDIR}"
+  fi
+  exit ${status}
+}
+trap cleanup_workdir EXIT
 
-    if opts.customize_cfg and not opts.dry_run:
-        _write_customized_cfg(out_cfg, opts.customise_commands, os.path.basename(__file__))
+cd "${WORKDIR}"
+echo "JOBDIR=${JOBDIR}"
+echo "INITIALDIR=${INITIALDIR}"
+echo "WORKDIR=${WORKDIR}"
+echo "OS: $(cat /etc/redhat-release 2>/dev/null || true)"
+echo "uname: $(uname -a 2>/dev/null || true)"
+echo "HOSTNAME=${HOSTNAME:-<unset>}"
+echo "USER=${USER:-<unset>}"
 
-    if not opts.dry_run:
-        with open(output_dir + '/cmdLog', 'w') as handle:
-            handle.write(' '.join(sys.argv) + '\n')
-        with open(output_dir + '/dataset.json', 'w') as handle:
-            json.dump(input_dset, handle, sort_keys=True, indent=2)
+# Fallback for local tests or sites that do not set X509_USER_PROXY after
+# x509userproxy transfer. exe.sh lives in BASEDIR/job_x, proxy in BASEDIR.
+if [[ -z "${X509_USER_PROXY:-}" ]]; then
+  _jme_proxy="${JOBDIR}/../X509_USER_PROXY"
+  if [[ -r "${_jme_proxy}" ]]; then
+    export X509_USER_PROXY="${_jme_proxy}"
+  fi
+  unset _jme_proxy
+fi
 
-    # Validate/dump the final python config before creating the jobs.
-    retcode = EXE('edmConfigDump ' + _quote(out_cfg) +
-                  ' 2> ' + _quote(output_dir + '/configDump.log') +
-                  ' > ' + _quote(output_dir + '/configDump.py'),
-                  suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
-    if retcode:
-        EXE('cat ' + _quote(output_dir + '/configDump.log'),
-            verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
-        raise SystemExit(retcode)
+echo "X509_USER_PROXY=${X509_USER_PROXY:-<unset>}"
+if [[ -z "${X509_USER_PROXY:-}" || ! -r "${X509_USER_PROXY}" ]]; then
+  echo "[ERROR] X509 proxy is missing or not readable inside the job."
+  exit 88
+fi
 
-    subfile = output_dir + '/condor.sub'
-    if not opts.dry_run:
-        _write_condor_submit_file(subfile, output_dir, output_dir_final, opts, memory_mb, max_runtime_seconds)
+if command -v voms-proxy-info >/dev/null 2>&1; then
+  echo "=== voms-proxy-info (summary) ==="
+  voms-proxy-info -timeleft || true
+  voms-proxy-info -identity || true
+fi
 
-    job_counter = 0
-    total_events = 0
-    stop = False
+# Make scram available on batch workers.
+if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
+  source /cvmfs/cms.cern.ch/cmsset_default.sh
+fi
 
-    for fdict in input_dset['files']:
-        input_file = fdict['file']
-        input_nevents = int(fdict['nevents'])
+jme_use_cmssw_xrootd() {
+  local xrootd_base=""
+  xrootd_base="$(scram tool info xrootd 2>/dev/null | awk -F= '/^XROOTD_BASE=/{print $2}' | tail -n 1 || true)"
 
-        secondary_files = []
-        if opts.parentFiles_level == 1:
-            secondary_files = fdict.get('parentFiles_1', [])
-        elif opts.parentFiles_level == 2:
-            secondary_files = fdict.get('parentFiles_2', [])
+  if [[ -n "${xrootd_base}" && -d "${xrootd_base}/bin" ]]; then
+    export PATH="${xrootd_base}/bin:${PATH}"
+    [[ -d "${xrootd_base}/lib64" ]] && export LD_LIBRARY_PATH="${xrootd_base}/lib64:${LD_LIBRARY_PATH:-}"
+    [[ -d "${xrootd_base}/lib"   ]] && export LD_LIBRARY_PATH="${xrootd_base}/lib:${LD_LIBRARY_PATH:-}"
+  fi
 
-        if opts.parentFiles_level in (1, 2) and len(secondary_files) == 0:
-            KILL(log_prx + 'secondary input files requested, but list is empty for ' + input_file)
+  echo "which xrdfs: $(command -v xrdfs || echo '<not found>')"
+  echo "which xrdcp: $(command -v xrdcp || echo '<not found>')"
+}
 
-        n_jobs_this_file = int(math.ceil(float(input_nevents) / opts.n_events)) if opts.n_events > 0 else 1
-        remainder = input_nevents % opts.n_events if opts.n_events > 0 else 0
+jme_stageout() {
+  local src="${1:?missing local source file}"
+  local dst="${2:?missing destination path}"
+  local dst_dir
+  dst_dir="$(dirname "${dst}")"
 
-        for i_job in range(n_jobs_this_file):
-            job_dir = output_dir + '/' + opts.jobdirname + output_postfix.format(job_counter)
-            MKDIRP(job_dir + '/logs', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+  echo "[INFO] stageout: ${src} -> ${dst}"
 
-            max_events_this_job = opts.n_events if opts.n_events > 0 else input_nevents
-            if i_job == (n_jobs_this_file - 1) and remainder != 0:
-                max_events_this_job = remainder
+  if [[ ! -f "${src}" ]]; then
+    echo "[ERROR] local output does not exist: ${src}"
+    echo "[ERROR] pwd=$(pwd)"
+    echo "[ERROR] available files:"
+    ls -lh
+    exit 89
+  fi
 
-            total_events += max_events_this_job
-            if opts.max_events > 0 and total_events >= opts.max_events:
-                max_events_this_job -= (total_events - opts.max_events)
-                stop = True
+  if [[ "${dst}" == /eos/* ]]; then
+    local eos_host="eosuser.cern.ch"
+    [[ "${dst}" == /eos/cms/* ]] && eos_host="eoscms.cern.ch"
 
-            if not opts.dry_run:
-                open(job_dir + '/flag.queue', 'w').close()
+    xrdfs "${eos_host}" mkdir -p "${dst_dir}" || true
+    xrdcp -f "${src}" "root://${eos_host}//${dst}"
 
-            output_file = final_output.rstrip('/') + '/out' + output_postfix.format(job_counter) + '.root'
-            cfg_rel = os.path.relpath(out_cfg, job_dir)
-            skip_events = opts.n_events * i_job if opts.n_events > 0 else 0
-            cmsrun_opts = _cmsrun_options(
-                cfg_relpath=cfg_rel,
-                max_events=max_events_this_job,
-                skip_events=skip_events,
-                input_file=input_file,
-                secondary_files=secondary_files,
-                output_file=output_file,
-                extra_args=cmsrun_extra_args,
-            )
+  elif [[ "${dst}" == /store/* ]]; then
+    xrdfs eoscms.cern.ch mkdir -p "${dst_dir}" || true
+    xrdcp -f "${src}" "root://eoscms.cern.ch//${dst}"
 
-            exe_path = job_dir + '/exe.sh'
-            if not opts.dry_run:
-                _write_job_executable(
-                    path=exe_path,
-                    cmssw_base=cmssw_base,
-                    job_dir=job_dir,
-                    cmsrun_opts=cmsrun_opts,
-                    export_ld_library_path=opts.export_LD_LIBRARY_PATH,
-                )
+  elif [[ "${dst}" == root://* ]]; then
+    xrdcp -f "${src}" "${dst}"
 
-            print(colored_text('output:', ['1', '94']), os.path.relpath(exe_path, os.environ.get('PWD', os.getcwd())))
-            job_counter += 1
+  else
+    mkdir -p "${dst_dir}"
+    cp -f "${src}" "${dst}"
+  fi
 
-            if stop:
-                break
-        if stop:
-            break
-
-    print(colored_text('prepared jobs:', ['1', '92']), job_counter)
-    print(colored_text('submit file:', ['1', '92']), subfile)
-
-    if opts.submit:
-        EXE('condor_submit ' + _quote(subfile), suspend=False,
-            verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+  rm -f "${src}"
+}
+"""
 
 
 if __name__ == '__main__':
-    main()
+   parser = argparse.ArgumentParser(
+    prog='./'+os.path.basename(__file__),
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=__doc__)
+
+   parser.add_argument('-c', '--cfg', dest='cmsRun_cfg', action='store', default=None, required=True,
+                       help='path to cmsRun cfg file')
+   parser.add_argument('-d', '--dataset', dest='dataset', action='store', default=None, required=True,
+                       help='name of input data set in DAS or path to dataset json dump')
+   parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
+                       help='path to Condor job directory; if this resolves under /eos it is mirrored under --condor-workdir')
+   parser.add_argument('--condor-workdir', dest='condor_workdir', action='store', default=None, required=False,
+                       help='non-EOS base directory for Condor bookkeeping when -o resolves under /eos; default: /afs/cern.ch/user/${USER:0:1}/${USER}/condor_jobs_files')
+   parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
+                       help='path to final output directory i.e. directory with the PicoAOD ROOT files')
+   parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
+                       help='append minimal customization to cmsRun-cfg required by the driver')
+   parser.add_argument('-j', '--jobdirname', dest='jobdirname', action='store', default='job',
+                       help='prefix of batch-job sub-directories')
+   parser.add_argument('-f', '--max-files', dest='max_files', action='store', type=int, default=-1,
+                       help='maximum number of input files to be processed')
+   parser.add_argument('-m', '--max-events', dest='max_events', action='store', type=int, default=-1,
+                       help='maximum number of total input events to be processed')
+   parser.add_argument('-n', '--n-events', dest='n_events', action='store', type=int, default=-1,
+                       help='maximum number of events per job')
+   parser.add_argument('-p', '--parentFiles-level', dest='parentFiles_level', action='store', type=int, default=2,
+                       help='level of parentFiles to be used as secondary input files')
+   parser.add_argument('-b', '--batch-system', dest='batch_system', action='store', default='auto', choices=['auto', 'htc', 'slurm'],
+                       help='keyword to select batch system')
+   parser.add_argument('--cpus', dest='cpus', action='store', default='1',
+                       help='number of CPUs per job')
+   parser.add_argument('--memory', dest='memory', action='store', default='50M',
+                       help='job max memory')
+   parser.add_argument('-t', '--time', dest='time', action='store', default='01:00:00',
+                       help='job runtime in seconds or HH:MM:SS')
+   parser.add_argument('-q', '--queue', dest='queue', action='store', default='standard',
+                       help='name of partition on the batch system')
+   parser.add_argument('--JobFlavour', dest='JobFlavour', action='store', default=None,
+                       help='argument of HTCondor parameter "+JobFlavour"')
+   parser.add_argument('--AccountingGroup', dest='AccountingGroup', action='store', default=None,
+                       help='argument of HTCondor parameter "+AccountingGroup"')
+   parser.add_argument('--name', dest='job_name', action='store', default=None,
+                       help='name of batch job')
+   parser.add_argument('--customise-commands', '--customize-commands', dest='customise_commands', nargs='+', default=[],
+                       help='list of strings appended to final cmsRun configuration file')
+   parser.add_argument('--submit', dest='submit', action='store_true', default=False,
+                       help='submit job(s) on the batch system')
+   parser.add_argument('--export-LD-LIBRARY-PATH', dest='export_LD_LIBRARY_PATH', action='store_true', default=False,
+                       help='export LD_LIBRARY_PATH in batch-job executable')
+   parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False,
+                       help='enable dry-run mode')
+   parser.add_argument('-v', '--verbosity', dest='verbosity', nargs='?', type=int, default=0, const=1,
+                       help='level of verbosity')
+
+   opts, opts_unknown = parser.parse_known_args()
+   log_prx = os.path.basename(__file__)+' -- '
+
+   OUTPUT_DIR, REQUESTED_OUTPUT_DIR, OUTPUT_DIR_WAS_REMAPPED = _resolve_condor_output_dir(
+     opts.output, opts.condor_workdir, log_prx)
+
+   if 'CMSSW_BASE' not in os.environ:
+     KILL(log_prx+'global variable CMSSW_BASE is not defined (set up CMSSW environment with "cmsenv" before submitting jobs)')
+
+   if not os.path.isfile(opts.cmsRun_cfg):
+     KILL(log_prx+'invalid path to cmsRun cfg file [-c]: '+str(opts.cmsRun_cfg))
+
+   if OUTPUT_DIR_WAS_REMAPPED:
+     print(colored_text('warning:', ['1', '93']),
+           'requested -o resolves to an EOS path that standard CERN schedds reject: '+REQUESTED_OUTPUT_DIR)
+     print(colored_text('warning:', ['1', '93']),
+           'using non-EOS Condor bookkeeping area instead: '+OUTPUT_DIR)
+
+   if opts.batch_system == 'slurm':
+     KILL(log_prx+'this bdriver is intended for the HTCondor workflow used by the JME-style scripts; use --batch-system htc')
+
+   if opts.batch_system == 'auto':
+     opts.batch_system = 'htc'
+
+   if opts.batch_system == 'htc':
+     try:
+       which('condor_q')
+     except:
+       KILL(log_prx+'selected HTCondor batch system, but the executable "condor_q" is not available')
+
+   if opts.submit and (not opts.dry_run):
+     which('condor_submit')
+
+   if os.path.exists(OUTPUT_DIR):
+     msg = log_prx+'target path to Condor output directory already exists: '+str(OUTPUT_DIR)
+     if OUTPUT_DIR_WAS_REMAPPED:
+       msg += '\n  This is the non-EOS mirror of requested -o path: '+REQUESTED_OUTPUT_DIR
+       msg += '\n  Remove it, choose a new ODIR, or pass a different --condor-workdir.'
+     KILL(msg)
+
+   if opts.n_events == 0:
+     KILL(log_prx+'logic error: requesting zero events per job')
+   if opts.max_events == 0:
+     KILL(log_prx+'logic error: requesting a maximum of zero input events')
+   if opts.max_files == 0:
+     KILL(log_prx+'logic error: requesting a maximum of zero input files')
+
+   try:
+     time_mins, time_secs = divmod(int(opts.time), 60)
+     time_hours, time_mins = divmod(time_mins, 60)
+     TIME_STR_secs = opts.time
+   except:
+     try:
+       TIME_STR_blocks = opts.time.split(':')
+       assert len(TIME_STR_blocks) == 3
+       TIME_STR_secs = str(int(TIME_STR_blocks[0])*3600 + int(TIME_STR_blocks[1])*60 + int(TIME_STR_blocks[2]))
+     except:
+       KILL(log_prx+'invalid format for maximum runtime [--time/-t]: '+opts.time)
+
+   try:
+     memory_htc = int(opts.memory)
+     memory_htc_str = str(memory_htc)
+   except:
+     try:
+       memory_dictionary = {'M':1, 'G':1000}
+       memory_htc = int(opts.memory[0:(len(opts.memory)-1)]) * memory_dictionary[opts.memory[len(opts.memory)-1]]
+       memory_htc_str = str(memory_htc)
+     except:
+       KILL(log_prx+'invalid format for requested memory [--memory]: '+opts.memory)
+
+   cmsRun_addopts = opts_unknown[:]
+
+   if opts.verbosity > 0 and len(cmsRun_addopts):
+     print('-'*50)
+     print(colored_text('additional cmsRun command-line arguments:', ['1']))
+     for _tmp in cmsRun_addopts:
+       print(' '+str(_tmp))
+     print('-'*50)
+
+   if os.path.isfile(opts.dataset):
+     input_dset = skim_das_jsondump(file_path=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, verbose=(opts.verbosity > 0))
+   else:
+     which('dasgoclient')
+     input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_level, verbose=(opts.verbosity > 0))
+
+   nJobs, totEvents, breakLoop = 0, 0, False
+   for i_inpfdc in input_dset['files']:
+     i_nevents = i_inpfdc['nevents']
+     totEvents += i_nevents
+     if (opts.max_events > 0) and (totEvents >= opts.max_events):
+       i_nevents -= (totEvents - opts.max_events)
+       breakLoop = True
+     nJobs += int(math.ceil(float(i_nevents) / opts.n_events)) if (opts.n_events > 0) else 1
+     if breakLoop:
+       break
+
+   if nJobs == 0:
+     KILL(log_prx+'input error: expected number of batch jobs is zero: '+opts.dataset)
+
+   jobIndex_nDigits = max(1, len(str(nJobs - 1)))
+   outputname_postfix_format = '_{:0'+str(jobIndex_nDigits)+'d}'
+   del nJobs, totEvents, breakLoop
+
+   voms_proxy_path = os.environ['X509_USER_PROXY'] if 'X509_USER_PROXY' in os.environ else '/tmp/x509up_u'+str(os.getuid())
+
+   if not os.path.isfile(voms_proxy_path):
+     EXE('voms-proxy-init --voms cms', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   if not os.path.isfile(voms_proxy_path):
+     KILL(log_prx+'invalid path to voms proxy: '+voms_proxy_path)
+
+   # OUTPUT_DIR is the local/AFS Condor job area and is the only path used by condor.sub.
+   OUTPUT_DIR_FINAL = OUTPUT_DIR
+
+   # Keep local final outputs outside the temporary WORKDIR when -fo is not EOS/root://.
+   # EOS and root:// destinations are preserved verbatim for xrdcp stage-out.
+   if opts.final_output.startswith('/eos/') or opts.final_output.startswith('/store/') or opts.final_output.startswith('root://'):
+     FINAL_OUTPUT_DIR = opts.final_output.rstrip('/')
+   else:
+     FINAL_OUTPUT_DIR = os.path.abspath(opts.final_output).rstrip('/')
+
+   print(colored_text('final output:', ['1', '92']), FINAL_OUTPUT_DIR)
+   print(colored_text('condor job area:', ['1', '92']), OUTPUT_DIR)
+
+   MKDIRP(OUTPUT_DIR, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+   MKDIRP(OUTPUT_DIR+'/logs', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   EXE('cp '+_quote(voms_proxy_path)+' '+_quote(OUTPUT_DIR+'/X509_USER_PROXY'), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   out_cmsRun_cfg = os.path.abspath(OUTPUT_DIR+'/cfg.py')
+   EXE('cp '+_quote(opts.cmsRun_cfg)+' '+_quote(out_cmsRun_cfg), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   if opts.customize_cfg:
+     with open(out_cmsRun_cfg, 'a') as cfg_file:
+       custom_str = """
+###
+### customization added by {:} [time-stamp: {:}]
+###
+import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as vpo
+
+# Do not create and parse a second independent VarParsing object if the
+# original cfg already defined opts and called opts.parseArguments().
+# That was the main source of confusing maxEvents/output behaviour.
+try:
+    opts
+except NameError:
+    opts = vpo.VarParsing('analysis')
+    try:
+        opts.register('skipEvents', 0,
+                      vpo.VarParsing.multiplicity.singleton,
+                      vpo.VarParsing.varType.int,
+                      'number of events to be skipped')
+    except RuntimeError as err:
+        if 're-register' not in str(err):
+            raise
+    try:
+        opts.register('output', 'out.root',
+                      vpo.VarParsing.multiplicity.singleton,
+                      vpo.VarParsing.varType.string,
+                      'path to output file')
+    except RuntimeError as err:
+        if 're-register' not in str(err):
+            raise
+    opts.parseArguments()
+
+# max number of events to be processed
+if hasattr(process, 'maxEvents'):
+    process.maxEvents.input = opts.maxEvents
+
+# number of events to be skipped
+if hasattr(process, 'source') and hasattr(opts, 'skipEvents'):
+    process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
+
+# input EDM files [primary]
+if hasattr(process, 'source'):
+    process.source.fileNames = opts.inputFiles
+
+# input EDM files [secondary]
+if hasattr(process, 'source') and hasattr(opts, 'secondaryInputFiles'):
+    process.source.secondaryFileNames = opts.secondaryInputFiles
+
+# output file: current Reco2Pico cfg uses opts.output, while older CMSSW
+# templates sometimes use opts.outputFile. Support both.
+_driver_output = getattr(opts, 'output', None)
+if _driver_output is None:
+    _driver_output = getattr(opts, 'outputFile', None)
+if _driver_output is not None:
+    for _modname in ('out', 'nanoAODOutput'):
+        if hasattr(process, _modname) and hasattr(getattr(process, _modname), 'fileName'):
+            getattr(process, _modname).fileName = cms.untracked.string(_driver_output)
+    if hasattr(process, 'TFileService'):
+        process.TFileService.fileName = cms.string(_driver_output)
+del _driver_output
+"""
+       if opts.customise_commands:
+         custom_str += '\n'+'\n'.join(opts.customise_commands)+'\n'
+       cfg_file.write(custom_str.format(os.path.basename(__file__), str(datetime.datetime.now())))
+
+   if not opts.dry_run:
+     with open(os.path.abspath(OUTPUT_DIR+'/cmdLog'), 'w') as file_cmdLog:
+       file_cmdLog.write((' '.join(sys.argv[:]))+'\n')
+     with open(os.path.abspath(OUTPUT_DIR+'/paths.json'), 'w') as file_paths:
+       json.dump({
+         'requested_output_dir': REQUESTED_OUTPUT_DIR,
+         'condor_output_dir': OUTPUT_DIR,
+         'output_dir_was_remapped': OUTPUT_DIR_WAS_REMAPPED,
+         'final_output_dir': FINAL_OUTPUT_DIR,
+       }, file_paths, sort_keys=True, indent=2)
+     json.dump(input_dset, open(OUTPUT_DIR+'/dataset.json', 'w'), sort_keys=True, indent=2)
+
+   retcode = EXE('edmConfigDump '+_quote(out_cmsRun_cfg)+' 2> '+_quote(OUTPUT_DIR+'/configDump.log')+' > '+_quote(OUTPUT_DIR+'/configDump.py'), suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+   if retcode:
+     EXE('cat '+_quote(OUTPUT_DIR+'/configDump.log'), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     raise SystemExit(retcode)
+
+   SUBFILE_ABSPATH = OUTPUT_DIR+'/condor.sub'
+   if os.path.exists(SUBFILE_ABSPATH):
+     KILL(log_prx+'target output file already exists (condor submission file): '+SUBFILE_ABSPATH)
+
+   # IMPORTANT: BASEDIR must be the local/AFS Condor job area, never --final-output.
+   # EOS paths are used only inside exe.sh, where jme_stageout performs xrdcp.
+   SUBFILE_LINES = [
+     'BASEDIR = '+OUTPUT_DIR_FINAL,
+     'batch_name = '+(opts.job_name if opts.job_name is not None else '$Fn(BASEDIR)'),
+     'initialdir = $DIRNAME(QFILE)',
+     'executable = $(initialdir)/exe.sh',
+     'output = $DIRNAME(QFILE)/logs/out.$(Cluster).$(Process)',
+     'error  = $DIRNAME(QFILE)/logs/err.$(Cluster).$(Process)',
+     'log    = $(BASEDIR)/condor.$(Cluster).log',
+     '#arguments =',
+     '#transfer_executable = True',
+     '#transfer_input_files =',
+     'universe = vanilla',
+     'getenv = True',
+     'use_x509userproxy = True',
+     'should_transfer_files = IF_NEEDED',
+     'when_to_transfer_output = ON_EXIT',
+     'MY.WantOS = "el8"',
+     'RequestCpus = '+opts.cpus,
+     'RequestMemory = '+memory_htc_str,
+     '+MaxRuntime = '+TIME_STR_secs,
+   ]
+
+   if opts.JobFlavour is not None:
+     JobFlavour = opts.JobFlavour.strip('\'"')
+     SUBFILE_LINES += ['+JobFlavour = "{:}"'.format(JobFlavour)]
+
+   if opts.AccountingGroup is not None:
+     AccountingGroup = opts.AccountingGroup.strip('\'"')
+     SUBFILE_LINES += ['+AccountingGroup = "{:}"'.format(AccountingGroup)]
+
+   SUBFILE_LINES += [
+     'x509userproxy = $(BASEDIR)/X509_USER_PROXY',
+     'queue QFILE matching files $(BASEDIR)/*/flag.queue',
+   ]
+
+   if not opts.dry_run:
+     with open(SUBFILE_ABSPATH, 'w') as f_subfile:
+       for _tmp in SUBFILE_LINES:
+         f_subfile.write(_tmp+'\n')
+
+   jobCounter = 0
+   totEvents = 0
+   breakLoop = False
+
+   for i_inpfdc in input_dset['files']:
+     i_inputFile = i_inpfdc['file']
+     i_inputFile_nevents = i_inpfdc['nevents']
+
+     i_secondaryInputFiles = None
+     if opts.parentFiles_level == 2:
+       i_secondaryInputFiles = i_inpfdc['parentFiles_2']
+     elif opts.parentFiles_level == 1:
+       i_secondaryInputFiles = i_inpfdc['parentFiles_1']
+
+     if isinstance(i_secondaryInputFiles, list) and len(i_secondaryInputFiles) == 0:
+       KILL(log_prx+'list of secondary input files is empty (parentFiles_level = '+str(opts.parentFiles_level)+')')
+
+     i_njobs = int(math.ceil(float(i_inputFile_nevents) / opts.n_events)) if (opts.n_events > 0) else 1
+     i_nevt_remainder = i_inputFile_nevents % opts.n_events if (opts.n_events > 0) else 0
+
+     for i_job in range(i_njobs):
+       i_OUTPUT_DIR = OUTPUT_DIR+'/'+opts.jobdirname+outputname_postfix_format.format(jobCounter)
+
+       MKDIRP(i_OUTPUT_DIR+'/logs', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+       i_maxEvents = opts.n_events if (opts.n_events > 0) else i_inputFile_nevents
+       if (i_job == (i_njobs - 1)) and (i_nevt_remainder != 0):
+         i_maxEvents = i_nevt_remainder
+
+       totEvents += i_maxEvents
+       if (opts.max_events > 0) and (totEvents >= opts.max_events):
+         i_maxEvents -= (totEvents - opts.max_events)
+         breakLoop = True
+
+       EXE('touch '+_quote(i_OUTPUT_DIR+'/flag.queue'), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+       EXEFILE_ABSPATH = i_OUTPUT_DIR+'/exe.sh'
+       if os.path.exists(EXEFILE_ABSPATH):
+         KILL(log_prx+'target output file already exists (executable of batch job): '+EXEFILE_ABSPATH)
+
+       if not opts.dry_run:
+         with open(EXEFILE_ABSPATH, 'w') as f_exefile:
+           f_exefile.write('#!/bin/bash\n')
+           f_exefile.write(htc_exe_prologue())
+
+           if opts.export_LD_LIBRARY_PATH and 'LD_LIBRARY_PATH' in os.environ:
+             f_exefile.write('\nexport LD_LIBRARY_PATH='+os.environ['LD_LIBRARY_PATH']+'\n')
+
+           output_basename = 'out'+outputname_postfix_format.format(jobCounter)+'.root'
+           final_output_path = _join_output_path(FINAL_OUTPUT_DIR, output_basename)
+           skip_events = opts.n_events*i_job if opts.n_events > 0 else 0
+
+           cmsRun_opts = out_cmsRun_cfg
+           cmsRun_opts += ' \\\n maxEvents='+str(i_maxEvents)
+           cmsRun_opts += ' \\\n skipEvents='+str(skip_events)
+           cmsRun_opts += ' \\\n inputFiles='+str(i_inputFile)
+           if i_secondaryInputFiles:
+             cmsRun_opts += ' \\\n secondaryInputFiles='+str(','.join(i_secondaryInputFiles))
+           cmsRun_opts += ' \\\n output='+output_basename
+
+           for _tmp in cmsRun_addopts:
+             cmsRun_opts += ' \\\n '+str(_tmp)
+
+           i_SHELL_COMMANDS = [
+             ['cd '+_quote(os.environ['CMSSW_BASE']+'/src')],
+             ['eval `scram runtime -sh`'],
+             ['jme_use_cmssw_xrootd || true'],
+             ['cd "${WORKDIR}"'],
+             ['[ ! -f '+_quote(i_OUTPUT_DIR+'/flag.done')+' ] || exit 0'],
+             ['echo "[INFO] cmsRun command follows"'],
+             ['echo '+_quote('cmsRun '+cmsRun_opts)],
+             ['cmsRun '+cmsRun_opts],
+             ['echo "[INFO] WORKDIR content after cmsRun"'],
+             ['ls -lh'],
+             ['jme_stageout '+_quote(output_basename)+' '+_quote(final_output_path)],
+             ['touch '+_quote(i_OUTPUT_DIR+'/flag.done')],
+           ]
+
+           f_exefile.write('\n'+('\n\n'.join([' \\\n '.join(_tmp) for _tmp in i_SHELL_COMMANDS]))+'\n')
+
+         os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
+
+       print(colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD']))
+
+       jobCounter += 1
+
+       if breakLoop:
+         break
+
+     if breakLoop:
+       break
+
+   print(colored_text('prepared jobs:', ['1', '92']), jobCounter)
+   print(colored_text('submit file:', ['1', '92']), SUBFILE_ABSPATH)
+
+   if opts.submit:
+     EXE('condor_submit '+_quote(SUBFILE_ABSPATH), suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
