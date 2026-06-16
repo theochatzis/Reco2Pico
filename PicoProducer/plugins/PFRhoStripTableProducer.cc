@@ -12,6 +12,7 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/NanoAOD/interface/FlatTable.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -76,6 +77,7 @@ private:
   static bool insidePhi(const Strip& strip, float phi);
   static float wrapPhi(float phi);
   static Flavor flavorOf(const reco::Candidate& cand);
+  static float puppiWeightOf(const reco::Candidate& cand);
   static int signOf(float x);
   static float median(std::vector<float> values);
   static void validateEdges(const std::vector<double>& edges, const std::string& name);
@@ -84,6 +86,7 @@ private:
   const edm::ESGetToken<HcalDDDRecConstants, HcalRecNumberingRecord> hcalToken_;
 
   const std::string tableName_;
+  const bool usePuppiWeights_;
   const bool useHCALGeometry_;
   const bool includeHB_;
   const bool includeHE_;
@@ -95,7 +98,10 @@ private:
 PFRhoStripTableProducer::PFRhoStripTableProducer(const edm::ParameterSet& cfg)
     : srcToken_(consumes<edm::View<reco::Candidate>>(cfg.getParameter<edm::InputTag>("src"))),
       hcalToken_(esConsumes<HcalDDDRecConstants, HcalRecNumberingRecord>()),
-      tableName_(cfg.getParameter<std::string>("name")),
+      tableName_(cfg.getParameter<bool>("usePuppiWeights") && cfg.getParameter<std::string>("name") == "PFRhoStrip"
+                     ? std::string("PFPuppiRhoStrip")
+                     : cfg.getParameter<std::string>("name")),
+      usePuppiWeights_(cfg.getParameter<bool>("usePuppiWeights")),
       useHCALGeometry_(cfg.getParameter<bool>("useHCALGeometry")),
       includeHB_(cfg.getParameter<bool>("includeHB")),
       includeHE_(cfg.getParameter<bool>("includeHE")),
@@ -186,6 +192,18 @@ PFRhoStripTableProducer::Flavor PFRhoStripTableProducer::flavorOf(const reco::Ca
     return kNeutralHadron;
 
   return kOther;
+}
+
+float PFRhoStripTableProducer::puppiWeightOf(const reco::Candidate& cand) {
+  const auto* packed = dynamic_cast<const pat::PackedCandidate*>(&cand);
+  if (packed == nullptr) {
+    throw cms::Exception("InvalidInput")
+        << "PFRhoStripTableProducer configured with usePuppiWeights=true, but input candidate is not a "
+        << "pat::PackedCandidate. PUPPI weights are only available from packedPFCandidates/pat::PackedCandidate "
+        << "inputs.";
+  }
+
+  return static_cast<float>(packed->puppiWeight());
 }
 
 bool PFRhoStripTableProducer::insidePhi(const Strip& strip, float phi) {
@@ -349,7 +367,7 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
     if (idx < 0)
       continue;
 
-    const float pt = static_cast<float>(cand.pt());
+    const float pt = static_cast<float>(cand.pt()) * (usePuppiWeights_ ? puppiWeightOf(cand) : 1.f);
     const Flavor flavor = flavorOf(cand);
 
     strips[idx].sumPt[kAll] += pt;
@@ -360,6 +378,7 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
 
   // Compute FastJet-like rho per eta ring:
   //   1. Compute each eta-phi strip density: sumPt / area.
+  //      When usePuppiWeights=true, sumPt is filled with cand.pt() * cand.puppiWeight().
   //   2. For each etaBin and each flavor, take the median over phi strips.
   // The rho columns below store this median value, repeated for all rows in the same etaBin.
   std::map<int, std::array<std::vector<float>, kNFlavors>> stripRhoValuesByEtaBin;
@@ -436,7 +455,10 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
   }
 
   auto table = std::make_unique<nanoaod::FlatTable>(nRows, tableName_, false, false);
-  table->setDoc("PF rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE segmentation");
+  const std::string weightedPrefix = usePuppiWeights_ ? "PUPPI-weighted PF" : "PF";
+  const std::string weightedFlavorPrefix = usePuppiWeights_ ? "PUPPI-weighted " : "";
+  table->setDoc(weightedPrefix +
+                " rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE segmentation");
   
   constexpr int coordBits = 4;
   constexpr int rhoBits   = 4;
@@ -460,66 +482,66 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
   table->addColumn<float>("dPhi", dPhi, "phi bin width", coordBits);
   table->addColumn<float>("area", area, "eta-phi strip area", coordBits);
 
-  table->addColumn<float>("sumPt", sumPt[kAll], "scalar PF pT sum in this eta-phi strip", ptBits);
-  table->addColumn<float>("rho", rho[kAll], "median PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<float>("sumPt", sumPt[kAll], weightedPrefix + " scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>("rho", rho[kAll], "median " + weightedPrefix + " rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>("n", n[kAll], "number of PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtChargedHadron", sumPt[kChargedHadron],
-      "charged-hadron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "charged-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoChargedHadron", rho[kChargedHadron],
-      "median charged-hadron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "charged-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nChargedHadron", n[kChargedHadron],
       "number of charged-hadron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtNeutralHadron", sumPt[kNeutralHadron],
-      "neutral-hadron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "neutral-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoNeutralHadron", rho[kNeutralHadron],
-      "median neutral-hadron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "neutral-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nNeutralHadron", n[kNeutralHadron],
       "number of neutral-hadron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtPhoton", sumPt[kPhoton],
-      "photon PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "photon PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoPhoton", rho[kPhoton],
-      "median photon PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "photon PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nPhoton", n[kPhoton],
       "number of photon PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtElectron", sumPt[kElectron],
-      "electron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "electron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoElectron", rho[kElectron],
-      "median electron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "electron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nElectron", n[kElectron],
       "number of electron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtMuon", sumPt[kMuon],
-      "muon PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "muon PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoMuon", rho[kMuon],
-      "median muon PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "muon PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nMuon", n[kMuon],
       "number of muon PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtOther", sumPt[kOther],
-      "other PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "other PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoOther", rho[kOther],
-      "median other PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "other PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nOther", n[kOther],
       "number of other PF candidates in this eta-phi strip");
@@ -530,6 +552,7 @@ void PFRhoStripTableProducer::fillDescriptions(edm::ConfigurationDescriptions& d
   edm::ParameterSetDescription desc;
   desc.add<edm::InputTag>("src", edm::InputTag("packedPFCandidates"));
   desc.add<std::string>("name", "PFRhoStrip");
+  desc.add<bool>("usePuppiWeights", false);
   desc.add<bool>("useHCALGeometry", true);
   desc.add<bool>("includeHB", true);
   desc.add<bool>("includeHE", true);

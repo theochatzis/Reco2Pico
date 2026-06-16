@@ -37,8 +37,13 @@ def pfRhoStripTables(process, pfcSrc="packedPFCandidates"):
         ),
     )
     '''
-
-    process.pfRhoStripTableTask = cms.Task(process.pfRhoStripTable)
+    
+    process.pfPuppiRhoStripTable = process.pfRhoStripTable.clone(
+    usePuppiWeights = cms.bool(True),
+    name = "PFPuppiRhoStrip",
+    )
+    
+    process.pfRhoStripTableTask = cms.Task(process.pfRhoStripTable, process.pfPuppiRhoStripTable)
     process.pfRhoStripTableSeq = cms.Sequence(process.pfRhoStripTableTask)
 
     return process
