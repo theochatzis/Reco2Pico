@@ -17,6 +17,12 @@ opts.register('skipEvents', 0,
                'number of events to be skipped'
                )
 
+opts.register('lumis', None,
+              VarParsing.multiplicity.singleton,
+              VarParsing.varType.string,
+              'path to .json with list of luminosity sections'
+              )
+
 opts.register("globalTag",
                  "auto:run2_mc",
                  VarParsing.multiplicity.singleton,
@@ -29,6 +35,13 @@ opts.register("tables",
                  VarParsing.multiplicity.singleton, VarParsing.varType.string,
                  "Comma-separated table groups"
                  )
+
+opts.register( "skim",
+                  "",
+                  VarParsing.multiplicity.singleton,
+                  VarParsing.varType.string,
+                  "Comma-separated skim names, e.g. 'zjet'. Empty string means no skim."
+)
 
 opts.register('dumpPython', None,
               VarParsing.multiplicity.singleton,
@@ -46,11 +59,19 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag = GlobalTag(process.GlobalTag, opts.globalTag, "")
 
+# === Setup the source ===
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(opts.inputFiles))
 process.source.skipEvents = cms.untracked.uint32(opts.skipEvents)
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(opts.maxEvents))
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
+# select luminosity sections from .json file
+if opts.lumis is not None:
+   import FWCore.PythonUtilities.LumiList as LumiList
+   print(f'Selecting lumis from JSON file: {opts.lumis}')
+   process.source.lumisToProcess = LumiList.LumiList(filename = opts.lumis).getVLuminosityBlockRange()
+
+# === Setup the inputs ===
 # input EDM files [primary]
 if opts.inputFiles:
   process.source.fileNames = opts.inputFiles
@@ -78,12 +99,65 @@ if "/mc/" in process.source.fileNames[0]:
 else:
   print("Identified the sample is DATA")
 
-from Reco2Pico.PicoProducer.pico_cff import buildPicoSequence
+# === Skim helper ===
+def loadSkims(process, skimNames, isMC):
+    """
+    Load skim fragments from:
 
+        Reco2Pico/PicoProducer/python/skims/<skim>_cff.py
+
+    Each fragment must define:
+
+        setup(process, isMC=False)
+
+    and return a cms.Sequence.
+    """
+    import importlib
+
+    skimNames = [x.strip() for x in skimNames.split(",") if x.strip()]
+
+    if len(skimNames) == 0:
+        return cms.Sequence()
+
+    skimSequence = cms.Sequence()
+
+    for skimName in skimNames:
+        moduleName = "Reco2Pico.PicoProducer.skims.%s_cff" % skimName
+
+        try:
+            skimModule = importlib.import_module(moduleName)
+        except ImportError as err:
+            raise RuntimeError(
+                "Could not import skim '%s'. Expected file:\n"
+                "  Reco2Pico/PicoProducer/python/skims/%s_cff.py\n"
+                "Original error:\n  %s"
+                % (skimName, skimName, err)
+            )
+
+        if not hasattr(skimModule, "setup"):
+            raise RuntimeError(
+                "Skim module '%s' does not define setup(process, isMC=False)"
+                % moduleName
+            )
+
+        print("Loading skim: %s from %s" % (skimName, moduleName))
+        skimSequence += skimModule.setup(process, isMC=isMC)
+
+    return skimSequence
+
+
+# === Tables producers ===
+from Reco2Pico.PicoProducer.pico_cff import buildPicoSequence
 enabled_tables = [x.strip() for x in opts.tables.split(",") if x.strip()]
+
 process.picoSequence = buildPicoSequence(process, enabled_tables, isMC)
 
-process.p = cms.Path(process.picoSequence)
+process.skimSequence = loadSkims(process, opts.skim, isMC)
+
+if opts.skim:
+    process.p = cms.Path(process.skimSequence * process.picoSequence)
+else:
+    process.p = cms.Path(process.picoSequence)
 
 process.out = cms.OutputModule(
     "NanoAODOutputModule",
@@ -95,6 +169,9 @@ process.out = cms.OutputModule(
     ),
     compressionAlgorithm=cms.untracked.string("LZMA"),
     compressionLevel=cms.untracked.int32(4),
+    SelectEvents=cms.untracked.PSet( # added this to be able to skim
+        SelectEvents=cms.vstring("p")
+    ),
 )
 process.end = cms.EndPath(process.out)
 process.schedule = cms.Schedule(process.p, process.end)

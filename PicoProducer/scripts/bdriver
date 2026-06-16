@@ -252,6 +252,9 @@ if __name__ == '__main__':
                        help='non-EOS base directory for Condor bookkeeping when -o resolves under /eos; default: /afs/cern.ch/user/${USER:0:1}/${USER}/condor_jobs_files')
    parser.add_argument('-fo', '--final-output', dest='final_output', action='store', default='./', required=False,
                        help='path to final output directory i.e. directory with the PicoAOD ROOT files')
+   parser.add_argument('--lumi-json', '--golden-json', '--lumi-mask', dest='lumi_json',
+                       action='store', default=None, required=False,
+                       help='CMS Golden JSON / lumi mask. When DAS is used, files with no run-lumi overlap are skipped before jobs are created; the same mask is also applied inside cmsRun.')
    parser.add_argument('--customize-cfg', dest='customize_cfg', action='store_true', default=False,
                        help='append minimal customization to cmsRun-cfg required by the driver')
    parser.add_argument('-j', '--jobdirname', dest='jobdirname', action='store', default='job',
@@ -293,6 +296,20 @@ if __name__ == '__main__':
 
    opts, opts_unknown = parser.parse_known_args()
    log_prx = os.path.basename(__file__)+' -- '
+
+   # Optional Golden JSON / lumi mask.  If provided, this is used twice:
+   #   1) during DAS discovery, to avoid creating jobs for files with no
+   #      overlap with the mask;
+   #   2) inside cmsRun, to drop bad lumisections within selected files.
+   if opts.lumi_json is not None:
+     opts.lumi_json = os.path.abspath(os.path.expanduser(os.path.expandvars(opts.lumi_json)))
+     if not os.path.isfile(opts.lumi_json):
+       KILL(log_prx+'invalid path to Golden JSON / lumi mask [--lumi-json]: '+str(opts.lumi_json))
+     try:
+       with open(opts.lumi_json) as _lumi_json_handle:
+         json.load(_lumi_json_handle)
+     except Exception as _lumi_json_err:
+       KILL(log_prx+'failed to parse Golden JSON / lumi mask [--lumi-json]: '+str(opts.lumi_json)+'\n'+str(_lumi_json_err))
 
    OUTPUT_DIR, REQUESTED_OUTPUT_DIR, OUTPUT_DIR_WAS_REMAPPED = _resolve_condor_output_dir(
      opts.output, opts.condor_workdir, log_prx)
@@ -371,10 +388,31 @@ if __name__ == '__main__':
      print('-'*50)
 
    if os.path.isfile(opts.dataset):
-     input_dset = skim_das_jsondump(file_path=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, verbose=(opts.verbosity > 0))
+     input_dset = skim_das_jsondump(
+       file_path=opts.dataset,
+       max_files=opts.max_files,
+       max_events=opts.max_events,
+       lumi_json=opts.lumi_json,
+       verbose=(opts.verbosity > 0),
+     )
    else:
      which('dasgoclient')
-     input_dset = load_dataset_data(das_name=opts.dataset, max_files=opts.max_files, max_events=opts.max_events, parentFiles_levels=opts.parentFiles_level, verbose=(opts.verbosity > 0))
+     input_dset = load_dataset_data(
+       das_name=opts.dataset,
+       max_files=opts.max_files,
+       max_events=opts.max_events,
+       parentFiles_levels=opts.parentFiles_level,
+       lumi_json=opts.lumi_json,
+       verbose=(opts.verbosity > 0),
+     )
+
+   if isinstance(input_dset, dict) and input_dset.get('lumiMaskReport') is not None:
+     _lumi_report = input_dset['lumiMaskReport']
+     print(colored_text('lumi-mask selected runs:', ['1', '92']), len(_lumi_report.get('selected_runs', [])))
+     print(colored_text('lumi-mask selected files:', ['1', '92']), _lumi_report.get('selected_files', 0))
+     print(colored_text('lumi-mask selected file-level events:', ['1', '92']), _lumi_report.get('selected_events', 0))
+     if _lumi_report.get('stopped_early'):
+       print(colored_text('lumi-mask stopped early:', ['1', '93']), _lumi_report.get('stop_reason'))
 
    nJobs, totEvents, breakLoop = 0, 0, False
    for i_inpfdc in input_dset['files']:
@@ -422,6 +460,11 @@ if __name__ == '__main__':
 
    out_cmsRun_cfg = os.path.abspath(OUTPUT_DIR+'/cfg.py')
    EXE('cp '+_quote(opts.cmsRun_cfg)+' '+_quote(out_cmsRun_cfg), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+
+   out_lumi_json = None
+   if opts.lumi_json is not None:
+     out_lumi_json = os.path.abspath(OUTPUT_DIR+'/lumiMask.json')
+     EXE('cp '+_quote(opts.lumi_json)+' '+_quote(out_lumi_json), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
 
    if opts.customize_cfg:
      with open(out_cmsRun_cfg, 'a') as cfg_file:
@@ -490,6 +533,17 @@ del _driver_output
          custom_str += '\n'+'\n'.join(opts.customise_commands)+'\n'
        cfg_file.write(custom_str.format(os.path.basename(__file__), str(datetime.datetime.now())))
 
+   if (out_lumi_json is not None) and (not opts.dry_run):
+     with open(out_cmsRun_cfg, 'a') as cfg_file:
+       cfg_file.write('''
+
+###
+### lumi mask added by {:} [time-stamp: {:}]
+###
+import FWCore.PythonUtilities.LumiList as LumiList
+process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBlockRange()
+'''.format(os.path.basename(__file__), str(datetime.datetime.now()), repr(out_lumi_json)))
+
    if not opts.dry_run:
      with open(os.path.abspath(OUTPUT_DIR+'/cmdLog'), 'w') as file_cmdLog:
        file_cmdLog.write((' '.join(sys.argv[:]))+'\n')
@@ -499,8 +553,40 @@ del _driver_output
          'condor_output_dir': OUTPUT_DIR,
          'output_dir_was_remapped': OUTPUT_DIR_WAS_REMAPPED,
          'final_output_dir': FINAL_OUTPUT_DIR,
+         'lumi_json': out_lumi_json,
        }, file_paths, sort_keys=True, indent=2)
      json.dump(input_dset, open(OUTPUT_DIR+'/dataset.json', 'w'), sort_keys=True, indent=2)
+
+     lumi_report = input_dset.get('lumiMaskReport') if isinstance(input_dset, dict) else None
+     if lumi_report is not None:
+       with open(os.path.abspath(OUTPUT_DIR+'/lumiMaskReport.json'), 'w') as file_lumi_report:
+         json.dump(lumi_report, file_lumi_report, sort_keys=True, indent=2)
+       with open(os.path.abspath(OUTPUT_DIR+'/lumiMaskReport.txt'), 'w') as file_lumi_report_txt:
+         file_lumi_report_txt.write('Reco2Pico DAS lumi-mask preselection report\n')
+         file_lumi_report_txt.write('===========================================\n')
+         file_lumi_report_txt.write('Dataset: {:}\n'.format(input_dset.get('DAS', '<unknown>')))
+         file_lumi_report_txt.write('Lumi JSON: {:}\n'.format(lumi_report.get('lumi_json', '<unknown>')))
+         file_lumi_report_txt.write('Selection mode: {:}\n'.format(lumi_report.get('selection_mode', '<unknown>')))
+         file_lumi_report_txt.write('Dataset runs: {:}\n'.format(len(lumi_report.get('dataset_runs', []))))
+         file_lumi_report_txt.write('Lumi-mask runs: {:}\n'.format(len(lumi_report.get('lumi_mask_runs', []))))
+         file_lumi_report_txt.write('Selected runs: {:}\n'.format(len(lumi_report.get('selected_runs', []))))
+         file_lumi_report_txt.write('Rejected dataset runs: {:}\n'.format(len(lumi_report.get('rejected_runs', []))))
+         file_lumi_report_txt.write('Selected files: {:}\n'.format(lumi_report.get('selected_files', 0)))
+         file_lumi_report_txt.write('Selected file-level events: {:}\n'.format(lumi_report.get('selected_events', 0)))
+         file_lumi_report_txt.write('Stopped early: {:}\n'.format(lumi_report.get('stopped_early', False)))
+         file_lumi_report_txt.write('Stop reason: {:}\n'.format(lumi_report.get('stop_reason', None)))
+         file_lumi_report_txt.write('\nSelected runs and files\n')
+         file_lumi_report_txt.write('-----------------------\n')
+         for run in sorted(lumi_report.get('runs', {}).keys(), key=lambda x: int(x)):
+           run_info = lumi_report['runs'][run]
+           file_lumi_report_txt.write('Run {:}: {:} selected files, {:} file-level events ({:} DAS candidate files)\n'.format(
+             run,
+             run_info.get('selected_files', 0),
+             run_info.get('selected_events', 0),
+             run_info.get('candidate_files_from_das', 0),
+           ))
+           for file_name in run_info.get('files', []):
+             file_lumi_report_txt.write('  {:}\n'.format(file_name))
 
    retcode = EXE('edmConfigDump '+_quote(out_cmsRun_cfg)+' 2> '+_quote(OUTPUT_DIR+'/configDump.log')+' > '+_quote(OUTPUT_DIR+'/configDump.py'), suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
    if retcode:
