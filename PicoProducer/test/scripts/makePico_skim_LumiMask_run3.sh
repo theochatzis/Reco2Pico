@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-DEFAULT_NEVT=10000000
+DEFAULT_NEVT=1000000
 EVENTS_PER_JOB=10000
 MEMORY=2G
 RUNTIME=02:00:00
@@ -17,31 +17,25 @@ USE_JSON=true
 OUTPUT_DIR_EOS=/eos/user/${USER:0:1}/${USER}/reco2pico/myPicosDirectory/
 ODIR=${1}
 
-JECS_DIR=$CMSSW_BASE/src/Reco2Pico/PicoProducer/python/workflows/jecs/
-
 LUMI_JSON=/eos/user/c/cmsdqm/www/CAF/certification/Collisions25/Cert_Collisions2025_391658_398903_Golden.json
 SKIM="zjet"
 
 declare -A dataSamplesMap
 declare -A mcSamplesMap
 declare -A dataMaxEventsMap
-declare -A dataEventsPerJobMap
 declare -A mcMaxEventsMap
-declare -A mcEventsPerJobMap
 
 # DATA samples
-dataSamplesMap["Muon2025G"]="/Muon0/Run2025G-PromptReco-v1/MINIAOD"
+#dataSamplesMap["Muon2025G"]="/Muon0/Run2025G-PromptReco-v1/MINIAOD"
 
 # Per-DATA-sample max events
-dataMaxEventsMap["Muon2025G"]=10000000
-dataEventsPerJobMap["Muon2025G"]=500000
+#dataMaxEventsMap["Muon2025G"]=500000000
 
 # MC samples
 mcSamplesMap["ZTo2Mu"]="/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM"
 
 # Per-MC-sample max events
-mcMaxEventsMap["ZTo2Mu"]=1000000
-mcEventsPerJobMap["ZTo2Mu"]=5000
+mcMaxEventsMap["ZTo2Mu"]=10000000
 
 recoKeys=(
   default
@@ -64,17 +58,14 @@ fi
 run_samples() {
   local sampleType=$1
   local -n samplesMap=$2
-  local config_name=$3
 
   for sampleKey in "${!samplesMap[@]}"; do
     sampleName=${samplesMap[${sampleKey}]}
 
     if [ "${sampleType}" = "DATA" ]; then
       numEvents=${dataMaxEventsMap[${sampleKey}]:-${DEFAULT_NEVT}}
-      EVENTS_PER_JOB=${dataEventsPerJobMap[${sampleKey}]:-${DEFAULT_NEVT}}
     else
       numEvents=${mcMaxEventsMap[${sampleKey}]:-${DEFAULT_NEVT}}
-      EVENTS_PER_JOB=${mcEventsPerJobMap[${sampleKey}]:-${DEFAULT_NEVT}}
     fi
 
     FINAL_OUTPUT_DIR=${OUTPUT_DIR_EOS}/${ODIR}/${recoKey}/${sampleType}/${sampleKey}
@@ -85,7 +76,7 @@ run_samples() {
     if [ -d ${ODIR}/${recoKey}/${sampleType}/${sampleKey} ]; then rm -rf ${ODIR}/${recoKey}/${sampleType}/${sampleKey}; fi
 
     bdriver_args=(
-      -c ${config_name} --customize-cfg
+      -c tmp_cfg.py --customize-cfg
       -m ${numEvents}
       -n ${EVENTS_PER_JOB}
       --memory ${MEMORY}
@@ -107,27 +98,14 @@ run_samples() {
 
 for recoKey in "${recoKeys[@]}"; do
   python3 "${CMSSW_BASE}/src/Reco2Pico/PicoProducer/python/workflows/miniAOD_to_pico_cfg.py" \
-    "inputFiles=/store/data/Run2025G/ZeroBias/MINIAOD/PromptReco-v1/000/398/011/00000/0db8a2f5-d145-4f83-b8f9-480bbb77f38d.root" \
-    "tables=event,vertices,jets,met,muons,electrons,genJets" \
-    "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
-	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
+    "tables=event,pfRhoStrip,vertices" \
     "skim=${SKIM}" \
-    "dumpPython=tmp_cfg_data.py"
-  
-  python3 "${CMSSW_BASE}/src/Reco2Pico/PicoProducer/python/workflows/miniAOD_to_pico_cfg.py" \
-    "inputFiles=/store/mc/Run3Winter25MiniAOD/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/142X_mcRun3_2025_realistic_v7-v2/120000/59d22999-4787-4861-9dba-6c064778a808.root" \
-    "tables=event,vertices,jets,met,muons,electrons,genJets" \
-    "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
-	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
-    "skim=${SKIM}" \
-    "dumpPython=tmp_cfg_mc.py"
+    "dumpPython=tmp_cfg.py"
 
-  run_samples DATA dataSamplesMap tmp_cfg_data.py
-  run_samples MC mcSamplesMap tmp_cfg_mc.py
-
-  rm -rf tmp_cfg_data.py
-  rm -rf tmp_cfg_mc.py
+  run_samples DATA dataSamplesMap
+  run_samples MC mcSamplesMap
 done
 
 unset recoKey recoKeys dataSamplesMap mcSamplesMap dataMaxEventsMap mcMaxEventsMap DEFAULT_NEVT ODIR
 
+rm -rf tmp_cfg.py
