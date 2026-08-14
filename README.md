@@ -2,14 +2,6 @@
 
 `Reco2Pico` is a CMSSW-based toolkit for producing custom NanoAOD-like **PicoAOD** files from CMS event data and analyzing them with ROOT RDataFrame.
 
-The first supported production path is:
-
-```text
-miniAOD -> custom flatTables -> PicoAOD
-```
-
-Planned extensions include AOD and RECO inputs.
-
 Functionalities include:
 
 - Produce NanoAOD-structured PicoAOD files from CMS data tiers.
@@ -60,15 +52,4 @@ python Reco2Pico/analysis/rdf/analyze.py \
 
 Submit jobs to Condor:
 
-```bash
-python Reco2Pico/condor/submit_pico.py \
-  --dataset Reco2Pico/condor/datasets/example_miniAOD.txt \
-  --cfg Reco2Pico/python/workflows/miniAOD_to_pico_cfg.py \
-  --output-dir /store/user/$USER/reco2pico/test_v0 \
-  --tag test_v0 \
-  --files-per-job 1
-```
-
-## Status
-
-This is a v0 scaffold. The structure is intended to be stable, but CMSSW configs should be validated in the exact CMSSW release you intend to use.
+Use examples from `PicoProducer/test/scripts`
