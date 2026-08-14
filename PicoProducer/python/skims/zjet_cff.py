@@ -13,7 +13,7 @@ def setup(process, isMC=False):
       - pass muon HLT
       - pass MET filters
       - >= 2 isolated offline muons
-      - >= 1 OS dimuon with 60 < m_mumu < 120 GeV
+      - >= 2 OS dimuon with 60 < m_mumu < 120 GeV
       - jets cleaned from selected isolated muons
       - >= 1 cleaned jet
       - deltaPhi(Z, jet) > 2.7 for at least one Z-jet pair
