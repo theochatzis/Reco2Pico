@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import *
 from PhysicsTools.NanoAOD.nano_eras_cff import *
 from PhysicsTools.NanoAOD.globalVariablesTableProducer_cfi import globalVariablesTableProducer
+from PhysicsTools.NanoAOD.genWeightsTable_cfi import genWeightsTable
+
 # from PhysicsTools.NanoAOD.simpleBeamspotFlatTableProducer_cfi import simpleBeamspotFlatTableProducer
 # from PhysicsTools.NanoAOD.simpleGenEventFlatTableProducer_cfi import simpleGenEventFlatTableProducer
 # from PhysicsTools.NanoAOD.simpleGenFilterFlatTableProducerLumi_cfi import simpleGenFilterFlatTableProducerLumi
@@ -24,11 +26,19 @@ def eventTables(process, isMC=True):
     )
     event_tables.append(process.rhoTable)
 
+    # process.unpackedPatTrigger = unpackedPatTrigger.clone()
+    # event_tables.append(unpackedPatTrigger)
+
     if isMC:
         process.puTable = puTable.clone(
             savePtHatMax = cms.bool(False),
         )
         event_tables.append(process.puTable)
+        
+        process.genWeightsTable = genWeightsTable.clone()
+        event_tables.append(process.genWeightsTable)
+
+
     
     # Add all the tables in Task and Sequence
     process.picoEventTableTask = cms.Task(*event_tables)
