@@ -48,6 +48,36 @@ opts.register('dumpPython', None,
               VarParsing.varType.string,
               'path to python file with content of cms.Process')
 
+# For re-applying JECs , re-running PUPPI
+opts.register("rerunPUPPI",
+                 False,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.bool,
+                 "Rerun PUPPI, recluster AK4 PUPPI jets, and build new PAT jets for Pico"
+                 )
+
+opts.register("reApplyJEC",
+                 False,
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.bool,
+                 "Re-apply JECs to the Pico jet collection using the GlobalTag or a local SQLite DB"
+                 )
+
+opts.register("jecDBFile",
+                 "",
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+                 "Optional local SQLite DB file for JECs. Leave empty to use the GlobalTag"
+                 )
+
+opts.register("jecDBTag",
+                 "",
+                 VarParsing.multiplicity.singleton,
+                 VarParsing.varType.string,
+                 "Optional JetCorrectionsRecord tag in the local SQLite DB"
+                 )
+
+
 opts.parseArguments()
 
 process = cms.Process("PICO")
@@ -147,10 +177,33 @@ def loadSkims(process, skimNames, isMC):
 
 
 # === Tables producers ===
+from Reco2Pico.PicoProducer.objects.pico_puppi_jets_cff import setupPuppiPatJetsForPico
+jet_source_for_pico = "slimmedJetsPuppi"
+process, jet_source_for_pico = setupPuppiPatJetsForPico(
+    process,
+    rerunPUPPI=opts.rerunPUPPI,
+    reApplyJEC=opts.reApplyJEC,
+    jetSource=jet_source_for_pico,
+    candName="packedPFCandidates", # Input candidates for the rerun PUPPI producer in case of rerunPUPPI
+    vertexName="offlineSlimmedPrimaryVertices", # Input vertices for the rerun PUPPI producer and JEC update
+    pfCandidates="packedPFCandidates", # Input candidates in case of reApplyJEC
+    svSource="slimmedSecondaryVertices", # Secondary vertices used by PAT jet tools
+    jecPayload="AK4PFPuppi", # JEC payload/label, e.g. AK4PFPuppi
+    jecLevels=("L1FastJet", "L2Relative", "L3Absolute", "L2L3Residual"),
+    jecDBFile=opts.jecDBFile,
+    jecDBTag=opts.jecDBTag,
+    labelName="PicoPuppiJet", # Label used for the newly produced PAT jet collection
+)
+
 from Reco2Pico.PicoProducer.pico_cff import buildPicoSequence
 enabled_tables = [x.strip() for x in opts.tables.split(",") if x.strip()]
 
-process.picoSequence = buildPicoSequence(process, enabled_tables, isMC)
+process.picoSequence = buildPicoSequence(
+   process=process, 
+   enabled_tables=enabled_tables,
+   isMC=isMC,
+   jetSrc=jet_source_for_pico,
+)
 
 process.skimSequence = loadSkims(process, opts.skim, isMC)
 
@@ -164,6 +217,7 @@ process.out = cms.OutputModule(
     fileName=cms.untracked.string(opts.output),
     outputCommands= cms.untracked.vstring(
     "drop *",
+    "keep edmTriggerResults_*_*_*", # for trigger decisions and Noise filters
     "keep nanoaodFlatTable_*Table_*_*",
     "keep nanoaodUniqueString_nanoMetadata_*_*",
     ),
@@ -175,6 +229,13 @@ process.out = cms.OutputModule(
 )
 process.end = cms.EndPath(process.out)
 process.schedule = cms.Schedule(process.p, process.end)
+
+# In order to use the rerunPUPPI and reApplyJEC
+if hasattr(process, "reco2picoJetTask"):
+    process.schedule.associate(process.reco2picoJetTask)
+
+if hasattr(process, "patAlgosToolsTask"):
+    process.schedule.associate(process.patAlgosToolsTask)
 
 # dump content of cms.Process to python file
 if opts.dumpPython is not None:
