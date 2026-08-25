@@ -8,7 +8,13 @@ from PhysicsTools.NanoAOD.jetMC_cff import jetMCTable, genJetTable
 
 jet_tables = []
 
-def jetTables(process, src="slimmedJetsPuppi", isMC=True):
+def jetTables(
+    process,
+    src="slimmedJetsPuppi",
+    isMC=True,
+    genJetSrc="slimmedGenJets",
+    ):
+
     """picoJetTable = an AK4 Puppi Jets Table
     Inspired from: NanoAOD/python/jetsAK4_Puppi_cff
     https://github.com/cms-sw/cmssw/blob/7ec24a49fc652e32e42e96243b975e83233ea986/PhysicsTools/NanoAOD/python/jetsAK4_Puppi_cff.py
@@ -54,7 +60,11 @@ def jetTables(process, src="slimmedJetsPuppi", isMC=True):
 
         jet_tables.append(process.picoJetMCTable)
 
-        process.picoGenJetTable = genJetTable.clone()
+        process.picoGenJetTable = genJetTable.clone(
+            src=cms.InputTag(genJetSrc),
+            name=cms.string("GenJet"),
+            doc=cms.string("AK4 generator-level jets"),
+        )
         jet_tables.append(process.picoGenJetTable)
 
     # Add all the tables in Task and Sequence
