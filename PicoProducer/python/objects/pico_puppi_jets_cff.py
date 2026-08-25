@@ -80,91 +80,92 @@ def makePicoPuppiProducer(
     candName="packedPFCandidates",
     vertexName="offlineSlimmedPrimaryVertices",
 ):
-    """Return the editable PUPPI producer used to recluster Pico PUPPI jets.
+    from CommonTools.PileupAlgos.Puppi_cff import puppi
 
-    The defaults follow the Phase-2-style configuration from the referenced
-    JMETriggerAnalysis test cfg, but the candidate and vertex sources are
-    exposed as workflow options.
-    """
-
-    return cms.EDProducer(
-        "PuppiProducer",
-        DeltaZCut=cms.double(0.1),
-        DeltaZCutForChargedFromPUVtxs=cms.double(0.2),
-        EtaMaxCharged=cms.double(99999),
-        EtaMaxPhotons=cms.double(2.5),
-        EtaMinUseDeltaZ=cms.double(4.0),
-        MinPuppiWeight=cms.double(0.01),
-        NumOfPUVtxsForCharged=cms.uint32(2),
-        PUProxyValue=cms.InputTag(""),
-        PtMaxCharged=cms.double(20.0),
-        PtMaxNeutrals=cms.double(200),
-        PtMaxNeutralsStartSlope=cms.double(20.0),
-        PtMaxPhotons=cms.double(-1),
-        UseDeltaZCut=cms.bool(True),
-        UseDeltaZCutForPileup=cms.bool(False),
-        UseFromPVLooseTight=cms.bool(False),
-        algos=cms.VPSet(
-            cms.PSet(
-                etaMin=cms.vdouble(0.0, 2.5),
-                etaMax=cms.vdouble(2.5, 3.5),
-                ptMin=cms.vdouble(0.0, 0.0),
-                MinNeutralPt=cms.vdouble(100000000000, 0.2), # 0.2
-                MinNeutralPtSlope=cms.vdouble(0.015, 0.030),
-                RMSEtaSF=cms.vdouble(1.0, 1.0),
-                MedEtaSF=cms.vdouble(1.0, 1.0),
-                EtaMaxExtrap=cms.double(2.0),
-                puppiAlgos=cms.VPSet(
-                    cms.PSet(
-                        algoId=cms.int32(5),
-                        applyLowPUCorr=cms.bool(True),
-                        combOpt=cms.int32(0),
-                        cone=cms.double(0.4),
-                        rmsPtMin=cms.double(0.1),
-                        rmsScaleFactor=cms.double(1.0),
-                        useCharged=cms.bool(True),
-                    )
-                ),
-            ),
-            cms.PSet(
-                etaMin=cms.vdouble(3.5),
-                etaMax=cms.vdouble(10.0),
-                ptMin=cms.vdouble(0.0),
-                MinNeutralPt=cms.vdouble(2.0),
-                MinNeutralPtSlope=cms.vdouble(0.08),
-                RMSEtaSF=cms.vdouble(1.0),
-                MedEtaSF=cms.vdouble(0.75),
-                EtaMaxExtrap=cms.double(2.0),
-                puppiAlgos=cms.VPSet(
-                    cms.PSet(
-                        algoId=cms.int32(5),
-                        applyLowPUCorr=cms.bool(True),
-                        combOpt=cms.int32(0),
-                        cone=cms.double(0.4),
-                        rmsPtMin=cms.double(0.5),
-                        rmsScaleFactor=cms.double(1.0),
-                        useCharged=cms.bool(False),
-                    )
-                ),
-            ),
-        ),
-        applyCHS=cms.bool(True),
+    return puppi.clone(
         candName=_as_input_tag(candName),
-        clonePackedCands=cms.bool(False),
-        invertPuppi=cms.bool(False),
-        mightGet=cms.optional.untracked.vstring,
-        puppiDiagnostics=cms.bool(False),
-        puppiNoLep=cms.bool(False),
-        useExistingWeights=cms.bool(False),
-        useExp=cms.bool(False),
-        usePUProxyValue=cms.bool(False),
-        useVertexAssociation=cms.bool(False),
-        vertexAssociation=cms.InputTag(""),
-        vertexAssociationQuality=cms.int32(0),
         vertexName=_as_input_tag(vertexName),
-        vtxNdofCut=cms.int32(4),
-        vtxZCut=cms.double(24),
+        clonePackedCands=cms.bool(True),
+        useExistingWeights=cms.bool(True),
     )
+# cms.EDProducer(
+#     "PuppiProducer",
+#     DeltaZCut=cms.double(0.1),
+#     DeltaZCutForChargedFromPUVtxs=cms.double(0.2),
+#     EtaMaxCharged=cms.double(99999),
+#     EtaMaxPhotons=cms.double(2.5),
+#     EtaMinUseDeltaZ=cms.double(4.0),
+#     MinPuppiWeight=cms.double(0.01),
+#     NumOfPUVtxsForCharged=cms.uint32(2),
+#     PUProxyValue=cms.InputTag(""),
+#     PtMaxCharged=cms.double(20.0),
+#     PtMaxNeutrals=cms.double(200),
+#     PtMaxNeutralsStartSlope=cms.double(20.0),
+#     PtMaxPhotons=cms.double(-1),
+#     UseDeltaZCut=cms.bool(True),
+#     UseDeltaZCutForPileup=cms.bool(False),
+#     UseFromPVLooseTight=cms.bool(False),
+#     algos=cms.VPSet(
+#         cms.PSet(
+#             etaMin=cms.vdouble(0.0, 2.5),
+#             etaMax=cms.vdouble(2.5, 3.5),
+#             ptMin=cms.vdouble(0.0, 0.0),
+#             MinNeutralPt=cms.vdouble(0.2, 0.2), 
+#             MinNeutralPtSlope=cms.vdouble(0.015, 0.030),
+#             RMSEtaSF=cms.vdouble(1.0, 1.0),
+#             MedEtaSF=cms.vdouble(1.0, 1.0),
+#             EtaMaxExtrap=cms.double(2.0),
+#             puppiAlgos=cms.VPSet(
+#                 cms.PSet(
+#                     algoId=cms.int32(5),
+#                     applyLowPUCorr=cms.bool(True),
+#                     combOpt=cms.int32(0),
+#                     cone=cms.double(0.4),
+#                     rmsPtMin=cms.double(0.1),
+#                     rmsScaleFactor=cms.double(1.0),
+#                     useCharged=cms.bool(True),
+#                 )
+#             ),
+#         ),
+#         cms.PSet(
+#             etaMin=cms.vdouble(3.5),
+#             etaMax=cms.vdouble(10.0),
+#             ptMin=cms.vdouble(0.0),
+#             MinNeutralPt=cms.vdouble(2.0),
+#             MinNeutralPtSlope=cms.vdouble(0.08),
+#             RMSEtaSF=cms.vdouble(1.0),
+#             MedEtaSF=cms.vdouble(0.75),
+#             EtaMaxExtrap=cms.double(2.0),
+#             puppiAlgos=cms.VPSet(
+#                 cms.PSet(
+#                     algoId=cms.int32(5),
+#                     applyLowPUCorr=cms.bool(True),
+#                     combOpt=cms.int32(0),
+#                     cone=cms.double(0.4),
+#                     rmsPtMin=cms.double(0.5),
+#                     rmsScaleFactor=cms.double(1.0),
+#                     useCharged=cms.bool(False),
+#                 )
+#             ),
+#         ),
+#     ),
+#     applyCHS=cms.bool(True),
+#     candName=_as_input_tag(candName),
+#     clonePackedCands=cms.bool(False),
+#     invertPuppi=cms.bool(False),
+#     mightGet=cms.optional.untracked.vstring,
+#     puppiDiagnostics=cms.bool(False),
+#     puppiNoLep=cms.bool(False),
+#     useExistingWeights=cms.bool(False),
+#     useExp=cms.bool(False),
+#     usePUProxyValue=cms.bool(False),
+#     useVertexAssociation=cms.bool(False),
+#     vertexAssociation=cms.InputTag(""),
+#     vertexAssociationQuality=cms.int32(0),
+#     vertexName=_as_input_tag(vertexName),
+#     vtxNdofCut=cms.int32(4),
+#     vtxZCut=cms.double(24),
+# )
 
 
 def addPuppiPFJets(process, candName, vertexName):
@@ -176,6 +177,9 @@ def addPuppiPFJets(process, candName, vertexName):
     process.offlineAK4PFPuppiJets = _ak4PFJetsPuppi.clone(
         src=cms.InputTag("offlinePFPuppi"),
         applyWeight=cms.bool(False),
+        # Keep all jets produced by FastJet.
+        # ak4PFJets inherits jetPtMin = 5 GeV by default.
+        jetPtMin=cms.double(1.0),
     )
 
     if not hasattr(process, "reco2picoJetTask"):
