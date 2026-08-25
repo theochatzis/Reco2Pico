@@ -1,60 +1,945 @@
 collection,variable,type,size_kb_per_event,doc
-Electron,Electron_charge,int32_t[],0.0010751953125,electric charge
-Electron,Electron_cutBasedID_loose,int32_t[],0.0019521484375,RunIIIWinter22 V1 loose cut-based electron ID
-Electron,Electron_cutBasedID_medium,int32_t[],0.00199609375,RunIIIWinter22 V1 medium cut-based electron ID
-Electron,Electron_cutBasedID_tight,int32_t[],0.0019638671875,RunIIIWinter22 V1 tight cut-based electron ID
-Electron,Electron_cutBasedID_veto,int32_t[],0.001830078125,RunIIIWinter22 V1 veto cut-based electron ID
-Electron,Electron_eta,float[],0.003822265625,eta
-Electron,Electron_mass,float[],0.0023466796875,mass
-Electron,Electron_pdgId,int32_t[],0.001078125,PDG code assigned by the event reconstruction (not by MC truth)
-Electron,Electron_phi,float[],0.003818359375,phi
-Electron,Electron_pt,float[],0.0051572265625,pt
+DST,DST_PFScouting_AXOLoose,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_AXONominal,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_AXOTight,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_AXOVLoose,bool,0.000169921875,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_AXOVTight,bool,0.000169921875,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_CICADALoose,bool,0.0002734375,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_CICADAMedium,bool,0.0002509765625,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_CICADATight,bool,0.00023828125,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_CICADAVLoose,bool,0.0002822265625,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_CICADAVTight,bool,0.0002353515625,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_DatasetMuon,bool,0.0001953125,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_DoubleEG,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_DoubleMuon,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_JetHT,bool,0.000169921875,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_SingleMuon,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_SinglePhotonEB,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+DST,DST_PFScouting_ZeroBias,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+Dataset,Dataset_ScoutingPFMonitor,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+Dataset,Dataset_ScoutingPFRun3,bool,0.00016796875,Trigger/flag bit (process: HLT)
+Electron,Electron_charge,int32_t[],0.0009541015625,electric charge
+Electron,Electron_cutBasedID_loose,int32_t[],0.0016982421875,RunIIIWinter22 V1 loose cut-based electron ID
+Electron,Electron_cutBasedID_medium,int32_t[],0.0017421875,RunIIIWinter22 V1 medium cut-based electron ID
+Electron,Electron_cutBasedID_tight,int32_t[],0.0016943359375,RunIIIWinter22 V1 tight cut-based electron ID
+Electron,Electron_cutBasedID_veto,int32_t[],0.001572265625,RunIIIWinter22 V1 veto cut-based electron ID
+Electron,Electron_eta,float[],0.003298828125,eta
+Electron,Electron_mass,float[],0.0020537109375,mass
+Electron,Electron_pdgId,int32_t[],0.00095703125,PDG code assigned by the event reconstruction (not by MC truth)
+Electron,Electron_phi,float[],0.003318359375,phi
+Electron,Electron_pt,float[],0.0042939453125,pt
+Event,HLTriggerFinalPath,bool,0.0001640625,Trigger/flag bit (process: HLT)
+Event,HLTriggerFirstPath,bool,0.0001640625,Trigger/flag bit (process: HLT)
 Event,bunchCrossing,uint32_t,0.0001748046875,bunchCrossing/i
-Event,event,uint64_t,0.0011435546875,event/l
-Event,luminosityBlock,uint32_t,0.0001806640625,luminosityBlock/i
-Event,nElectron,int32_t,0.0006318359375,minimal slimmedElectrons table
-Event,nJet,int32_t,0.000806640625,AK4 PUPPI jets for PicoAOD
-Event,nMuon,int32_t,0.0008271484375,Muons for PicoAOD
-Event,nPFCand,int32_t,0.0017353515625,selected packed PF candidates for PicoAOD
+Event,event,uint64_t,0.0010380859375,event/l
+Event,luminosityBlock,uint32_t,0.0002001953125,luminosityBlock/i
+Event,nElectron,int32_t,0.0006044921875,Electrons for PicoAOD
+Event,nGenJet,int32_t,0.0001689453125,AK4 generator-level jets
+Event,nJet,int32_t,0.000849609375,AK4 PUPPI jets for PicoAOD
+Event,nMuon,int32_t,0.0008232421875,Muons for PicoAOD
+Event,nPFCand,int32_t,0.0018056640625,selected packed PF candidates for PicoAOD
+Event,nPFPuppiRhoStrip,int32_t,0.000181640625,"PUPPI-weighted PF rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE/HF segmentation"
+Event,nPFRhoStrip,int32_t,0.0001767578125,"PF rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE/HF segmentation"
 Event,orbitNumber,uint32_t,0.0001728515625,orbitNumber/i
 Event,run,uint32_t,0.0001689453125,run/i
-Jet,Jet_area,float[],0.004107421875,jet area
-Jet,Jet_chEmEF,float[],0.0013359375,charged EM energy fraction
-Jet,Jet_chHEF,float[],0.0048037109375,charged hadron energy fraction
-Jet,Jet_eta,float[],0.0098837890625,eta
-Jet,Jet_mass,float[],0.007814453125,mass
-Jet,Jet_muEF,float[],0.001357421875,muon energy fraction
-Jet,Jet_neEmEF,float[],0.0037109375,neutral EM energy fraction
-Jet,Jet_neHEF,float[],0.0046396484375,neutral hadron energy fraction
-Jet,Jet_phi,float[],0.0098212890625,phi
-Jet,Jet_pt,float[],0.01297265625,pt
-Jet,Jet_rawFactor,float[],0.0044365234375,1 - Factor to get back to raw pT
-Muon,Muon_charge,int32_t[],0.0020361328125,electric charge
-Muon,Muon_eta,float[],0.009505859375,eta
-Muon,Muon_mass,float[],0.0017763671875,mass
-Muon,Muon_pdgId,int32_t[],0.00203515625,PDG code assigned by the event reconstruction (not by MC truth)
-Muon,Muon_pfRelIso04_all,float[],0.0055751953125,"PF relative isolation, dR=0.4, delta-beta corrected"
-Muon,Muon_phi,float[],0.010423828125,phi
-Muon,Muon_pt,float[],0.0141025390625,pt
-Muon,Muon_tightId,bool[],0.000982421875,"cut-based ID, tight WP"
-PFCand,PFCand_charge,int32_t[],0.2254423828125,electric charge
-PFCand,PFCand_eta,float[],1.20008203125,PF candidate eta
-PFCand,PFCand_fromPV,int32_t[],0.2155439453125,packed candidate fromPV flag
-PFCand,PFCand_mass,float[],0.1126630859375,PF candidate mass
-PFCand,PFCand_pdgId,int32_t[],0.260248046875,PF candidate PDG ID
-PFCand,PFCand_phi,float[],1.350546875,PF candidate phi
-PFCand,PFCand_pt,float[],1.0118369140625,PF candidate pT
-PFCand,PFCand_puppiWeight,float[],0.11456640625,PUPPI weight
-PV,PV_chi2,float,0.0009775390625,main primary vertex reduced chi2
-PV,PV_ndof,float,0.0012978515625,main primary vertex number of degree of freedom
-PV,PV_npvs,uint8_t,0.0010361328125,total number of reconstructed primary vertices
+Flag,Flag_BadChargedCandidateFilter,bool,0.00017578125,Trigger/flag bit (process: PAT)
+Flag,Flag_BadChargedCandidateSummer16Filter,bool,0.00018359375,Trigger/flag bit (process: PAT)
+Flag,Flag_BadPFMuonDzFilter,bool,0.00016796875,Trigger/flag bit (process: PAT)
+Flag,Flag_BadPFMuonFilter,bool,0.000166015625,Trigger/flag bit (process: PAT)
+Flag,Flag_BadPFMuonSummer16Filter,bool,0.000173828125,Trigger/flag bit (process: PAT)
+Flag,Flag_CSCTightHalo2015Filter,bool,0.0002470703125,Trigger/flag bit (process: PAT)
+Flag,Flag_CSCTightHaloFilter,bool,0.0002119140625,Trigger/flag bit (process: PAT)
+Flag,Flag_CSCTightHaloTrkMuUnvetoFilter,bool,0.00030859375,Trigger/flag bit (process: PAT)
+Flag,Flag_EcalDeadCellBoundaryEnergyFilter,bool,0.0001826171875,Trigger/flag bit (process: PAT)
+Flag,Flag_EcalDeadCellTriggerPrimitiveFilter,bool,0.0001845703125,Trigger/flag bit (process: PAT)
+Flag,Flag_HBHENoiseFilter,bool,0.000166015625,Trigger/flag bit (process: PAT)
+Flag,Flag_HBHENoiseIsoFilter,bool,0.0001689453125,Trigger/flag bit (process: PAT)
+Flag,Flag_HcalStripHaloFilter,bool,0.000169921875,Trigger/flag bit (process: PAT)
+Flag,Flag_chargedHadronTrackResolutionFilter,bool,0.0001845703125,Trigger/flag bit (process: PAT)
+Flag,Flag_ecalBadCalibFilter,bool,0.0001689453125,Trigger/flag bit (process: PAT)
+Flag,Flag_ecalLaserCorrFilter,bool,0.000361328125,Trigger/flag bit (process: PAT)
+Flag,Flag_eeBadScFilter,bool,0.0001640625,Trigger/flag bit (process: PAT)
+Flag,Flag_globalSuperTightHalo2016Filter,bool,0.0001806640625,Trigger/flag bit (process: PAT)
+Flag,Flag_globalTightHalo2016Filter,bool,0.00017578125,Trigger/flag bit (process: PAT)
+Flag,Flag_goodVertices,bool,0.0002060546875,Trigger/flag bit (process: PAT)
+Flag,Flag_hcalLaserEventFilter,bool,0.0001708984375,Trigger/flag bit (process: PAT)
+Flag,Flag_hfNoisyHitsFilter,bool,0.00016796875,Trigger/flag bit (process: PAT)
+Flag,Flag_muonBadTrackFilter,bool,0.0001689453125,Trigger/flag bit (process: PAT)
+Flag,Flag_trkPOGFilters,bool,0.0001796875,Trigger/flag bit (process: PAT)
+Flag,Flag_trkPOG_logErrorTooManyClusters,bool,0.0001806640625,Trigger/flag bit (process: PAT)
+Flag,Flag_trkPOG_manystripclus53X,bool,0.000189453125,Trigger/flag bit (process: PAT)
+Flag,Flag_trkPOG_toomanystripclus53X,bool,0.0001923828125,Trigger/flag bit (process: PAT)
+GenJet,GenJet_eta,float[],0.0001796875,eta
+GenJet,GenJet_mass,float[],0.0001806640625,mass
+GenJet,GenJet_phi,float[],0.0001796875,phi
+GenJet,GenJet_pt,float[],0.0001787109375,pt
+HLT,HLT_AK8DiPFJet250_250_SoftDropMass40,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet250_250_SoftDropMass50,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet260_260_SoftDropMass30,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet260_260_SoftDropMass40,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet270_270_SoftDropMass30,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet280_280_SoftDropMass30,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8DiPFJet290_290_SoftDropMass30,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet140,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet200,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet220_SoftDropMass40,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet220_SoftDropMass40_PNetBB0p06_DoubleAK4PFJet60_30_PNet2BTagMean0p50,bool,0.0002236328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet220_SoftDropMass40_PNetBB0p06_DoubleAK4PFJet60_30_PNet2BTagMean0p53,bool,0.0002236328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet220_SoftDropMass40_PNetBB0p06_DoubleAK4PFJet60_30_PNet2BTagMean0p55,bool,0.0002236328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet220_SoftDropMass40_PNetBB0p06_DoubleAK4PFJet60_30_PNet2BTagMean0p60,bool,0.0002236328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet230_SoftDropMass40,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet230_SoftDropMass40_PNetBB0p06,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet230_SoftDropMass40_PNetBB0p10,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet230_SoftDropMass40_PNetTauTau0p03,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet230_SoftDropMass40_PNetTauTau0p05,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet250_SoftDropMass40_PNetBB0p06,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet250_SoftDropMass40_PNetBB0p10,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet250_SoftDropMass40_PNetTauTau0p03,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet250_SoftDropMass40_PNetTauTau0p05,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet260,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_Nch40,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_Nch45,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_SoftDropMass40_PNetBB0p06,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_SoftDropMass40_PNetBB0p10,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_SoftDropMass40_PNetTauTau0p03,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet275_SoftDropMass40_PNetTauTau0p05,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet320,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet380_SoftDropMass30,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet40,bool,0.00034765625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet400,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet400_SoftDropMass30,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet425_SoftDropMass30,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet450,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet450_SoftDropMass30,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet500,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet550,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet60,bool,0.00030078125,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJet80,bool,0.00021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd140,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd200,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd260,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd320,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd40,bool,0.0003388671875,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd400,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd450,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd500,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd60,bool,0.0002177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_AK8PFJetFwd80,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4DiJet110_Mu5,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4DiJet170_Mu5,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4DiJet20_Mu5,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4DiJet40_Mu5,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4DiJet70_Mu5,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK4Jet300_Mu5,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK8DiJet170_Mu5,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK8Jet170_DoubleMu5,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_BTagMu_AK8Jet300_Mu5,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_CDC_L2cosmic_10_er1p0,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_CDC_L2cosmic_5p5_er1p0,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloJet500_NoJetID,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloJet550_NoJetID,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloMET350_NotCleaned,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloMET60_DTCluster50,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloMET60_DTClusterNoMB1S50,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloMET90_NotCleaned,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_CaloMHT90,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_CascadeMu100,bool,0.000162109375,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster100_Ele5,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster100_Mu5,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster100_PNetTauhPFJet10_Loose,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster50_Photon20Unseeded,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster50_Photon30Unseeded,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster_Loose,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster_Medium,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_CscCluster_Tight,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_DiEle27_WPTightCaloOnly_L1DoubleEG,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiMu4_Ele9_CaloIdL_TrackIdL_DZ_Mass3p8,bool,0.0001875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiMu9_Ele9_CaloIdL_TrackIdL,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve100_HFJEC,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve140,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve160_HFJEC,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve180_PPSMatch_Xi0p3_QuadJet_Max2ProtPerRP,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve200,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve220_HFJEC,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve260,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve260_HFJEC,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve300_HFJEC,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve320,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve40,bool,0.000271484375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve400,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve500,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve60,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve60_HFJEC,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve80,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPFJetAve80_HFJEC,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time1ns,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time1p2ns,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time1p4ns,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time1p6ns,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time1p8ns,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10Time2ns,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiPhoton10_CaloIdL,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DiSC30_18_EIso_AND_HE_Mass70,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi,bool,0.000162109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi3p5_Muon2,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi_L1_4R_0er1p5R,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi_L1_NoOS,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi_NoVertexing,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi_NoVertexing_L1_4R_0er1p5R,bool,0.0001875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Jpsi_NoVertexing_NoOS,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_LowMass,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_LowMass_L1_0er1p5,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_LowMass_L1_4,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_LowMass_L1_TM530,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Upsilon_L1_4p5,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Upsilon_L1_4p5er2p0,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Upsilon_L1_4p5er2p0M,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Upsilon_Muon_NoL1Mass,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon0_Upsilon_NoVertexing,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon10_Upsilon_y1p4,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon12_Upsilon_y1p4,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon14_Phi_Barrel_Seagulls,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon14_PsiPrime,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon14_PsiPrime_noCorrL1,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon18_PsiPrime,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon18_PsiPrime_noCorrL1,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon24_Phi_noCorrL1,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon24_Upsilon_noCorrL1,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon25_Jpsi,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_Dimuon25_Jpsi_noCorrL1,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton20_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton20_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton22_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton22_14_eta1p5_R9IdL_AND_HE_AND_IsoTCaloIdT,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton24_14_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton24_16_eta1p5_R9IdL_AND_HET_AND_IsoTCaloIdT,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton30_18_R9IdL_AND_HE_AND_IsoCaloId_Mass55,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Diphoton30_22_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass95,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DiphotonMVA14p25_Mass90,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_DiphotonMVA14p25_Tight_Mass90,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DisplacedMu24_MediumChargedIsoDisplacedPFTauHPS24,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleCscCluster100,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleCscCluster75,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle10_eta1p22_mMax6,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle24_eta2p1_WPTight_Gsf,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle25_CaloIdL_MW,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle27_CaloIdL_MW,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle33_CaloIdL_MW,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle6p5_eta1p22_mMax6,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_DZ_PFHT350,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT350,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleEle8_eta1p22_mMax6,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleIsoMu20_eta2p1,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu10NoVtx_2Cha_CosmicSeed_VetoL3Mu0DxyMax1cm,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu10NoVtx_2Cha_VetoL3Mu0DxyMax1cm,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu12NoVtx_2Cha_CosmicSeed_VetoL3Mu0DxyMax1cm,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu12NoVtx_2Cha_VetoL3Mu0DxyMax1cm,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu14NoVtx_2Cha_VetoL3Mu0DxyMax1cm,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu23NoVtx_2Cha,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu25NoVtx_2Cha,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu25NoVtx_2Cha_CosmicSeed,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu25NoVtx_2Cha_CosmicSeed_Eta2p4,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu25NoVtx_2Cha_Eta2p4,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu30NoVtx_2Cha_CosmicSeed_Eta2p4,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu30NoVtx_2Cha_Eta2p4,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu50,bool,0.000162109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu_L3Mu16NoVtx_VetoL3Mu0DxyMax0p1cm,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL2Mu_L3Mu18NoVtx_VetoL3Mu0DxyMax0p1cm,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL3Mu16_10NoVtx_DxyMin0p01cm,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL3Mu18_10NoVtx_DxyMin0p01cm,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL3Mu20_10NoVtx_DxyMin0p01cm,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleL3dTksMu16_10NoVtx_DxyMin0p01cm,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumChargedIsoDisplacedPFTauHPS32_Trk1_eta2p1,bool,0.0002021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumChargedIsoDisplacedPFTauHPS32_Trk1_eta2p1_noDxy,bool,0.0002080078125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumChargedIsoDisplacedPFTauHPS36_Trk1_eta2p1,bool,0.0002021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumDeepTauPFTauHPS30_L2NN_eta2p1_OneProng,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet75,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMediumDeepTauPFTauHPS35_L2NN_eta2p1,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu2_Jpsi_DoubleTrk1_Phi1p05,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu2_Jpsi_LowPt,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DCA_PFMET50_PFMHT60,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DCA_PFMET50_PFMHT60_Mass2p0,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DCA_PFMET50_PFMHT60_Mass2p0_noDCA,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DZ_PFMET50_PFMHT60,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DZ_PFMET70_PFMHT70,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DZ_PFMET90_PFMHT90,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_DoubleEle7p5_CaloIdL_TrackIdL_Upsilon,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_TkMu_DsTau3Mu,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_Trk_Tau3mu,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu3_Trk_Tau3mu_NoL1Mass,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu43NoFiltersNoVtx,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu48NoFiltersNoVtx,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_Bs,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_Displaced_Photon4_BsToMMG,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_Jpsi,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_LowMass,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_LowMass_SS,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_3_Photon4_BsToMMG,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_JpsiTrkTrk_Displaced,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_JpsiTrk_Bc,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_Jpsi_Displaced,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_Jpsi_NoVertexing,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_LowMass_Displaced,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_Mass3p8_DZ_PFHT350,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu4_MuMuTrk_Displaced,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoubleMu5_Upsilon_DoubleEle3_CaloIdL_TrackIdL,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets100_PNetBTag_0p11,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets116MaxDeta1p6_PNet2BTag_0p11,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets128MaxDeta1p6_PNet2BTag_0p11,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets200_PNetBTag_0p11,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets350_PNetBTag_0p11,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePFJets40_PNetBTag_0p11,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePNetTauhPFJet26_L2NN_eta2p3_PFJet60,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePNetTauhPFJet26_L2NN_eta2p3_PFJet75,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePNetTauhPFJet30_Medium_L2NN_eta2p3,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePNetTauhPFJet30_Tight_L2NN_eta2p3,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePhoton33_CaloIdL,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePhoton70,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_DoublePhoton85,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_ECALHT800,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_EcalCalibration,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele115_CaloIdVT_GsfTrkIdT,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30,bool,0.000185546875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele135_CaloIdVT_GsfTrkIdT,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele14_eta2p5_IsoVVVL_Gsf_PFHT200_PNetBTag0p53,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele15_IsoVVVL_PFHT450,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele15_IsoVVVL_PFHT450_PFMET50,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele15_IsoVVVL_PFHT600,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele17_CaloIdM_TrackIdM_PFJet30,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30,bool,0.000185546875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele23_CaloIdM_TrackIdM_PFJet30,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele24_eta2p1_WPTight_Gsf_LooseDeepTauPFTauHPS30_eta2p1_CrossL1,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele24_eta2p1_WPTight_Gsf_PNetTauhPFJet30_Loose_eta2p3_CrossL1,bool,0.0002099609375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele24_eta2p1_WPTight_Gsf_PNetTauhPFJet30_Medium_eta2p3_CrossL1,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele24_eta2p1_WPTight_Gsf_PNetTauhPFJet30_Tight_eta2p3_CrossL1,bool,0.0002099609375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele28_HighEta_SC20_Mass55,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele28_eta2p1_WPTight_Gsf_HT150,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele30_WPTight_Gsf,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele30_eta2p1_WPTight_Gsf_CentralPFJet35_EleCleaned,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele32_WPTight_Gsf,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele32_WPTight_Gsf_L1DoubleEG,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele35_WPTight_Gsf,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele38_WPTight_Gsf,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele40_WPTight_Gsf,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet220_SoftDropMass40,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet220_SoftDropMass40_PNetBB0p06,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet230_SoftDropMass40,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet230_SoftDropMass40_PNetBB0p06,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_AK8PFJet230_SoftDropMass40_PNetBB0p10,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele50_IsoVVVL_PFHT450,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Ele8_CaloIdM_TrackIdM_PFJet30,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_EphemeralPhysics,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_EphemeralZeroBias,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT170_L1SingleLLPJet_DisplacedDijet40_DisplacedTrack,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DelayedJet40_DoubleDelay0p5nsTrackless,bool,0.0002080078125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DelayedJet40_DoubleDelay1nsInclusive,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DelayedJet40_SingleDelay1nsTrackless,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DelayedJet40_SingleDelay2nsInclusive,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DisplacedDijet40_DisplacedTrack,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0002099609375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_DisplacedDijet60_DisplacedTrack,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_PFJet60_NeutralHadronFrac0p7,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT200_L1SingleLLPJet_PFJet60_NeutralHadronFrac0p8,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT240_L1SingleLLPJet_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0002099609375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT270_L1SingleLLPJet_DisplacedDijet40_DisplacedTrack,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT280_L1SingleLLPJet_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0002099609375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT300_Beamspot,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT320_L1SingleLLPJet_DisplacedDijet60_Inclusive,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350,bool,0.0001552734375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay1p5To3p5nsInclusive,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay1p6To3p5nsInclusive,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay1p75To3p5nsInclusive,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay3nsInclusive,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay3p25nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT350_DelayedJet40_SingleDelay3p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT360_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT360_DisplacedDijet45_Inclusive1PtrkShortSig5,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT390_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT390_DisplacedDijet45_Inclusive1PtrkShortSig5,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT390eta2p0_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT400_DisplacedDijet40_DisplacedTrack,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT420_L1SingleLLPJet_DisplacedDijet60_Inclusive,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT425,bool,0.0001552734375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay0p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay0p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay0p75nsTrackless,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay1nsInclusive,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay1nsTrackless,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay1p25nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_DoubleDelay1p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay0p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay0p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1To1p5nsInclusive,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1nsInclusive,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1nsTrackless,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1p1To1p6nsInclusive,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1p25To1p75nsInclusive,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1p25nsTrackless,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay1p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay2nsInclusive,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay2p25nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DelayedJet40_SingleDelay2p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DisplacedDijet40_DisplacedTrack,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_HT430_DisplacedDijet40_Inclusive1PtrkShortSig5,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_HT550_DisplacedDijet60_Inclusive,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_HT650_DisplacedDijet60_Inclusive,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_HcalCalibration,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_HcalNZS,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_HcalPhiSym,bool,0.00029296875,Trigger/flag bit (process: HLT)
+HLT,HLT_HighPtTkMu100,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu20,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu20_eta2p1_PNetTauhPFJet27_Loose_eta2p3_CrossL1,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu20_eta2p1_PNetTauhPFJet27_Medium_eta2p3_CrossL1,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu20_eta2p1_PNetTauhPFJet27_Tight_eta2p3_CrossL1,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_OneProng32,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_TwoProngs35,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_LooseDeepTauPFTauHPS180_eta2p1,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_LooseDeepTauPFTauHPS30_eta2p1_CrossL1,bool,0.000201171875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS20_eta2p1_SingleL1,bool,0.000203125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_CrossL1,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_OneProng_CrossL1,bool,0.0002158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet60_CrossL1,bool,0.00021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS30_L2NN_eta2p1_PFJet75_CrossL1,bool,0.00021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS35_L2NN_eta2p1_CrossL1,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_MediumDeepTauPFTauHPS45_L2NN_eta2p1_CrossL1,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PFHT250,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PFHT250_QuadPFJet25,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PFHT250_QuadPFJet25_PNet1Tauh0p50,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet130_Loose_L2NN_eta2p3_CrossL1,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet130_Medium_L2NN_eta2p3_CrossL1,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet130_Tight_L2NN_eta2p3_CrossL1,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet20_eta2p2_SingleL1,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet26_L2NN_eta2p3_CrossL1,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet26_L2NN_eta2p3_CrossL1_PFJet60,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet26_L2NN_eta2p3_CrossL1_PFJet75,bool,0.00020703125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet30_Loose_eta2p3_CrossL1_ETau_Monitoring,bool,0.0002158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet30_Medium_L2NN_eta2p3_CrossL1,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet30_Medium_eta2p3_CrossL1_ETau_Monitoring,bool,0.000216796875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet30_Tight_L2NN_eta2p3_CrossL1,bool,0.000205078125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet30_Tight_eta2p3_CrossL1_ETau_Monitoring,bool,0.0002158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_PNetTauhPFJet45_L2NN_eta2p3_CrossL1,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu24_eta2p1_SinglePFJet25_PNet1Tauh0p50,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu27,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu27_MediumChargedIsoDisplacedPFTauHPS24_eta2p1_SingleL1,bool,0.0002080078125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu50_AK8PFJet220_SoftDropMass40,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu50_AK8PFJet220_SoftDropMass40_PNetBB0p06,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu50_AK8PFJet230_SoftDropMass40,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu50_AK8PFJet230_SoftDropMass40_PNetBB0p06,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoMu50_AK8PFJet230_SoftDropMass40_PNetBB0p10,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoTrackHB,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoTrackHE,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoTrk200_L1SingleMuShower,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_IsoTrk400_L1SingleMuShower,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_L1AXOVTight,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_L1CSCShower_DTCluster50,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1CSCShower_DTCluster75,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1ETMHadSeeds,bool,0.0002177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1MET_DTCluster50,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_L1MET_DTClusterNoMB1S50,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Mu6HT240,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1SingleLLPJet,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1SingleMuCosmics,bool,0.0003193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay0p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay0p75nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1nsTrackless,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1p25nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1p25nsTrackless,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_DoubleDelay1p75nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay2p5To4nsInclusive,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay2p5nsTrackless,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay2p6To4nsInclusive,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay2p75To4nsInclusive,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay2p75nsTrackless,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay3nsTrackless,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay3p5nsInclusive,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay3p75nsInclusive,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_L1Tau_DelayedJet40_SingleDelay4nsInclusive,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_L1_CDC_SingleMu_3_er1p2_TOP120_DPHI2p618_3p142,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10NoVtx_2Cha,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10NoVtx_2Cha_CosmicSeed,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10NoVtx_2Cha_CosmicSeed_VetoL3Mu0DxyMax1cm,bool,0.0002109375,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10NoVtx_2Cha_VetoL3Mu0DxyMax1cm,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10_NoVertex_NoBPTX,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu10_NoVertex_NoBPTX3BX,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu23NoVtx_2Cha,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu23NoVtx_2Cha_CosmicSeed,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu40_NoVertex_3Sta_NoBPTX3BX,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu45_NoVertex_3Sta_NoBPTX3BX,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu50NoVtx_3Cha_CosmicSeed_VetoL3Mu0DxyMax1cm,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_L2Mu50NoVtx_3Cha_VetoL3Mu0DxyMax1cm,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_L3Mu10NoVtx,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_L3Mu10NoVtx_DxyMin0p01cm,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_L3Mu30NoVtx_DxyMin0p01cm,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_L3Mu50NoVtx_DxyMin0p01cm,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_L3dTksMu10_NoVtx_DxyMin0p01cm,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_LooseDeepTauPFTauHPS180_L2NN_eta2p1,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_MET105_IsoTrk50,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_MET120_IsoTrk50,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP10,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP11,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP6,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP6_IP6,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP7,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP8,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_Barrel_L1HP9,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu0_L1DoubleMu,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu10_Barrel_L1HP11_IP6,bool,0.000171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets100_PNetBTag_0p11,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets200_PNetBTag_0p11,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets350_PNetBTag_0p11,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets40MaxDeta1p6_PNet2BTag_0p11,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets40_PNetBTag_0p11,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_DoublePFJets54MaxDeta1p6_PNet2BTag_0p11,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_IsoVVL_PFHT150_PNetBTag0p53,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12eta2p3,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu12eta2p3_PFJet40,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu15,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu15_IsoVVVL_PFHT450,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu15_IsoVVVL_PFHT450_PFMET50,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu15_IsoVVVL_PFHT600,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_Photon30_IsoCaloId,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_AK8CaloJet30,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_AK8PFJet30,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_CaloJet30,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_PFJet30,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu18_Mu9_SameSign,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19_TrkIsoVVL,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass3p8,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass8,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu20,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu20NoFiltersNoVtxDisplaced_Photon20_CaloCustomId,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu25_TkMu0_Phi,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu27,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu27_Ele37_CaloIdL_MW,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu30_TkMu0_Psi,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu30_TkMu0_Upsilon,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu37_Ele27_CaloIdL_MW,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu37_TkMu27,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu38NoFiltersNoVtxDisplaced_Photon38_CaloIdL,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3_L1SingleMu5orSingleMu7,bool,0.000203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3_PFJet40,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight,bool,0.000205078125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu80_PFMHTNoMu80_IDTight,bool,0.000203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu90_PFMHTNoMu90_IDTight,bool,0.000203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu43NoFiltersNoVtxDisplaced_Photon43_CaloIdL,bool,0.000193359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu43NoFiltersNoVtx_Photon43_CaloIdL,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu48NoFiltersNoVtx_Photon48_CaloIdL,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu4_L1DoubleMu,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu50,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu50_IsoVVVL_PFHT450,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu50_L1SingleMuShower,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu55,bool,0.000154296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet30_Inclusive1PtrkShortSig5_DisplacedLoose,bool,0.000212890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet35_Inclusive0PtrkShortSig5,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet35_Inclusive1PtrkShortSig5_DisplacedLoose,bool,0.000212890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet40_Inclusive0PtrkShortSig5,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet40_Inclusive1PtrkShortSig5_DisplacedLoose,bool,0.000212890625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet45_Inclusive0PtrkShortSig5,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6HT240_DisplacedDijet50_Inclusive0PtrkShortSig5,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu6_Barrel_L1HP7_IP6,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu7_Barrel_L1HP8_IP6,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu7p5_L2Mu2_Jpsi,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu7p5_L2Mu2_Upsilon,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_Barrel_L1HP9_IP6,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_DiEle12_CaloIdL_TrackIdL,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT350,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT350_DZ,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_CaloDiJet30,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_DoubleAK4PFJet60_30,bool,0.0002138671875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_DoubleAK4PFJet60_30_PNet2BTagMean0p50,bool,0.0002314453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30,bool,0.0002041015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30_PFBtagDeepJet_1p5,bool,0.0002216796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFDiJet30_PNet2BTagMean0p50,bool,0.0002216796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT250,bool,0.0002021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT250_QuadPFJet25,bool,0.0002138671875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT250_QuadPFJet25_PNet1BTag0p20,bool,0.0002275390625,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT250_QuadPFJet25_PNet2BTagMean0p55,bool,0.0002314453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT280,bool,0.0002021484375,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT280_QuadPFJet30,bool,0.0002138671875,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_PFHT280_QuadPFJet30_PNet2BTagMean0p55,bool,0.0002314453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Mu9_Barrel_L1HP10_IP6,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT1050,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT180,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250_QuadPFJet25,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250_QuadPFJet25_PNet1BTag0p20_PNet1Tauh0p50,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250_QuadPFJet25_PNet2BTagMean0p55,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250_QuadPFJet30_PNet1BTag0p20_PNet1Tauh0p50,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT250_QuadPFJet30_PNet2BTagMean0p55,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT280_QuadPFJet30,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT280_QuadPFJet30_PNet1BTag0p20_PNet1Tauh0p50,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT280_QuadPFJet30_PNet2BTagMean0p55,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT280_QuadPFJet30_PNet2BTagMean0p60,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT280_QuadPFJet35_PNet2BTagMean0p60,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT330PT30_QuadPFJet_75_60_45_40,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_2p0,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT330PT30_QuadPFJet_75_60_45_40_PNet3BTag_4p3,bool,0.0001962890625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepJet_4p5,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT340_QuadPFJet70_50_40_40_PNet2BTagMean0p70,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT350,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT370,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT400_FivePFJet_120_120_60_30_30,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_4p3,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT400_FivePFJet_120_120_60_30_30_PNet2BTag_5p6,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT400_SixPFJet32,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT400_SixPFJet32_PNet2BTagMean0p50,bool,0.000185546875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT430,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT450_SixPFJet36,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT450_SixPFJet36_PNetBTag0p35,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT500_PFMET100_PFMHT100_IDTight,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT500_PFMET110_PFMHT110_IDTight,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT510,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT590,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT680,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT700_PFMET85_PFMHT85_IDTight,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT780,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT800_PFMET75_PFMHT75_IDTight,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFHT890,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet110,bool,0.000162109375,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet140,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet200,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet200_TimeGt2p5ns,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet200_TimeLtNeg2p5ns,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet260,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet320,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet40,bool,0.0002978515625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet400,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet40_GPUvsCPU,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet450,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet500,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet550,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet60,bool,0.0001923828125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJet80,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd140,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd200,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd260,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd320,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd40,bool,0.0002265625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd400,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd450,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd500,bool,0.0001611328125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd60,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFJetFwd80,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET105_IsoTrk50,bool,0.0001669921875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET120_PFMHT120_IDTight,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET120_PFMHT120_IDTight_PFHT60,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET130_PFMHT130_IDTight,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET140_PFMHT140_IDTight,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET200_BeamHaloCleaned,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET200_NotCleaned,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET250_NotCleaned,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMET300_NotCleaned,bool,0.0001689453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu110_PFMHTNoMu110_IDTight_FilterHF,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu120_PFMHTNoMu120_IDTight,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_FilterHF,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu130_PFMHTNoMu130_IDTight,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu130_PFMHTNoMu130_IDTight_FilterHF,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu140_PFMHTNoMu140_IDTight,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETNoMu140_PFMHTNoMu140_IDTight_FilterHF,bool,0.00019140625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETTypeOne140_PFMHT140_IDTight,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PFMETTypeOne200_BeamHaloCleaned,bool,0.0001806640625,Trigger/flag bit (process: HLT)
+HLT,HLT_PPSMaxTracksPerArm1,bool,0.0002001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_PPSMaxTracksPerRP4,bool,0.00026953125,Trigger/flag bit (process: HLT)
+HLT,HLT_PPSRandom,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon100EBHE10,bool,0.0001650390625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon110EB_TightID_TightIso,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon110EB_TightID_TightIso_AK8CaloJet30,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon110EB_TightID_TightIso_AK8PFJet30,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon110EB_TightID_TightIso_CaloJet30,bool,0.0001875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon110EB_TightID_TightIso_PFJet30,bool,0.000185546875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon120,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon120_R9Id90_HE10_IsoM,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon150,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon165_R9Id90_HE10_IsoM,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon175,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon200,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon20_HoverELoose,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon300_NoHE,bool,0.0001640625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon30EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon30_HoverELoose,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon32_OneProng32_M50To105,bool,0.000177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon33,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon34_R9Id90_CaloIdL_IsoL_DisplacedIdL_MediumChargedIsoDisplacedPFTauHPS34,bool,0.0002255859375,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon35_TwoProngs35,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon40EB,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon40EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon45EB,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon45EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB_TightID_TightIso_AK8CaloJet30,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB_TightID_TightIso_AK8PFJet30,bool,0.0001875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB_TightID_TightIso_CaloJet30,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50EB_TightID_TightIso_PFJet30,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50_R9Id90_HE10_IsoM,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50_TimeGt2p5ns,bool,0.000169921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon50_TimeLtNeg2p5ns,bool,0.0001728515625,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon55EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon60_R9Id90_CaloIdL_IsoL_DisplacedIdL_PFHT350,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon60_R9Id90_CaloIdL_IsoL_DisplacedIdL_PFHT380,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon60_R9Id90_CaloIdL_IsoL_DisplacedIdL_PFHT400,bool,0.0001982421875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon60_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon75,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon75EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon75_R9Id90_HE10_IsoM,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3,bool,0.00019921875,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon90,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon90EB_TightID_TightIso,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Photon90_R9Id90_HE10_IsoM,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_Physics,bool,0.0001572265625,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet100_88_70_30,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet100_88_70_30_PNet1CvsAll0p5_VBF3Tight,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet103_88_75_15,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet103_88_75_15_PNet2BTag_0p4_0p12_VBF1,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet103_88_75_15_PNetBTag_0p4_VBF2,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet105_88_75_30,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet105_88_75_30_PNet1CvsAll0p5_VBF3Tight,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet105_88_76_15,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet105_88_76_15_PNet2BTag_0p4_0p12_VBF1,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet105_88_76_15_PNetBTag_0p4_VBF2,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet111_90_80_15,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet111_90_80_15_PNet2BTag_0p4_0p12_VBF1,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet111_90_80_15_PNetBTag_0p4_VBF2,bool,0.0001884765625,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet111_90_80_30,bool,0.0001708984375,Trigger/flag bit (process: HLT)
+HLT,HLT_QuadPFJet111_90_80_30_PNet1CvsAll0p6_VBF3Tight,bool,0.0001953125,Trigger/flag bit (process: HLT)
+HLT,HLT_Random,bool,0.00015625,Trigger/flag bit (process: HLT)
+HLT,HLT_SingleEle8,bool,0.00016015625,Trigger/flag bit (process: HLT)
+HLT,HLT_SingleEle8_SingleEGL1,bool,0.0002060546875,Trigger/flag bit (process: HLT)
+HLT,HLT_SinglePNetTauhPFJet130_Loose_L2NN_eta2p3,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_SinglePNetTauhPFJet130_Medium_L2NN_eta2p3,bool,0.0001904296875,Trigger/flag bit (process: HLT)
+HLT,HLT_SinglePNetTauhPFJet130_Tight_L2NN_eta2p3,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_Tau3Mu_Mu7_Mu1_TkMu1_IsoTau15_Charge1,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_Tau3Mu_Mu7_Mu1_TkMu1_Tau15_Charge1,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_Trimuon5_3p5_2_Upsilon_Muon,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_TrimuonOpen_5_3p5_2_Upsilon_Muon,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_TripleMu_10_5_5_DZ,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_TripleMu_12_10_5,bool,0.000166015625,Trigger/flag bit (process: HLT)
+HLT,HLT_TripleMu_5_3_3_Mass3p8_DCA,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_TripleMu_5_3_3_Mass3p8_DZ,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx,bool,0.00018359375,Trigger/flag bit (process: HLT)
+HLT,HLT_UncorrectedJetE30_NoBPTX,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_UncorrectedJetE30_NoBPTX3BX,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_UncorrectedJetE60_NoBPTX3BX,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_UncorrectedJetE70_NoBPTX3BX,bool,0.0001767578125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet125_45_Mjj1050,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet125_45_Mjj1200,bool,0.0001748046875,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet45_Mjj650_MediumDeepTauPFTauHPS45_L2NN_eta2p1,bool,0.000205078125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet45_Mjj650_PNetTauhPFJet45_L2NN_eta2p3,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet45_Mjj750_MediumDeepTauPFTauHPS45_L2NN_eta2p1,bool,0.000205078125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet45_Mjj750_PNetTauhPFJet45_L2NN_eta2p3,bool,0.000197265625,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet50_Mjj600_Ele22_eta2p1_WPTight_Gsf,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet50_Mjj650_Ele22_eta2p1_WPTight_Gsf,bool,0.0001943359375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet50_Mjj650_Photon22,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet50_Mjj750_Photon22,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet75_45_Mjj800_DiPFJet60,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet75_45_Mjj850_DiPFJet60,bool,0.0001826171875,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet80_45_Mjj650_PFMETNoMu85,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet80_45_Mjj750_PFMETNoMu85,bool,0.0001845703125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet95_45_Mjj750_Mu3_TrkIsoVVL,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DiPFJet95_45_Mjj850_Mu3_TrkIsoVVL,bool,0.0001865234375,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DoubleMediumDeepTauPFTauHPS20_eta2p1,bool,0.000189453125,Trigger/flag bit (process: HLT)
+HLT,HLT_VBF_DoublePNetTauhPFJet20_eta2p2,bool,0.000181640625,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias,bool,0.000158203125,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_Alignment,bool,0.00016796875,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_Beamspot,bool,0.0002177734375,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_FirstBXAfterTrain,bool,0.00017578125,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_FirstCollisionAfterAbortGap,bool,0.000185546875,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_FirstCollisionInTrain,bool,0.0001796875,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_IsolatedBunches,bool,0.000173828125,Trigger/flag bit (process: HLT)
+HLT,HLT_ZeroBias_LastCollisionInTrain,bool,0.0001787109375,Trigger/flag bit (process: HLT)
+Jet,Jet_area,float[],0.005291015625,jet area
+Jet,Jet_chEmEF,float[],0.00135546875,charged Electromagnetic Energy Fraction
+Jet,Jet_chHEF,float[],0.0063232421875,charged Hadron Energy Fraction
+Jet,Jet_chMultiplicity,uint8_t[],0.003046875,(Puppi-weighted) Number of charged particles in the jet
+Jet,Jet_eta,float[],0.0125009765625,eta
+Jet,Jet_genJetIdx,int16_t[],0.0010966796875,index of matched gen jet
+Jet,Jet_hfEmEF,float[],0.0012421875,electromagnetic Energy Fraction in HF
+Jet,Jet_hfHEF,float[],0.0027373046875,hadronic Energy Fraction in HF
+Jet,Jet_mass,float[],0.011267578125,mass
+Jet,Jet_muEF,float[],0.001423828125,muon Energy Fraction
+Jet,Jet_nConstituents,uint8_t[],0.0031904296875,Number of particles in the jet
+Jet,Jet_neEmEF,float[],0.00388671875,neutral Electromagnetic Energy Fraction
+Jet,Jet_neHEF,float[],0.0060107421875,neutral Hadron Energy Fraction
+Jet,Jet_neMultiplicity,uint8_t[],0.00247265625,(Puppi-weighted) Number of neutral particles in the jet
+Jet,Jet_phi,float[],0.0127158203125,phi
+Jet,Jet_pt,float[],0.01913671875,pt
+Jet,Jet_rawFactor,float[],0.0068818359375,1 - Factor to get back to raw pT
+L1Reco,L1Reco_step,bool,0.0001572265625,Trigger/flag bit (process: RECO)
+L1simulation,L1simulation_step,bool,0.0001630859375,Trigger/flag bit (process: HLT)
+MC,MC_PFScouting,bool,0.0001591796875,Trigger/flag bit (process: HLT)
+Muon,Muon_charge,int32_t[],0.0019501953125,electric charge
+Muon,Muon_eta,float[],0.008927734375,eta
+Muon,Muon_looseId,bool[],0.001345703125,muon is loose muon
+Muon,Muon_mass,float[],0.0017177734375,mass
+Muon,Muon_mediumId,bool[],0.0015263671875,"cut-based ID, medium WP"
+Muon,Muon_pdgId,int32_t[],0.0019296875,PDG code assigned by the event reconstruction (not by MC truth)
+Muon,Muon_pfIsoId,uint8_t[],0.001951171875,"PFIso ID from miniAOD selector (1=PFIsoVeryLoose, 2=PFIsoLoose, 3=PFIsoMedium, 4=PFIsoTight, 5=PFIsoVeryTight, 6=PFIsoVeryVeryTight)"
+Muon,Muon_pfRelIso04_all,float[],0.0051962890625,"PF relative isolation, dR=0.4, delta-beta corrected"
+Muon,Muon_phi,float[],0.009732421875,phi
+Muon,Muon_pt,float[],0.0129658203125,pt
+Muon,Muon_tightId,bool[],0.000970703125,"cut-based ID, tight WP"
+PFCand,PFCand_caloEnergy,float[],1.6768125,Stored ECAL+HCAL energy
+PFCand,PFCand_caloFraction,float[],1.36383984375,(ECAL+HCAL energy)/candidate energy
+PFCand,PFCand_charge,int32_t[],0.482125,PF candidate electric charge
+PFCand,PFCand_dxy,float[],2.86156640625,dxy relative to associated PV
+PFCand,PFCand_dz,float[],1.54712890625,dz relative to associated PV
+PFCand,PFCand_ecalEnergy,float[],0.95126171875,Stored ECAL energy
+PFCand,PFCand_energy,float[],3.2742421875,PF candidate energy
+PFCand,PFCand_eta,float[],2.28303125,PF candidate eta
+PFCand,PFCand_fromPV,int32_t[],0.4558671875,PackedCandidate PV association
+PFCand,PFCand_hcalEnergy,float[],1.50858203125,Stored HCAL energy
+PFCand,PFCand_hcalFraction,float[],1.5273125,HCAL fraction of calorimeter energy
+PFCand,PFCand_isIsolatedChargedHadron,bool[],0.03254296875,MiniAOD isolated charged-hadron flag
+PFCand,PFCand_mass,float[],0.67706640625,PF candidate mass
+PFCand,PFCand_pdgId,int32_t[],0.5925625,PF candidate PDG/PF type
+PFCand,PFCand_phi,float[],3.3365546875,PF candidate phi
+PFCand,PFCand_pt,float[],3.09450390625,Unweighted PF candidate pT
+PFCand,PFCand_ptTrk,float[],3.09594921875,Track transverse momentum stored in PackedCandidate
+PFCand,PFCand_puppiWeight,float[],0.2153203125,Existing PUPPI weight
+PFCand,PFCand_puppiWeightNoLep,float[],0.22723828125,Existing no-lepton PUPPI weight
+PFCand,PFCand_rawCaloEnergy,float[],0.09708203125,Raw ECAL+HCAL energy for isolated charged hadrons
+PFCand,PFCand_rawCaloFraction,float[],0.0976796875,Raw (ECAL+HCAL)/candidate energy for isolated charged hadrons
+PFCand,PFCand_rawEcalEnergy,float[],0.09239453125,Raw ECAL energy for isolated charged hadrons
+PFCand,PFCand_rawHcalEnergy,float[],0.09032421875,Raw HCAL energy for isolated charged hadrons
+PFCand,PFCand_rawHcalFraction,float[],0.09065625,Raw HCAL fraction for isolated charged hadrons
+PFPuppiRhoStrip,PFPuppiRhoStrip_area,float[],0.318359375,eta-phi strip area
+PFPuppiRhoStrip,PFPuppiRhoStrip_dEta,float[],0.326171875,eta bin width
+PFPuppiRhoStrip,PFPuppiRhoStrip_dPhi,float[],0.244140625,phi bin width
+PFPuppiRhoStrip,PFPuppiRhoStrip_eta,float[],0.3720703125,eta center
+PFPuppiRhoStrip,PFPuppiRhoStrip_etaBin,int32_t[],0.35546875,"generic eta-bin id: signed HCAL ieta if useHCALGeometry, otherwise custom eta-bin index"
+PFPuppiRhoStrip,PFPuppiRhoStrip_etaMax,float[],0.37890625,upper eta edge
+PFPuppiRhoStrip,PFPuppiRhoStrip_etaMin,float[],0.37890625,lower eta edge
+PFPuppiRhoStrip,PFPuppiRhoStrip_iEta,int32_t[],0.388671875,"HCAL ieta when useHCALGeometry=true, otherwise 0"
+PFPuppiRhoStrip,PFPuppiRhoStrip_iPhi,int32_t[],0.388671875,"HCAL iphi when useHCALGeometry=true, otherwise 0"
+PFPuppiRhoStrip,PFPuppiRhoStrip_n,uint16_t[],0.959689453125,number of PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nChargedHadron,uint16_t[],0.86099609375,number of charged-hadron PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nElectron,uint16_t[],0.080310546875,number of electron PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nMuon,uint16_t[],0.089099609375,number of muon PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nNeutralHadron,uint16_t[],0.316421875,number of neutral-hadron PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nOther,uint16_t[],0.07694921875,number of other PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_nPhoton,uint16_t[],0.353826171875,number of photon PF candidates in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_phi,float[],0.4462890625,phi center
+PFPuppiRhoStrip,PFPuppiRhoStrip_phiBin,int32_t[],0.390625,"generic phi-bin id: HCAL iphi if useHCALGeometry, otherwise custom phi-bin index"
+PFPuppiRhoStrip,PFPuppiRhoStrip_phiMax,float[],0.21875,upper phi edge for custom bins; 0 for HCAL geometry bins
+PFPuppiRhoStrip,PFPuppiRhoStrip_phiMin,float[],0.21875,lower phi edge for custom bins; 0 for HCAL geometry bins
+PFPuppiRhoStrip,PFPuppiRhoStrip_rho,float[],0.2158203125,median PUPPI-weighted PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoChargedHadron,float[],0.228515625,median PUPPI-weighted charged-hadron PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoElectron,float[],0.2236328125,median PUPPI-weighted electron PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoMuon,float[],0.2197265625,median PUPPI-weighted muon PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoNeutralHadron,float[],0.228515625,median PUPPI-weighted neutral-hadron PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoOther,float[],0.220703125,median PUPPI-weighted other PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_rhoPhoton,float[],0.2216796875,median PUPPI-weighted photon PF rho over phi strips in this eta bin
+PFPuppiRhoStrip,PFPuppiRhoStrip_subdet,int32_t[],0.2265625,"HCAL subdetector enum when useHCALGeometry=true: HB=1, HE=2, HF=4; otherwise 0"
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPt,float[],0.5409296875,PUPPI-weighted PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtChargedHadron,float[],0.50151953125,PUPPI-weighted charged-hadron PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtElectron,float[],0.22584765625,PUPPI-weighted electron PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtMuon,float[],0.2225625,PUPPI-weighted muon PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtNeutralHadron,float[],0.28958984375,PUPPI-weighted neutral-hadron PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtOther,float[],0.22265625,PUPPI-weighted other PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_sumPtPhoton,float[],0.24803515625,PUPPI-weighted photon PF scalar pT sum in this eta-phi strip
+PFPuppiRhoStrip,PFPuppiRhoStrip_zside,int32_t[],0.2333984375,"HCAL zside when useHCALGeometry=true, otherwise sign of eta center"
+PFRhoStrip,PFRhoStrip_area,float[],0.3134765625,eta-phi strip area
+PFRhoStrip,PFRhoStrip_dEta,float[],0.3212890625,eta bin width
+PFRhoStrip,PFRhoStrip_dPhi,float[],0.2392578125,phi bin width
+PFRhoStrip,PFRhoStrip_eta,float[],0.3671875,eta center
+PFRhoStrip,PFRhoStrip_etaBin,int32_t[],0.3505859375,"generic eta-bin id: signed HCAL ieta if useHCALGeometry, otherwise custom eta-bin index"
+PFRhoStrip,PFRhoStrip_etaMax,float[],0.3740234375,upper eta edge
+PFRhoStrip,PFRhoStrip_etaMin,float[],0.3740234375,lower eta edge
+PFRhoStrip,PFRhoStrip_iEta,int32_t[],0.3837890625,"HCAL ieta when useHCALGeometry=true, otherwise 0"
+PFRhoStrip,PFRhoStrip_iPhi,int32_t[],0.3837890625,"HCAL iphi when useHCALGeometry=true, otherwise 0"
+PFRhoStrip,PFRhoStrip_n,uint16_t[],0.95805859375,number of PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nChargedHadron,uint16_t[],0.859365234375,number of charged-hadron PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nElectron,uint16_t[],0.0786796875,number of electron PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nMuon,uint16_t[],0.08746875,number of muon PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nNeutralHadron,uint16_t[],0.314791015625,number of neutral-hadron PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nOther,uint16_t[],0.075318359375,number of other PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_nPhoton,uint16_t[],0.3521953125,number of photon PF candidates in this eta-phi strip
+PFRhoStrip,PFRhoStrip_phi,float[],0.44140625,phi center
+PFRhoStrip,PFRhoStrip_phiBin,int32_t[],0.3857421875,"generic phi-bin id: HCAL iphi if useHCALGeometry, otherwise custom phi-bin index"
+PFRhoStrip,PFRhoStrip_phiMax,float[],0.2138671875,upper phi edge for custom bins; 0 for HCAL geometry bins
+PFRhoStrip,PFRhoStrip_phiMin,float[],0.2138671875,lower phi edge for custom bins; 0 for HCAL geometry bins
+PFRhoStrip,PFRhoStrip_rho,float[],0.324796875,median PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoChargedHadron,float[],0.2679453125,median charged-hadron PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoElectron,float[],0.21875,median electron PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoMuon,float[],0.21484375,median muon PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoNeutralHadron,float[],0.28834375,median neutral-hadron PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoOther,float[],0.2158203125,median other PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_rhoPhoton,float[],0.216796875,median photon PF rho over phi strips in this eta bin
+PFRhoStrip,PFRhoStrip_subdet,int32_t[],0.2216796875,"HCAL subdetector enum when useHCALGeometry=true: HB=1, HE=2, HF=4; otherwise 0"
+PFRhoStrip,PFRhoStrip_sumPt,float[],3.49426171875,PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtChargedHadron,float[],2.37360546875,charged-hadron PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtElectron,float[],0.222765625,electron PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtMuon,float[],0.231171875,muon PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtNeutralHadron,float[],1.52810546875,neutral-hadron PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtOther,float[],0.2177734375,other PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_sumPtPhoton,float[],0.70765234375,photon PF scalar pT sum in this eta-phi strip
+PFRhoStrip,PFRhoStrip_zside,int32_t[],0.228515625,"HCAL zside when useHCALGeometry=true, otherwise sign of eta center"
+PV,PV_chi2,float,0.0009853515625,main primary vertex reduced chi2
+PV,PV_ndof,float,0.0012939453125,main primary vertex number of degree of freedom
+PV,PV_npvs,uint8_t,0.0010322265625,total number of reconstructed primary vertices
 PV,PV_npvsGood,uint8_t,0.0010205078125,number of good reconstructed primary vertices. selection: !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2
-PV,PV_score,float,0.001369140625,"main primary vertex score, i.e. sum pt2 of clustered objects"
-PV,PV_sumpt2,float,0.0013388671875,sum pt2 of pf charged candidates for the main primary vertex
-PV,PV_sumpx,float,0.001599609375,sum px of pf charged candidates for the main primary vertex
-PV,PV_sumpy,float,0.001603515625,sum py of pf charged candidates for the main primary vertex
-PV,PV_x,float,0.000990234375,main primary vertex position x coordinate
-PV,PV_y,float,0.001162109375,main primary vertex position y coordinate
-PV,PV_z,float,0.001775390625,main primary vertex position z coordinate
-PuppiMET,PuppiMET_phi,float,0.002654296875,phi
-PuppiMET,PuppiMET_pt,float,0.0036923828125,pt
+PV,PV_score,float,0.001361328125,"main primary vertex score, i.e. sum pt2 of clustered objects"
+PV,PV_sumpt2,float,0.0013232421875,sum pt2 of pf charged candidates for the main primary vertex
+PV,PV_sumpx,float,0.001619140625,sum px of pf charged candidates for the main primary vertex
+PV,PV_sumpy,float,0.001599609375,sum py of pf charged candidates for the main primary vertex
+PV,PV_x,float,0.001142578125,main primary vertex position x coordinate
+PV,PV_y,float,0.001119140625,main primary vertex position y coordinate
+PV,PV_z,float,0.001763671875,main primary vertex position z coordinate
+Pileup,Pileup_gpudensity,float,0.0015185546875,Generator-level PU vertices / mm
+Pileup,Pileup_nPU,int32_t,0.00125,the number of pileup interactions that have been added to the event in the current bunch crossing
+Pileup,Pileup_nTrueInt,float,0.0020634765625,the true mean number of the poisson distribution for this event from which the number of interactions each bunch crossing has been sampled
+Pileup,Pileup_pudensity,float,0.000689453125,PU vertices / mm
+Pileup,Pileup_sumEOOT,int32_t,0.00181640625,number of early out of time pileup
+Pileup,Pileup_sumLOOT,int32_t,0.001453125,number of late out of time pileup
+PuppiMET,PuppiMET_phi,float,0.002650390625,phi
+PuppiMET,PuppiMET_pt,float,0.0036806640625,pt
+RawPuppiMET,RawPuppiMET_phi,float,0.0017275390625,phi
+RawPuppiMET,RawPuppiMET_pt,float,0.00155078125,pt
+Rho,Rho_fixedGridRhoAll,float,0.0036611328125,"rho from all PF Candidates, no foreground removal"
+Rho,Rho_fixedGridRhoFastjetAll,float,0.0036484375,"rho from all PF Candidates, used e.g. for JECs"
+Rho,Rho_fixedGridRhoFastjetCentral,float,0.00368359375,rho from all PF Candidates in the central region
+Rho,Rho_fixedGridRhoFastjetCentralCalo,float,0.0037421875,rho from calo towers with |eta| < 2.5
+Rho,Rho_fixedGridRhoFastjetCentralChargedPileUp,float,0.0036181640625,rho from charged pileup PF Candidates in the central region
+Rho,Rho_fixedGridRhoFastjetCentralNeutral,float,0.0035732421875,rho from neutral PF Candidates with |eta| < 2.5

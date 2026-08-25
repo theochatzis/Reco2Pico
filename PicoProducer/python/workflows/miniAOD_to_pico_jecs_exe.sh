@@ -1,11 +1,11 @@
 #!/bin/bash
 
-FINALROOT_NAME=test_pico_pfoffset.root
+FINALROOT_NAME=test_pico_pfoffset_nojec.root
 NEVENTS=1000
 JECS_DIR=$CMSSW_BASE/src/Reco2Pico/PicoProducer/python/workflows/jecs/
 cmsRun miniAOD_to_pico_cfg.py \
 	inputFiles=/store/mc/RunIII2024Summer24MiniAODv6/SingleNeutrino_Par-E-10_gun/MINIAODSIM/FlatPU0to120_150X_mcRun3_2024_realistic_v2-v2/120000/7324e590-b0e6-4c31-90f7-b24c9a13d2a1.root \
-	reApplyJEC=True \
+	reApplyJEC=False \
 	rerunPUPPI=False \
     jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db \
 	jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi \
@@ -25,7 +25,7 @@ echo "size (KB) per event: $sizePerEvent"
 
 python3 make_workbook.py
 
-mv test_pico.root ${FINALROOT_NAME}
+# mv test_pico.root ${FINALROOT_NAME}
 
 # Possible samples for inputs:
 #/store/mc/Run3Winter25MiniAOD/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/142X_mcRun3_2025_realistic_v7-v2/120000/e76d5a6d-41a4-4e61-b119-245a3c7d4ded.root

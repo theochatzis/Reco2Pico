@@ -24,7 +24,7 @@ opts.register('lumis', None,
               )
 
 opts.register("globalTag",
-                 "auto:run2_mc",
+                 "auto:phase1_2025_realistic",
                  VarParsing.multiplicity.singleton,
                  VarParsing.varType.string,
                  "GlobalTag"
