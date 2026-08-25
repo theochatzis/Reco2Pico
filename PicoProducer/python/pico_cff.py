@@ -90,7 +90,7 @@ def buildPicoSequence(process,
         print("Adding jets Table")
         from Reco2Pico.PicoProducer.tables.jets_cff import jetTables
 
-        process = jetTables(process, src=jetSrc, isMC=isMC)
+        process = jetTables(process, src=jetSrc, isMC=isMC, genJetSrc="slimmedGenJets")
         process.picoTask.add(process.picoJetTableTask)
 
     if "met" in enabled_tables:
