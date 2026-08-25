@@ -83,7 +83,7 @@ def setup(process, isMC=False):
         "PATMuonSelector",
         src=cms.InputTag("slimmedMuons"),
         cut=cms.string(
-        "pt > 10. && abs(eta) < 2.4 && "
+        "pt > 0. && abs(eta) < 2.4 && "
         "isPFMuon && "
         "(isGlobalMuon || isTrackerMuon) && "
         "(pfIsolationR04().sumChargedHadronPt"
@@ -106,7 +106,7 @@ def setup(process, isMC=False):
     process.zjetDimuons = cms.EDProducer(
         "CandViewShallowCloneCombiner",
         decay=cms.string("zjetMuons@+ zjetMuons@-"),
-        cut=cms.string("70 < mass < 110"),
+        cut=cms.string("85 < mass < 95"),
     )
 
     process.zjetOneDimuon = cms.EDFilter(
@@ -141,7 +141,7 @@ def setup(process, isMC=False):
         "PATJetSelector",
         src=cms.InputTag("zjetCleanedJets"),
         cut=cms.string(
-            "pt > 15 && abs(eta) < 5.0"
+            "pt > 0.0 && abs(eta) < 5.0"
         ),
         filter=cms.bool(False),
     )
