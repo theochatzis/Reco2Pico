@@ -7,7 +7,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-DEFAULT_NEVT=10000000
+DEFAULT_NEVT=100000000
 EVENTS_PER_JOB=10000
 MEMORY=2G
 RUNTIME=02:00:00
@@ -33,14 +33,14 @@ declare -A mcEventsPerJobMap
 dataSamplesMap["Muon2025G"]="/Muon0/Run2025G-PromptReco-v1/MINIAOD"
 
 # Per-DATA-sample max events
-dataMaxEventsMap["Muon2025G"]=10000000
+dataMaxEventsMap["Muon2025G"]=100000000
 dataEventsPerJobMap["Muon2025G"]=500000
 
 # MC samples
 mcSamplesMap["ZTo2Mu"]="/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM"
 
 # Per-MC-sample max events
-mcMaxEventsMap["ZTo2Mu"]=1000000
+mcMaxEventsMap["ZTo2Mu"]=10000000
 mcEventsPerJobMap["ZTo2Mu"]=5000
 
 recoKeys=(
@@ -109,6 +109,8 @@ for recoKey in "${recoKeys[@]}"; do
   python3 "${CMSSW_BASE}/src/Reco2Pico/PicoProducer/python/workflows/miniAOD_to_pico_cfg.py" \
     "inputFiles=/store/data/Run2025G/ZeroBias/MINIAOD/PromptReco-v1/000/398/011/00000/0db8a2f5-d145-4f83-b8f9-480bbb77f38d.root" \
     "tables=event,vertices,jets,met,muons,electrons,genJets" \
+    "reApplyJEC=True" \
+	  "rerunPUPPI=True" \
     "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
 	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
     "skim=${SKIM}" \
@@ -117,6 +119,8 @@ for recoKey in "${recoKeys[@]}"; do
   python3 "${CMSSW_BASE}/src/Reco2Pico/PicoProducer/python/workflows/miniAOD_to_pico_cfg.py" \
     "inputFiles=/store/mc/Run3Winter25MiniAOD/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/MINIAODSIM/142X_mcRun3_2025_realistic_v7-v2/120000/59d22999-4787-4861-9dba-6c064778a808.root" \
     "tables=event,vertices,jets,met,muons,electrons,genJets" \
+    "reApplyJEC=True" \
+	  "rerunPUPPI=True" \
     "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
 	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
     "skim=${SKIM}" \
