@@ -1,0 +1,899 @@
+# ============================================================
+# Z+jet windowed response + eta-binned jet composition
+# ============================================================
+
+Z_mass:
+  title: "Z mass;m_{#mu#mu} [GeV];Events"
+  bins: [80, 80, 102]
+  variable: "Z_mass"
+  weight: "zjet_eventWeight"
+
+Z_pt:
+  title: "Z p_{T};p_{T}^{Z} [GeV];Events"
+  bins: [40, 0, 200]
+  variable: "Z_pt"
+  weight: "zjet_eventWeight"
+
+MPF_nominal:
+  title: "Nominal event MPF;MPF;Events"
+  bins: [160, -1, 3]
+  variable: "MPF_nominal"
+  weight: "zjet_eventWeight"
+
+DB_nominal_vs_Zpt:
+  type: "TProfile"
+  title: "Nominal Direct Balance;p_{T}^{Z} [GeV];DB"
+  bins: [100, 0, 500]
+  variable_x: "Z_pt"
+  variable_y: "DB_nominal"
+  weight: "zjet_eventWeight"
+
+MPF_nominal_vs_Zpt:
+  type: "TProfile"
+  title: "Nominal MPF;p_{T}^{Z} [GeV];MPF"
+  bins: [100, 0, 500]
+  variable_x: "Z_pt"
+  variable_y: "MPF_nominal"
+  weight: "zjet_eventWeight"
+
+# ============================================================
+# PARALLEL / SIGNAL
+# ============================================================
+
+Jet_eta_parallel:
+  title: "Jet #eta, parallel / signal;#eta^{jet};Weighted jets"
+  bins: [100, -5, 5]
+  variable: "Jet_eta_parallel"
+  weight: "weight_parallel"
+
+DB_parallel:
+  title: "Direct balance, parallel / signal;p_{T}^{jet}/p_{T}^{Z};Weighted jets"
+  bins: [120, 0, 2.4]
+  variable: "DB_parallel"
+  weight: "weight_parallel"
+
+MPF_parallel:
+  title: "MPF, parallel / signal;MPF;Weighted jets"
+  bins: [160, -1, 3]
+  variable: "MPF_parallel"
+  weight: "weight_parallel"
+
+DB_parallel_vs_Zpt:
+  type: "TProfile"
+  title: "Direct balance, parallel / signal;p_{T}^{Z} [GeV];DB"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel"
+  variable_y: "DB_parallel"
+  weight: "weight_parallel"
+
+MPF_parallel_vs_Zpt:
+  type: "TProfile"
+  title: "MPF, parallel / signal;p_{T}^{Z} [GeV];MPF"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel"
+  variable_y: "MPF_parallel"
+  weight: "weight_parallel"
+
+# ============================================================
+# TRANSVERSE CONTROL
+# ============================================================
+
+Jet_eta_transverse:
+  title: "Jet #eta, transverse control;#eta^{jet};Weighted jets"
+  bins: [100, -5, 5]
+  variable: "Jet_eta_transverse"
+  weight: "weight_transverse"
+
+DB_transverse:
+  title: "Direct balance, transverse control;p_{T}^{jet}/p_{T}^{Z};Weighted jets"
+  bins: [120, 0, 2.4]
+  variable: "DB_transverse"
+  weight: "weight_transverse"
+
+MPF_transverse:
+  title: "MPF, transverse control;MPF;Weighted jets"
+  bins: [160, -1, 3]
+  variable: "MPF_transverse"
+  weight: "weight_transverse"
+
+DB_transverse_vs_Zpt:
+  type: "TProfile"
+  title: "Direct balance, transverse control;p_{T}^{Z} [GeV];DB"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse"
+  variable_y: "DB_transverse"
+  weight: "weight_transverse"
+
+MPF_transverse_vs_Zpt:
+  type: "TProfile"
+  title: "MPF, transverse control;p_{T}^{Z} [GeV];MPF"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse"
+  variable_y: "MPF_transverse"
+  weight: "weight_transverse"
+
+# ============================================================
+# WINDOWED / SUBTRACTED
+# ============================================================
+
+Jet_eta_windowed:
+  title: "Jet #eta, windowed / subtracted;#eta^{jet};Weighted jets"
+  bins: [100, -5, 5]
+  variable: "Jet_eta_windowed"
+  weight: "weight_windowed"
+
+DB_windowed:
+  title: "Direct balance, windowed / subtracted;p_{T}^{jet}/p_{T}^{Z};Weighted jets"
+  bins: [120, 0, 2.4]
+  variable: "DB_windowed"
+  weight: "weight_windowed"
+
+MPF_windowed:
+  title: "MPF, windowed / subtracted;MPF;Weighted jets"
+  bins: [160, -1, 3]
+  variable: "MPF_windowed"
+  weight: "weight_windowed"
+
+DB_windowed_vs_Zpt:
+  type: "TProfile"
+  title: "Direct balance, windowed / subtracted;p_{T}^{Z} [GeV];DB"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed"
+  variable_y: "DB_windowed"
+  weight: "weight_windowed"
+
+MPF_windowed_vs_Zpt:
+  type: "TProfile"
+  title: "MPF, windowed / subtracted;p_{T}^{Z} [GeV];MPF"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed"
+  variable_y: "MPF_windowed"
+  weight: "weight_windowed"
+
+# ============================================================
+# ENERGY FRACTIONS VS Z pT IN |eta| REGIONS
+# ============================================================
+
+# ---- parallel / signal ----
+
+# 0.0 #leq |#eta^{jet}| < 1.3
+Jet_chHEF_parallel_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta0to1p3"
+  variable_y: "Jet_chHEF_parallel_eta0to1p3"
+  weight: "weight_parallel_eta0to1p3"
+
+Jet_neHEF_parallel_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta0to1p3"
+  variable_y: "Jet_neHEF_parallel_eta0to1p3"
+  weight: "weight_parallel_eta0to1p3"
+
+Jet_chEmEF_parallel_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta0to1p3"
+  variable_y: "Jet_chEmEF_parallel_eta0to1p3"
+  weight: "weight_parallel_eta0to1p3"
+
+Jet_neEmEF_parallel_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta0to1p3"
+  variable_y: "Jet_neEmEF_parallel_eta0to1p3"
+  weight: "weight_parallel_eta0to1p3"
+
+Jet_muEF_parallel_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta0to1p3"
+  variable_y: "Jet_muEF_parallel_eta0to1p3"
+  weight: "weight_parallel_eta0to1p3"
+
+# 1.3 #leq |#eta^{jet}| < 1.5
+Jet_chHEF_parallel_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p3to1p5"
+  variable_y: "Jet_chHEF_parallel_eta1p3to1p5"
+  weight: "weight_parallel_eta1p3to1p5"
+
+Jet_neHEF_parallel_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p3to1p5"
+  variable_y: "Jet_neHEF_parallel_eta1p3to1p5"
+  weight: "weight_parallel_eta1p3to1p5"
+
+Jet_chEmEF_parallel_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p3to1p5"
+  variable_y: "Jet_chEmEF_parallel_eta1p3to1p5"
+  weight: "weight_parallel_eta1p3to1p5"
+
+Jet_neEmEF_parallel_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p3to1p5"
+  variable_y: "Jet_neEmEF_parallel_eta1p3to1p5"
+  weight: "weight_parallel_eta1p3to1p5"
+
+Jet_muEF_parallel_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p3to1p5"
+  variable_y: "Jet_muEF_parallel_eta1p3to1p5"
+  weight: "weight_parallel_eta1p3to1p5"
+
+# 1.5 #leq |#eta^{jet}| < 2.5
+Jet_chHEF_parallel_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p5to2p5"
+  variable_y: "Jet_chHEF_parallel_eta1p5to2p5"
+  weight: "weight_parallel_eta1p5to2p5"
+
+Jet_neHEF_parallel_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p5to2p5"
+  variable_y: "Jet_neHEF_parallel_eta1p5to2p5"
+  weight: "weight_parallel_eta1p5to2p5"
+
+Jet_chEmEF_parallel_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p5to2p5"
+  variable_y: "Jet_chEmEF_parallel_eta1p5to2p5"
+  weight: "weight_parallel_eta1p5to2p5"
+
+Jet_neEmEF_parallel_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p5to2p5"
+  variable_y: "Jet_neEmEF_parallel_eta1p5to2p5"
+  weight: "weight_parallel_eta1p5to2p5"
+
+Jet_muEF_parallel_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta1p5to2p5"
+  variable_y: "Jet_muEF_parallel_eta1p5to2p5"
+  weight: "weight_parallel_eta1p5to2p5"
+
+# 2.5 #leq |#eta^{jet}| < 2.7
+Jet_chHEF_parallel_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p5to2p7"
+  variable_y: "Jet_chHEF_parallel_eta2p5to2p7"
+  weight: "weight_parallel_eta2p5to2p7"
+
+Jet_neHEF_parallel_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p5to2p7"
+  variable_y: "Jet_neHEF_parallel_eta2p5to2p7"
+  weight: "weight_parallel_eta2p5to2p7"
+
+Jet_chEmEF_parallel_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p5to2p7"
+  variable_y: "Jet_chEmEF_parallel_eta2p5to2p7"
+  weight: "weight_parallel_eta2p5to2p7"
+
+Jet_neEmEF_parallel_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p5to2p7"
+  variable_y: "Jet_neEmEF_parallel_eta2p5to2p7"
+  weight: "weight_parallel_eta2p5to2p7"
+
+Jet_muEF_parallel_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p5to2p7"
+  variable_y: "Jet_muEF_parallel_eta2p5to2p7"
+  weight: "weight_parallel_eta2p5to2p7"
+
+# 2.7 #leq |#eta^{jet}| < 3.0
+Jet_chHEF_parallel_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p7to3p0"
+  variable_y: "Jet_chHEF_parallel_eta2p7to3p0"
+  weight: "weight_parallel_eta2p7to3p0"
+
+Jet_neHEF_parallel_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p7to3p0"
+  variable_y: "Jet_neHEF_parallel_eta2p7to3p0"
+  weight: "weight_parallel_eta2p7to3p0"
+
+Jet_chEmEF_parallel_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p7to3p0"
+  variable_y: "Jet_chEmEF_parallel_eta2p7to3p0"
+  weight: "weight_parallel_eta2p7to3p0"
+
+Jet_neEmEF_parallel_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p7to3p0"
+  variable_y: "Jet_neEmEF_parallel_eta2p7to3p0"
+  weight: "weight_parallel_eta2p7to3p0"
+
+Jet_muEF_parallel_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta2p7to3p0"
+  variable_y: "Jet_muEF_parallel_eta2p7to3p0"
+  weight: "weight_parallel_eta2p7to3p0"
+
+# 3.0 #leq |#eta^{jet}| < 5.0
+Jet_chHEF_parallel_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, parallel / signal, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta3p0to5p0"
+  variable_y: "Jet_chHEF_parallel_eta3p0to5p0"
+  weight: "weight_parallel_eta3p0to5p0"
+
+Jet_neHEF_parallel_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, parallel / signal, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta3p0to5p0"
+  variable_y: "Jet_neHEF_parallel_eta3p0to5p0"
+  weight: "weight_parallel_eta3p0to5p0"
+
+Jet_chEmEF_parallel_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, parallel / signal, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta3p0to5p0"
+  variable_y: "Jet_chEmEF_parallel_eta3p0to5p0"
+  weight: "weight_parallel_eta3p0to5p0"
+
+Jet_neEmEF_parallel_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, parallel / signal, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta3p0to5p0"
+  variable_y: "Jet_neEmEF_parallel_eta3p0to5p0"
+  weight: "weight_parallel_eta3p0to5p0"
+
+Jet_muEF_parallel_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, parallel / signal, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_parallel_eta3p0to5p0"
+  variable_y: "Jet_muEF_parallel_eta3p0to5p0"
+  weight: "weight_parallel_eta3p0to5p0"
+
+# ---- transverse control ----
+
+# 0.0 #leq |#eta^{jet}| < 1.3
+Jet_chHEF_transverse_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta0to1p3"
+  variable_y: "Jet_chHEF_transverse_eta0to1p3"
+  weight: "weight_transverse_eta0to1p3"
+
+Jet_neHEF_transverse_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta0to1p3"
+  variable_y: "Jet_neHEF_transverse_eta0to1p3"
+  weight: "weight_transverse_eta0to1p3"
+
+Jet_chEmEF_transverse_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta0to1p3"
+  variable_y: "Jet_chEmEF_transverse_eta0to1p3"
+  weight: "weight_transverse_eta0to1p3"
+
+Jet_neEmEF_transverse_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta0to1p3"
+  variable_y: "Jet_neEmEF_transverse_eta0to1p3"
+  weight: "weight_transverse_eta0to1p3"
+
+Jet_muEF_transverse_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta0to1p3"
+  variable_y: "Jet_muEF_transverse_eta0to1p3"
+  weight: "weight_transverse_eta0to1p3"
+
+# 1.3 #leq |#eta^{jet}| < 1.5
+Jet_chHEF_transverse_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p3to1p5"
+  variable_y: "Jet_chHEF_transverse_eta1p3to1p5"
+  weight: "weight_transverse_eta1p3to1p5"
+
+Jet_neHEF_transverse_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p3to1p5"
+  variable_y: "Jet_neHEF_transverse_eta1p3to1p5"
+  weight: "weight_transverse_eta1p3to1p5"
+
+Jet_chEmEF_transverse_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p3to1p5"
+  variable_y: "Jet_chEmEF_transverse_eta1p3to1p5"
+  weight: "weight_transverse_eta1p3to1p5"
+
+Jet_neEmEF_transverse_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p3to1p5"
+  variable_y: "Jet_neEmEF_transverse_eta1p3to1p5"
+  weight: "weight_transverse_eta1p3to1p5"
+
+Jet_muEF_transverse_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p3to1p5"
+  variable_y: "Jet_muEF_transverse_eta1p3to1p5"
+  weight: "weight_transverse_eta1p3to1p5"
+
+# 1.5 #leq |#eta^{jet}| < 2.5
+Jet_chHEF_transverse_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p5to2p5"
+  variable_y: "Jet_chHEF_transverse_eta1p5to2p5"
+  weight: "weight_transverse_eta1p5to2p5"
+
+Jet_neHEF_transverse_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p5to2p5"
+  variable_y: "Jet_neHEF_transverse_eta1p5to2p5"
+  weight: "weight_transverse_eta1p5to2p5"
+
+Jet_chEmEF_transverse_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p5to2p5"
+  variable_y: "Jet_chEmEF_transverse_eta1p5to2p5"
+  weight: "weight_transverse_eta1p5to2p5"
+
+Jet_neEmEF_transverse_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p5to2p5"
+  variable_y: "Jet_neEmEF_transverse_eta1p5to2p5"
+  weight: "weight_transverse_eta1p5to2p5"
+
+Jet_muEF_transverse_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta1p5to2p5"
+  variable_y: "Jet_muEF_transverse_eta1p5to2p5"
+  weight: "weight_transverse_eta1p5to2p5"
+
+# 2.5 #leq |#eta^{jet}| < 2.7
+Jet_chHEF_transverse_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p5to2p7"
+  variable_y: "Jet_chHEF_transverse_eta2p5to2p7"
+  weight: "weight_transverse_eta2p5to2p7"
+
+Jet_neHEF_transverse_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p5to2p7"
+  variable_y: "Jet_neHEF_transverse_eta2p5to2p7"
+  weight: "weight_transverse_eta2p5to2p7"
+
+Jet_chEmEF_transverse_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p5to2p7"
+  variable_y: "Jet_chEmEF_transverse_eta2p5to2p7"
+  weight: "weight_transverse_eta2p5to2p7"
+
+Jet_neEmEF_transverse_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p5to2p7"
+  variable_y: "Jet_neEmEF_transverse_eta2p5to2p7"
+  weight: "weight_transverse_eta2p5to2p7"
+
+Jet_muEF_transverse_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p5to2p7"
+  variable_y: "Jet_muEF_transverse_eta2p5to2p7"
+  weight: "weight_transverse_eta2p5to2p7"
+
+# 2.7 #leq |#eta^{jet}| < 3.0
+Jet_chHEF_transverse_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p7to3p0"
+  variable_y: "Jet_chHEF_transverse_eta2p7to3p0"
+  weight: "weight_transverse_eta2p7to3p0"
+
+Jet_neHEF_transverse_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p7to3p0"
+  variable_y: "Jet_neHEF_transverse_eta2p7to3p0"
+  weight: "weight_transverse_eta2p7to3p0"
+
+Jet_chEmEF_transverse_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p7to3p0"
+  variable_y: "Jet_chEmEF_transverse_eta2p7to3p0"
+  weight: "weight_transverse_eta2p7to3p0"
+
+Jet_neEmEF_transverse_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p7to3p0"
+  variable_y: "Jet_neEmEF_transverse_eta2p7to3p0"
+  weight: "weight_transverse_eta2p7to3p0"
+
+Jet_muEF_transverse_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta2p7to3p0"
+  variable_y: "Jet_muEF_transverse_eta2p7to3p0"
+  weight: "weight_transverse_eta2p7to3p0"
+
+# 3.0 #leq |#eta^{jet}| < 5.0
+Jet_chHEF_transverse_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, transverse control, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta3p0to5p0"
+  variable_y: "Jet_chHEF_transverse_eta3p0to5p0"
+  weight: "weight_transverse_eta3p0to5p0"
+
+Jet_neHEF_transverse_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, transverse control, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta3p0to5p0"
+  variable_y: "Jet_neHEF_transverse_eta3p0to5p0"
+  weight: "weight_transverse_eta3p0to5p0"
+
+Jet_chEmEF_transverse_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, transverse control, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta3p0to5p0"
+  variable_y: "Jet_chEmEF_transverse_eta3p0to5p0"
+  weight: "weight_transverse_eta3p0to5p0"
+
+Jet_neEmEF_transverse_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, transverse control, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta3p0to5p0"
+  variable_y: "Jet_neEmEF_transverse_eta3p0to5p0"
+  weight: "weight_transverse_eta3p0to5p0"
+
+Jet_muEF_transverse_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, transverse control, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_transverse_eta3p0to5p0"
+  variable_y: "Jet_muEF_transverse_eta3p0to5p0"
+  weight: "weight_transverse_eta3p0to5p0"
+
+# ---- windowed / subtracted ----
+
+# 0.0 #leq |#eta^{jet}| < 1.3
+Jet_chHEF_windowed_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta0to1p3"
+  variable_y: "Jet_chHEF_windowed_eta0to1p3"
+  weight: "weight_windowed_eta0to1p3"
+
+Jet_neHEF_windowed_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta0to1p3"
+  variable_y: "Jet_neHEF_windowed_eta0to1p3"
+  weight: "weight_windowed_eta0to1p3"
+
+Jet_chEmEF_windowed_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta0to1p3"
+  variable_y: "Jet_chEmEF_windowed_eta0to1p3"
+  weight: "weight_windowed_eta0to1p3"
+
+Jet_neEmEF_windowed_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta0to1p3"
+  variable_y: "Jet_neEmEF_windowed_eta0to1p3"
+  weight: "weight_windowed_eta0to1p3"
+
+Jet_muEF_windowed_eta0to1p3_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 0.0 #leq |#eta^{jet}| < 1.3;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta0to1p3"
+  variable_y: "Jet_muEF_windowed_eta0to1p3"
+  weight: "weight_windowed_eta0to1p3"
+
+# 1.3 #leq |#eta^{jet}| < 1.5
+Jet_chHEF_windowed_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p3to1p5"
+  variable_y: "Jet_chHEF_windowed_eta1p3to1p5"
+  weight: "weight_windowed_eta1p3to1p5"
+
+Jet_neHEF_windowed_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p3to1p5"
+  variable_y: "Jet_neHEF_windowed_eta1p3to1p5"
+  weight: "weight_windowed_eta1p3to1p5"
+
+Jet_chEmEF_windowed_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p3to1p5"
+  variable_y: "Jet_chEmEF_windowed_eta1p3to1p5"
+  weight: "weight_windowed_eta1p3to1p5"
+
+Jet_neEmEF_windowed_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p3to1p5"
+  variable_y: "Jet_neEmEF_windowed_eta1p3to1p5"
+  weight: "weight_windowed_eta1p3to1p5"
+
+Jet_muEF_windowed_eta1p3to1p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 1.3 #leq |#eta^{jet}| < 1.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p3to1p5"
+  variable_y: "Jet_muEF_windowed_eta1p3to1p5"
+  weight: "weight_windowed_eta1p3to1p5"
+
+# 1.5 #leq |#eta^{jet}| < 2.5
+Jet_chHEF_windowed_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p5to2p5"
+  variable_y: "Jet_chHEF_windowed_eta1p5to2p5"
+  weight: "weight_windowed_eta1p5to2p5"
+
+Jet_neHEF_windowed_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p5to2p5"
+  variable_y: "Jet_neHEF_windowed_eta1p5to2p5"
+  weight: "weight_windowed_eta1p5to2p5"
+
+Jet_chEmEF_windowed_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p5to2p5"
+  variable_y: "Jet_chEmEF_windowed_eta1p5to2p5"
+  weight: "weight_windowed_eta1p5to2p5"
+
+Jet_neEmEF_windowed_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p5to2p5"
+  variable_y: "Jet_neEmEF_windowed_eta1p5to2p5"
+  weight: "weight_windowed_eta1p5to2p5"
+
+Jet_muEF_windowed_eta1p5to2p5_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 1.5 #leq |#eta^{jet}| < 2.5;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta1p5to2p5"
+  variable_y: "Jet_muEF_windowed_eta1p5to2p5"
+  weight: "weight_windowed_eta1p5to2p5"
+
+# 2.5 #leq |#eta^{jet}| < 2.7
+Jet_chHEF_windowed_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p5to2p7"
+  variable_y: "Jet_chHEF_windowed_eta2p5to2p7"
+  weight: "weight_windowed_eta2p5to2p7"
+
+Jet_neHEF_windowed_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p5to2p7"
+  variable_y: "Jet_neHEF_windowed_eta2p5to2p7"
+  weight: "weight_windowed_eta2p5to2p7"
+
+Jet_chEmEF_windowed_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p5to2p7"
+  variable_y: "Jet_chEmEF_windowed_eta2p5to2p7"
+  weight: "weight_windowed_eta2p5to2p7"
+
+Jet_neEmEF_windowed_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p5to2p7"
+  variable_y: "Jet_neEmEF_windowed_eta2p5to2p7"
+  weight: "weight_windowed_eta2p5to2p7"
+
+Jet_muEF_windowed_eta2p5to2p7_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 2.5 #leq |#eta^{jet}| < 2.7;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p5to2p7"
+  variable_y: "Jet_muEF_windowed_eta2p5to2p7"
+  weight: "weight_windowed_eta2p5to2p7"
+
+# 2.7 #leq |#eta^{jet}| < 3.0
+Jet_chHEF_windowed_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p7to3p0"
+  variable_y: "Jet_chHEF_windowed_eta2p7to3p0"
+  weight: "weight_windowed_eta2p7to3p0"
+
+Jet_neHEF_windowed_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p7to3p0"
+  variable_y: "Jet_neHEF_windowed_eta2p7to3p0"
+  weight: "weight_windowed_eta2p7to3p0"
+
+Jet_chEmEF_windowed_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p7to3p0"
+  variable_y: "Jet_chEmEF_windowed_eta2p7to3p0"
+  weight: "weight_windowed_eta2p7to3p0"
+
+Jet_neEmEF_windowed_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p7to3p0"
+  variable_y: "Jet_neEmEF_windowed_eta2p7to3p0"
+  weight: "weight_windowed_eta2p7to3p0"
+
+Jet_muEF_windowed_eta2p7to3p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 2.7 #leq |#eta^{jet}| < 3.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta2p7to3p0"
+  variable_y: "Jet_muEF_windowed_eta2p7to3p0"
+  weight: "weight_windowed_eta2p7to3p0"
+
+# 3.0 #leq |#eta^{jet}| < 5.0
+Jet_chHEF_windowed_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged-hadron energy fraction, windowed / subtracted, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta3p0to5p0"
+  variable_y: "Jet_chHEF_windowed_eta3p0to5p0"
+  weight: "weight_windowed_eta3p0to5p0"
+
+Jet_neHEF_windowed_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral-hadron energy fraction, windowed / subtracted, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neHEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta3p0to5p0"
+  variable_y: "Jet_neHEF_windowed_eta3p0to5p0"
+  weight: "weight_windowed_eta3p0to5p0"
+
+Jet_chEmEF_windowed_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Charged EM energy fraction, windowed / subtracted, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<chEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta3p0to5p0"
+  variable_y: "Jet_chEmEF_windowed_eta3p0to5p0"
+  weight: "weight_windowed_eta3p0to5p0"
+
+Jet_neEmEF_windowed_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Neutral EM energy fraction, windowed / subtracted, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<neEmEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta3p0to5p0"
+  variable_y: "Jet_neEmEF_windowed_eta3p0to5p0"
+  weight: "weight_windowed_eta3p0to5p0"
+
+Jet_muEF_windowed_eta3p0to5p0_vs_Zpt:
+  type: "TProfile"
+  title: "Muon energy fraction, windowed / subtracted, 3.0 #leq |#eta^{jet}| < 5.0;p_{T}^{Z} [GeV];<muEF>"
+  bins: [40, 0, 200]
+  variable_x: "Z_pt_windowed_eta3p0to5p0"
+  variable_y: "Jet_muEF_windowed_eta3p0to5p0"
+  weight: "weight_windowed_eta3p0to5p0"
