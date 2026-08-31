@@ -53,6 +53,29 @@ def define_columns(df, sample, args, config):
 
     columns = {str(c) for c in df.GetColumnNames()}
 
+    required_columns = [
+        "Jet_rawFactor",
+        "RawPuppiMET_pt",
+        "RawPuppiMET_phi",
+    ]
+
+    missing = [
+        name
+        for name in required_columns
+        if name not in columns
+    ]
+
+    if missing:
+        raise RuntimeError(
+            "WindowedBalanceStudy Type-I PUPPI MET rebuild requires "
+            "the following Pico columns: {}. "
+            "Regenerate the Pico with RawPuppiMET and Jet_rawFactor."
+            .format(
+                ", ".join(missing)
+            )
+        )
+
+
     if "genWeight" in columns:
         df = df.Define(
             "zjet_eventWeight",
@@ -95,8 +118,10 @@ def define_columns(df, sample, args, config):
                 Jet_neMultiplicity,
                 Jet_nConstituents,
 
-                PuppiMET_pt,
-                PuppiMET_phi
+                Jet_rawFactor,
+
+                RawPuppiMET_pt,
+                RawPuppiMET_phi
             )
             """
         )
@@ -116,61 +141,62 @@ def define_columns(df, sample, args, config):
         )
 
         .Define(
-            "MPF_nominal",
+            "MPF_event_rebuilt",
             "zjet_result.nominalMPF"
         )
 
+        .Define(
+            "PuppiMET_rebuilt_pt",
+            "zjet_result.rebuiltPuppiMET_pt"
+        )
+
+        .Define(
+            "PuppiMET_rebuilt_phi",
+            "zjet_result.rebuiltPuppiMET_phi"
+        )
+
+        .Define(
+            "PuppiMET_delta_pt",
+            "zjet_result.rebuiltPuppiMET_pt - PuppiMET_pt"
+        )
+
         # ======================================================
-        # Nominal / conventional Z+jet baseline
+        # Nominal / legacy leading-jet baseline.
         #
-        # Scalar columns are kept for debugging / selections.
+        # This is now independent of the all-pairs parallel window:
+        #   * lepton-cleaned jets
+        #   * leading jet pT >= 12 GeV, |eta| <= 5
+        #   * back-to-back residual < 0.44
+        #   * alpha < 1 using the subleading cleaned jet
+        #   * no Tight Jet ID on the baseline jet
         #
-        # IMPORTANT:
-        # Do NOT fill a sentinel such as -1 into a TProfile when no
-        # nominal recoil jet exists.  For histogramming we expose
-        # one-element RVecs for valid nominal Z+jet events and empty
-        # RVecs otherwise.  RDataFrame then contributes zero entries
-        # for events without a nominal recoil jet.
-        #
-        # The nominal jet is the highest-pT accepted jet in the
-        # parallel recoil window. Since DB = pT(jet)/pT(Z), this is
-        # equivalent to Max(dbParallel).
+        # The Z selection remains the current WindowedBalanceStudy
+        # selection; only the baseline jet/recoil definition is synchronized.
         # ======================================================
 
         .Define(
             "NominalJet_valid",
-            "!zjet_result.ptParallel.empty()"
-        )
-
-        .Define(
-            "NominalJet_index",
-            """
-            NominalJet_valid
-                ? static_cast<int>(
-                    ROOT::VecOps::ArgMax(
-                        zjet_result.ptParallel
-                    )
-                  )
-                : -1
-            """
+            "zjet_result.baseline.valid"
         )
 
         .Define(
             "DB_nominal",
-            """
-            NominalJet_valid
-                ? zjet_result.dbParallel[NominalJet_index]
-                : -1.f
-            """
+            "zjet_result.baseline.db"
+        )
+
+        .Define(
+            "MPF_nominal",
+            "zjet_result.baseline.mpf"
+        )
+
+        .Define(
+            "Alpha_nominal",
+            "zjet_result.baseline.alpha"
         )
 
         .Define(
             "Probe_pt_nominal",
-            """
-            NominalJet_valid
-                ? zjet_result.ptParallel[NominalJet_index]
-                : -1.f
-            """
+            "zjet_result.baseline.jetPt"
         )
 
         .Define(
@@ -178,7 +204,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.dbParallel[NominalJet_index]
+                    zjet_result.baseline.db
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -189,7 +215,18 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.nominalMPF
+                    zjet_result.baseline.mpf
+                  }
+                : ROOT::VecOps::RVec<float>{}
+            """
+        )
+
+        .Define(
+            "Alpha_nominal_vec",
+            """
+            NominalJet_valid
+                ? ROOT::VecOps::RVec<float>{
+                    zjet_result.baseline.alpha
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -200,7 +237,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.ptParallel[NominalJet_index]
+                    zjet_result.baseline.jetPt
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -210,7 +247,9 @@ def define_columns(df, sample, args, config):
             "Z_pt_nominal",
             """
             NominalJet_valid
-                ? ROOT::VecOps::RVec<float>{zjet_result.Z_pt}
+                ? ROOT::VecOps::RVec<float>{
+                    zjet_result.Z_pt
+                  }
                 : ROOT::VecOps::RVec<float>{}
             """
         )
@@ -220,7 +259,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.etaParallel[NominalJet_index]
+                    zjet_result.baseline.jetEta
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -231,7 +270,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.chHEFParallel[NominalJet_index]
+                    zjet_result.baseline.chHEF
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -242,7 +281,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.neHEFParallel[NominalJet_index]
+                    zjet_result.baseline.neHEF
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -253,7 +292,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.chEmEFParallel[NominalJet_index]
+                    zjet_result.baseline.chEmEF
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -264,7 +303,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.neEmEFParallel[NominalJet_index]
+                    zjet_result.baseline.neEmEF
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -275,7 +314,7 @@ def define_columns(df, sample, args, config):
             """
             NominalJet_valid
                 ? ROOT::VecOps::RVec<float>{
-                    zjet_result.muEFParallel[NominalJet_index]
+                    zjet_result.baseline.muEF
                   }
                 : ROOT::VecOps::RVec<float>{}
             """
@@ -285,7 +324,9 @@ def define_columns(df, sample, args, config):
             "weight_nominal",
             """
             NominalJet_valid
-                ? ROOT::VecOps::RVec<float>{zjet_eventWeight}
+                ? ROOT::VecOps::RVec<float>{
+                    zjet_eventWeight
+                  }
                 : ROOT::VecOps::RVec<float>{}
             """
         )

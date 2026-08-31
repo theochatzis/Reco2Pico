@@ -45,6 +45,8 @@ python3 plot_zjet_profile_maps.py \
   --db-max 2.0 \
   --mpf-min 0.5 \
   --mpf-max 1.5 \
+  --response-ratio-min 0.90 \
+  --response-ratio-max 1.10 \
   --output-dir /eos/user/t/tchatzis/php-plots/windowedBalance/plots_profile2d
 
 # python3 plot_windowed_balance_mplhep.py \
