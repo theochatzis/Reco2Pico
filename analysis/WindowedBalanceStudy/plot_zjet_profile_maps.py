@@ -87,6 +87,7 @@ COARSE_ABS_ETA_REGIONS = OrderedDict([
 ])
 
 PT_CATEGORIES = OrderedDict([
+    ("ptZ_inclusive",  (0.0, 10000.0, "")),
     ("ptZ_5to15",  (5.0, 15.0,  r"$5 \leq p_T^Z < 15\,\mathrm{GeV}$")),
     ("ptZ_15to50", (15.0, 30.0, r"$15 \leq p_T^Z < 30\,\mathrm{GeV}$")),
     ("ptZ_30to50", (30.0, 50.0, r"$30 \leq p_T^Z < 50\,\mathrm{GeV}$")),
@@ -544,6 +545,48 @@ def project_count_vs_eta(
         ylabel="Weighted entries",
     )
 
+def project_jet_pt(
+    jet_pt_map,
+    pt_mask,
+    name="",
+):
+    """
+    Project TH2D(pT(Z), pT(jet)) onto pT(jet)
+    for an arbitrary pT(Z) category.
+
+    Hist2D convention:
+        values[jet_pt_bin, ptZ_bin]
+    """
+
+    values = np.sum(
+        jet_pt_map.values[
+            :,
+            pt_mask
+        ],
+        axis=1,
+    )
+
+    errors = None
+
+    if jet_pt_map.errors is not None:
+        errors = np.sqrt(
+            np.sum(
+                jet_pt_map.errors[
+                    :,
+                    pt_mask
+                ] ** 2,
+                axis=1,
+            )
+        )
+
+    return Hist1D(
+        values=values,
+        edges=jet_pt_map.yedges.copy(),
+        errors=errors,
+        name=name,
+        xlabel=r"$p_T^{jet}$ [GeV]",
+        ylabel="Weighted entries",
+    )
 
 def project_raw_response(
     response_map,
@@ -639,6 +682,7 @@ def plot_methods(
     ratio_ylim=None,
     normalize_mc=False,
     logx=False,
+    logy=False,
     auto_y=True,
 ):
     if ratio_ylim is None:
@@ -663,6 +707,7 @@ def plot_methods(
         auto_ratio_y=False,
         mc_ratio_uncertainty_band=True,
         logx=logx,
+        logy=logy,
         legend_outside=True,
         ratio_legend=False,
         side_text=side_text,
@@ -790,8 +835,45 @@ def make_distributions(
         ),
         normalize_mc=args.normalize_distributions,
         logx=True,
+        logy=True,
     )
+    # --------------------------------------------------------
+    # Jet pT in coarse eta regions
+    # --------------------------------------------------------
+    jet_pt_maps = {}
 
+    for region_name in COARSE_ABS_ETA_REGIONS:
+
+        data_region = OrderedDict()
+        mc_region = OrderedDict()
+
+        for method in DISTRIBUTION_METHODS:
+
+            name = (
+                "JetPtDist_{}_{}_vs_Zpt"
+                .format(
+                    method,
+                    region_name,
+                )
+            )
+
+            data_region[method] = get_map(
+                data_reader,
+                args.region,
+                name,
+            )
+
+            mc_region[method] = get_map(
+                mc_reader,
+                args.region,
+                name,
+            )
+
+        jet_pt_maps[region_name] = (
+            data_region,
+            mc_region,
+        )
+    
     # --------------------------------------------------------
     # Jet eta + raw DB/MPF in each broad pT category.
     # --------------------------------------------------------
@@ -893,7 +975,81 @@ def make_distributions(
             normalize_mc=args.normalize_distributions,
             logx=False,
         )
+        # ====================================================
+        # Jet pT distributions in coarse eta regions
+        # ====================================================
+        for region_name, (
+            eta_low,
+            eta_high,
+        ) in COARSE_ABS_ETA_REGIONS.items():
 
+            data_region, mc_region = (
+                jet_pt_maps[
+                    region_name
+                ]
+            )
+
+            data_methods = OrderedDict()
+            mc_methods = OrderedDict()
+
+            for method in DISTRIBUTION_METHODS:
+
+                data_pt_mask = pt_bin_mask(
+                    data_region[method],
+                    low,
+                    high,
+                )
+
+                mc_pt_mask = pt_bin_mask(
+                    mc_region[method],
+                    low,
+                    high,
+                )
+
+                data_methods[method] = project_jet_pt(
+                    data_region[method],
+                    data_pt_mask,
+                    method,
+                )
+
+                mc_methods[method] = project_jet_pt(
+                    mc_region[method],
+                    mc_pt_mask,
+                    method,
+                )
+
+            side_text = (
+                category_label
+                + "\n"
+                + eta_region_label(
+                    eta_low,
+                    eta_high,
+                )
+            )
+
+            plot_methods(
+                data_methods,
+                mc_methods,
+                outputs(
+                    output_dir
+                    / "distributions"
+                    / "Jet_pt"
+                    / region_name
+                    / "Jet_pt_{}_{}".format(
+                        region_name,
+                        category_name,
+                    ),
+                    formats,
+                ),
+                args,
+                labels=DISTRIBUTION_METHODS,
+                xlabel=r"$p_T^{jet}$ [GeV]",
+                ylabel="Weighted entries",
+                side_text=side_text,
+                normalize_mc=args.normalize_distributions,
+                logx=True,
+                logy=True
+            )
         # raw DB and MPF distributions
         for observable, xlabel in (
             (

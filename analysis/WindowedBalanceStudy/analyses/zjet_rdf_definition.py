@@ -513,7 +513,77 @@ def define_columns(df, sample, args, config):
             "static_cast<int>(zjet_result.dbTransverse.size())"
         )
     )
+    
+    eta_regions = [
+        ("eta0to1p3",   0.0, 1.3),
+        ("eta1p3to1p5", 1.3, 1.5),
+        ("eta1p5to2p5", 1.5, 2.5),
+        ("eta2p5to2p7", 2.5, 2.7),
+        ("eta2p7to3p0", 2.7, 3.0),
+        ("eta3p0to5p0", 3.0, 5.0),
+    ]
 
+    for method in (
+        "parallel",
+        "transverse",
+        "windowed",
+    ):
+        for region_name, eta_min, eta_max in eta_regions:
+
+            mask = "mask_{}_{}".format(
+                method,
+                region_name,
+            )
+
+            df = df.Define(
+                mask,
+                (
+                    "(abs(Jet_eta_{0}) >= {1}f) && "
+                    "(abs(Jet_eta_{0}) < {2}f)"
+                ).format(
+                    method,
+                    eta_min,
+                    eta_max,
+                )
+            )
+
+            df = (
+                df
+
+                .Define(
+                    "Jet_pt_{}_{}".format(
+                        method,
+                        region_name,
+                    ),
+                    "Jet_pt_{0}[{1}]".format(
+                        method,
+                        mask,
+                    )
+                )
+
+                .Define(
+                    "Z_pt_{}_{}".format(
+                        method,
+                        region_name,
+                    ),
+                    "Z_pt_{0}[{1}]".format(
+                        method,
+                        mask,
+                    )
+                )
+
+                .Define(
+                    "weight_{}_{}".format(
+                        method,
+                        region_name,
+                    ),
+                    "weight_{0}[{1}]".format(
+                        method,
+                        mask,
+                    )
+                )
+            )
+        
     return df
 
 

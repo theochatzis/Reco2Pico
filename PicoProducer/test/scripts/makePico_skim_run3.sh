@@ -19,7 +19,8 @@ ODIR=${1}
 
 JECS_DIR=$CMSSW_BASE/src/Reco2Pico/PicoProducer/python/workflows/jecs/
 
-LUMI_JSON=/eos/user/c/cmsdqm/www/CAF/certification/Collisions25/Cert_Collisions2025_391658_398903_Golden.json
+#LUMI_JSON=/eos/user/c/cmsdqm/www/CAF/certification/Collisions25/Cert_Collisions2025_391658_398903_Golden.json
+LUMI_JSON=/eos/user/c/cmsdqm/www/CAF/certification/Collisions24/Cert_Collisions2024_378981_386951_Golden.json
 SKIM="zjet"
 
 declare -A dataSamplesMap
@@ -30,14 +31,16 @@ declare -A mcMaxEventsMap
 declare -A mcEventsPerJobMap
 
 # DATA samples
-dataSamplesMap["Muon2025G"]="/Muon0/Run2025G-PromptReco-v1/MINIAOD"
+#dataSamplesMap["Muon2025G"]="/Muon0/Run2025G-PromptReco-v1/MINIAOD"
+dataSamplesMap["Muon2024I"]="/Muon0/Run2024I-PromptReco-v1/MINIAOD"
 
 # Per-DATA-sample max events
-dataMaxEventsMap["Muon2025G"]=100000000
-dataEventsPerJobMap["Muon2025G"]=500000
+dataMaxEventsMap["Muon2024I"]=100000000
+dataEventsPerJobMap["Muon2024I"]=500000
 
 # MC samples
-mcSamplesMap["ZTo2Mu"]="/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM"
+#mcSamplesMap["ZTo2Mu"]="/ZTo2Mu_Bin-M-50to120_TuneCP5_13p6TeV_powheg-pythia8/Run3Winter25MiniAOD-142X_mcRun3_2025_realistic_v7-v2/MINIAODSIM"
+mcSamplesMap["ZTo2Mu"]="/DYto2Mu_Bin-MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24MiniAOD-140X_mcRun3_2024_realistic_v26-v2/MINIAODSIM"
 
 # Per-MC-sample max events
 mcMaxEventsMap["ZTo2Mu"]=10000000
@@ -111,8 +114,8 @@ for recoKey in "${recoKeys[@]}"; do
     "tables=event,vertices,jets,met,muons,electrons,genJets" \
     "reApplyJEC=True" \
 	  "rerunPUPPI=True" \
-    "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
-	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
+    "jecDBFile=${JECS_DIR}/Summer24Prompt24_V5_MC.db" \
+	  "jecDBTag=JetCorrectorParametersCollection_Summer24Prompt24_V5_MC_AK4PFPuppi" \
     "skim=${SKIM}" \
     "dumpPython=tmp_cfg_data.py"
   
@@ -121,8 +124,8 @@ for recoKey in "${recoKeys[@]}"; do
     "tables=event,vertices,jets,met,muons,electrons,genJets" \
     "reApplyJEC=True" \
 	  "rerunPUPPI=True" \
-    "jecDBFile=${JECS_DIR}/Winter25Prompt25_V3_MC.db" \
-	  "jecDBTag=JetCorrectorParametersCollection_Winter25Prompt25_V3_MC_AK4PFPuppi" \
+    "jecDBFile=${JECS_DIR}/Summer24Prompt24_V5_MC.db" \
+	  "jecDBTag=JetCorrectorParametersCollection_Summer24Prompt24_V5_MC_AK4PFPuppi" \
     "skim=${SKIM}" \
     "dumpPython=tmp_cfg_mc.py"
 

@@ -41,9 +41,9 @@ import yaml
 # ============================================================
 
 PTZ_EDGES = [
-    0, 3, 6, 9, 12, 15,
-    20, 28, 37, 50, 59, 86,
-    110, 132, 170, 204, 236, 279,
+    0, 3, 5, 6, 9, 12, 15,
+    20, 28, 30, 37, 50, 59, 86,
+    100, 110, 132, 170, 200, 204, 236, 279,
     302, 373, 460, 575, 638, 737,
     846, 967, 1101, 1248, 1410, 1588,
     1784, 2000, 2238, 2500, 2787, 3103,
@@ -60,6 +60,16 @@ PT_CATEGORY_EDGES = [
     7000.0
 ]
 
+# ============================================================
+#  Jet pT bins
+# ============================================================
+
+JET_PT_EDGES = [
+    0, 2, 4, 6, 8, 10,
+    12, 15, 20, 25, 30,
+    40, 50, 60, 80, 100,
+    150, 200, 300, 500,
+]
 
 # ============================================================
 # Fine signed eta binning, close to the HCAL tower segmentation.
@@ -251,6 +261,7 @@ def method_columns(method):
         return {
             "zpt": "Z_pt_nominal",
             "eta": "Jet_eta_nominal",
+            "jet_pt": "Probe_pt_nominal_vec",
             "weight": "weight_nominal",
             "DB": "DB_nominal_vec",
             "MPF": "MPF_nominal_vec",
@@ -266,6 +277,9 @@ def method_columns(method):
             method
         ),
         "eta": "Jet_eta_{}".format(
+            method
+        ),
+        "jet_pt": "Jet_pt_{}".format(
             method
         ),
         "weight": "weight_{}".format(
@@ -356,6 +370,21 @@ def profile2d(
         ("weight", weight),
     ])
 
+def jet_pt_dist2d(
+    title,
+    x,
+    y,
+    weight,
+):
+    return OrderedDict([
+        ("type", "TH2D"),
+        ("title", title),
+        ("edges_x", flow(PTZ_EDGES)),
+        ("edges_y", flow(JET_PT_EDGES)),
+        ("variable_x", x),
+        ("variable_y", y),
+        ("weight", weight),
+    ])
 
 def raw_response2d(
     title,
@@ -505,7 +534,41 @@ def generate():
             columns["weight"],
             MPF_EDGES,
         )
+    
+    # Jet pt and Z pt in eta regions
+    for method, description in DISTRIBUTION_METHODS.items():
+        columns = method_columns(method)
 
+        for region_name, (
+            eta_low,
+            eta_high,
+        ) in COARSE_ABS_ETA_REGIONS.items():
+
+            histograms[
+                "JetPtDist_{}_{}_vs_Zpt".format(
+                    method,
+                    region_name,
+                )
+            ] = jet_pt_dist2d(
+                "Jet pT, {}, {} <= |eta| < {};pT(Z) [GeV];pT(jet) [GeV]"
+                .format(
+                    description,
+                    eta_low,
+                    eta_high,
+                ),
+                "Z_pt_{}_{}".format(
+                    method,
+                    region_name,
+                ),
+                "Jet_pt_{}_{}".format(
+                    method,
+                    region_name,
+                ),
+                "weight_{}_{}".format(
+                    method,
+                    region_name,
+                ),
+            )
     return histograms
 
 

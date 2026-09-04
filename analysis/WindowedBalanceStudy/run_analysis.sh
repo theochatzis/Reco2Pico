@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Make the histogram YAML file
+cd analyses
+python3 make_zjet_profile_maps.py
+cd ../
+
 # First pass of analysis un-weighted MC for NPVs
 # Data
 python3 ../SkimRDFAnalysisBase/run_analysis.py \
-  --input-files-dir /eos/user/t/tchatzis/reco2pico/myPicosDirectory/windowed_balance_reclusterV2/default/DATA/Muon2025G/ \
+  --input-files-dir /eos/user/t/tchatzis/reco2pico/myPicosDirectory/windowedBalance2024/default/DATA/Muon2024I/ \
   --output-dir zjet_example_output \
   --file-pattern "*.root" \
   --histograms-defs analyses/zjet_histograms.yaml \
@@ -12,7 +17,7 @@ python3 ../SkimRDFAnalysisBase/run_analysis.py \
 
 # MC
 python3 ../SkimRDFAnalysisBase/run_analysis.py \
-  --input-files-dir /eos/user/t/tchatzis/reco2pico/myPicosDirectory/windowed_balance_reclusterV2/default/MC/ZTo2Mu/ \
+  --input-files-dir /eos/user/t/tchatzis/reco2pico/myPicosDirectory/windowedBalance2024/default/MC/ZTo2Mu/ \
   --output-dir zjet_example_output \
   --file-pattern "*.root" \
   --histograms-defs analyses/zjet_histograms.yaml \
@@ -39,7 +44,7 @@ python3 ../SkimRDFAnalysisBase/run_analysis.py \
 # Make plots
 
 python3 plot_zjet_profile_maps.py \
-  --data zjet_example_output/Muon2025G.root \
+  --data zjet_example_output/Muon2024I.root \
   --mc zjet_example_output/ZTo2Mu.root \
   --db-min 0.0 \
   --db-max 2.0 \
@@ -47,17 +52,8 @@ python3 plot_zjet_profile_maps.py \
   --mpf-max 1.5 \
   --response-ratio-min 0.90 \
   --response-ratio-max 1.10 \
-  --output-dir /eos/user/t/tchatzis/php-plots/windowedBalance/plots_profile2d
+  --ratio-min 0.50 \
+  --ratio-max 2.00 \
+  --zpt-min 10.0 \
+  --output-dir /eos/user/t/tchatzis/php-plots/windowedBalance/plots_profile2d_2024
 
-# python3 plot_windowed_balance_mplhep.py \
-#   --data zjet_example_output/Muon2025G.root \
-#   --mc zjet_example_output/ZTo2Mu.root \
-#   --output-dir /eos/user/t/tchatzis/php-plots/windowedBalance \
-#   --fractions-ratio-min 0.5 \
-#   --fractions-ratio-max 2.0 \
-#   --response-y-min 0.5 \
-#   --response-y-max 2.0 \
-#   --response-ratio-min 0.8 \
-#   --response-ratio-max 1.2 \
-#   --zpt-min 3.0 \
-#   --stage-local
