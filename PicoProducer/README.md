@@ -1,4 +1,4 @@
-# Reco2Pico 
+# Pico production
 For MiniAOD using FlatTables producers to convert the PAT collections directly to Picos. It is exactly the same as Nano just with reduced info and possibiliy to add more info of course.
 
 AOD and RECO can be converted directly
@@ -119,4 +119,3 @@ tracks removed by the threshold receive `trackIdx = -1`.
 
 `Track_pvIdx` points to the row of the native `Vertex` table with the largest
 vertex-fit weight for that track.
-
