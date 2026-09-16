@@ -1,0 +1,11 @@
+QCD-4Jets_Bin-HT-1000to1200_13p6TeV:
+  das: "QCD-4Jets_Bin-HT-1000to1200_TuneCP5_13p6TeV_madgraphMLM-pythia8"
+  process: "QCD-4Jets_Bin-HT-1000to1200"
+  xsec: 892.5
+  uncertainty: 0.8574
+
+QCD-4Jets_Bin-HT-100to200_13p6TeV:
+  das: "QCD-4Jets_Bin-HT-100to200_TuneCP5_13p6TeV_madgraphMLM-pythia8"
+  process: "QCD-4Jets_Bin-HT-100to200"
+  xsec: 25250000.0
+  uncertainty: 23230.0

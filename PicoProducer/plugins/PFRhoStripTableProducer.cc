@@ -11,7 +11,9 @@
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/View.h"
+#include "DataFormats/HcalDetId/interface/HcalSubdetector.h"
 #include "DataFormats/NanoAOD/interface/FlatTable.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -47,6 +49,7 @@ private:
   };
 
   struct Strip {
+    int subdet = 0;  // HcalSubdetector enum value when useHCALGeometry=true: HB=1, HE=2, HF=4.
     int etaBin = 0;  // Generic eta-bin identifier: signed HCAL ieta for HCAL geometry, 0-based index otherwise.
     int phiBin = 0;  // Generic phi-bin identifier: HCAL iphi for HCAL geometry, 0-based index otherwise.
     int ieta = 0;    // HCAL ieta when useHCALGeometry=true, otherwise 0.
@@ -76,6 +79,7 @@ private:
   static bool insidePhi(const Strip& strip, float phi);
   static float wrapPhi(float phi);
   static Flavor flavorOf(const reco::Candidate& cand);
+  static float puppiWeightOf(const reco::Candidate& cand);
   static int signOf(float x);
   static float median(std::vector<float> values);
   static void validateEdges(const std::vector<double>& edges, const std::string& name);
@@ -84,9 +88,11 @@ private:
   const edm::ESGetToken<HcalDDDRecConstants, HcalRecNumberingRecord> hcalToken_;
 
   const std::string tableName_;
+  const bool usePuppiWeights_;
   const bool useHCALGeometry_;
   const bool includeHB_;
   const bool includeHE_;
+  const bool includeHF_;
   const float minPt_;
   const std::vector<double> etaBins_;
   const std::vector<double> phiBins_;
@@ -95,10 +101,14 @@ private:
 PFRhoStripTableProducer::PFRhoStripTableProducer(const edm::ParameterSet& cfg)
     : srcToken_(consumes<edm::View<reco::Candidate>>(cfg.getParameter<edm::InputTag>("src"))),
       hcalToken_(esConsumes<HcalDDDRecConstants, HcalRecNumberingRecord>()),
-      tableName_(cfg.getParameter<std::string>("name")),
+      tableName_(cfg.getParameter<bool>("usePuppiWeights") && cfg.getParameter<std::string>("name") == "PFRhoStrip"
+                     ? std::string("PFPuppiRhoStrip")
+                     : cfg.getParameter<std::string>("name")),
+      usePuppiWeights_(cfg.getParameter<bool>("usePuppiWeights")),
       useHCALGeometry_(cfg.getParameter<bool>("useHCALGeometry")),
       includeHB_(cfg.getParameter<bool>("includeHB")),
       includeHE_(cfg.getParameter<bool>("includeHE")),
+      includeHF_(cfg.getParameter<bool>("includeHF")),
       minPt_(static_cast<float>(cfg.getParameter<double>("minPt"))),
       etaBins_(cfg.getParameter<std::vector<double>>("etaBins")),
       phiBins_(cfg.getParameter<std::vector<double>>("phiBins")) {
@@ -112,9 +122,9 @@ PFRhoStripTableProducer::PFRhoStripTableProducer(const edm::ParameterSet& cfg)
     }
   }
 
-  if (useHCALGeometry_ && !includeHB_ && !includeHE_) {
+  if (useHCALGeometry_ && !includeHB_ && !includeHE_ && !includeHF_) {
     throw cms::Exception("Configuration")
-        << "PFRhoStripTableProducer has useHCALGeometry=true but both includeHB and includeHE are false.";
+        << "PFRhoStripTableProducer has useHCALGeometry=true but includeHB, includeHE, and includeHF are all false.";
   }
 
   produces<nanoaod::FlatTable>();
@@ -188,6 +198,18 @@ PFRhoStripTableProducer::Flavor PFRhoStripTableProducer::flavorOf(const reco::Ca
   return kOther;
 }
 
+float PFRhoStripTableProducer::puppiWeightOf(const reco::Candidate& cand) {
+  const auto* packed = dynamic_cast<const pat::PackedCandidate*>(&cand);
+  if (packed == nullptr) {
+    throw cms::Exception("InvalidInput")
+        << "PFRhoStripTableProducer configured with usePuppiWeights=true, but input candidate is not a "
+        << "pat::PackedCandidate. PUPPI weights are only available from packedPFCandidates/pat::PackedCandidate "
+        << "inputs.";
+  }
+
+  return static_cast<float>(packed->puppiWeight());
+}
+
 bool PFRhoStripTableProducer::insidePhi(const Strip& strip, float phi) {
   phi = wrapPhi(phi);
 
@@ -251,6 +273,7 @@ std::vector<PFRhoStripTableProducer::Strip> PFRhoStripTableProducer::makeCustomS
   for (unsigned int ieta = 0; ieta + 1 < etaBins_.size(); ++ieta) {
     for (unsigned int iphi = 0; iphi + 1 < phiBins_.size(); ++iphi) {
       Strip strip;
+      strip.subdet = 0;
       strip.etaBin = static_cast<int>(ieta);
       strip.phiBin = static_cast<int>(iphi);
       strip.ieta = 0;
@@ -280,15 +303,18 @@ std::vector<PFRhoStripTableProducer::Strip> PFRhoStripTableProducer::makeCustomS
 
 std::vector<PFRhoStripTableProducer::Strip>
 PFRhoStripTableProducer::makeHCALStrips(const HcalDDDRecConstants& hcal) const {
-  std::map<std::tuple<int, int, int>, Strip> unique;
+  std::map<std::tuple<int, int, int, int>, Strip> unique;
 
-  auto addBins = [&](int hcalType) {
-    // hcalType = 0 -> HB, 1 -> HE
+  auto addHBHEBins = [&](int hcalType) {
+    // hcalType = 0 -> HB, 1 -> HE. Do not use hcalType=2 for HF:
+    // HcalDDDRecConstants::getEtaBins maps nonzero values to HE.
+    const int subdet = (hcalType == 0) ? static_cast<int>(HcalBarrel) : static_cast<int>(HcalEndcap);
     const auto etaBins = hcal.getEtaBins(hcalType);
 
     for (const auto& bin : etaBins) {
       for (const auto& phiPair : bin.phis) {
         Strip strip;
+        strip.subdet = subdet;
         strip.ieta = bin.ieta;
         strip.zside = bin.zside;
         strip.iphi = phiPair.first;
@@ -312,16 +338,94 @@ PFRhoStripTableProducer::makeHCALStrips(const HcalDDDRecConstants& hcal) const {
         strip.area = std::abs(strip.dEta * strip.dPhi);
 
         // getEtaBins can return multiple depth/layer structures for the same eta-phi strip.
-        // The rho strip map should contain one row per eta-phi strip, so deduplicate here.
-        unique.emplace(std::make_tuple(strip.zside, strip.ieta, strip.iphi), strip);
+        // The rho strip map should contain one row per subdetector eta-phi strip, so deduplicate here.
+        unique.emplace(std::make_tuple(strip.subdet, strip.zside, strip.ieta, strip.iphi), strip);
+      }
+    }
+  };
+
+  auto addHFBins = [&]() {
+    const auto& etaTableHF = hcal.getEtaTableHF();
+    const auto hfCells = hcal.getHFCellParameters();
+
+    if (hfCells.empty() || etaTableHF.size() < 2)
+      return;
+
+    int firstAbsIeta = std::numeric_limits<int>::max();
+    for (const auto& cell : hfCells)
+      firstAbsIeta = std::min(firstAbsIeta, std::abs(cell.ieta));
+
+    for (const auto& cell : hfCells) {
+      const int zside = signOf(static_cast<float>(cell.ieta));
+      const int absIeta = std::abs(cell.ieta);
+      const int etaIndex = absIeta - firstAbsIeta;
+
+      if (zside == 0)
+        continue;
+
+      if (etaIndex < 0 || static_cast<unsigned int>(etaIndex + 1) >= etaTableHF.size()) {
+        throw cms::Exception("Geometry")
+            << "PFRhoStripTableProducer cannot map HF ieta " << cell.ieta
+            << " to getEtaTableHF index " << etaIndex << ".";
+      }
+
+      std::map<int, float> phiByIphi;
+      for (const auto& phiPair : hcal.getPhis(static_cast<int>(HcalForward), absIeta))
+        phiByIphi.emplace(phiPair.first, wrapPhi(static_cast<float>(phiPair.second)));
+
+      for (int kphi = 0; kphi < cell.nPhi; ++kphi) {
+        int iphi = cell.firstPhi + kphi * cell.stepPhi;
+        iphi = ((iphi - 1) % 72) + 1;
+
+        const auto phiIt = phiByIphi.find(iphi);
+        if (phiIt == phiByIphi.end()) {
+          throw cms::Exception("Geometry")
+              << "PFRhoStripTableProducer cannot map HF ieta " << cell.ieta << " iphi " << iphi
+              << " to a phi center from HcalDDDRecConstants::getPhis.";
+        }
+
+        Strip strip;
+        strip.subdet = static_cast<int>(HcalForward);
+        strip.ieta = absIeta;
+        strip.zside = zside;
+        strip.iphi = iphi;
+        strip.etaBin = zside * absIeta;
+        strip.phiBin = iphi;
+
+        const float etaLow = static_cast<float>(etaTableHF[etaIndex]);
+        const float etaHigh = static_cast<float>(etaTableHF[etaIndex + 1]);
+
+        if (zside > 0) {
+          strip.etaMin = etaLow;
+          strip.etaMax = etaHigh;
+        } else {
+          strip.etaMin = -etaHigh;
+          strip.etaMax = -etaLow;
+        }
+
+        strip.eta = 0.5f * (strip.etaMin + strip.etaMax);
+        strip.phi = phiIt->second;
+        strip.dEta = strip.etaMax - strip.etaMin;
+
+        // HF phi segmentation is expressed in 5-degree iphi units by HFCellParameters::stepPhi.
+        strip.dPhi = static_cast<float>(cell.stepPhi) * static_cast<float>(M_PI / 36.0);
+        strip.phiMin = 0.f;
+        strip.phiMax = 0.f;
+        strip.area = std::abs(strip.dEta * strip.dPhi);
+
+        // getHFCellParameters can return multiple depths for the same eta-phi tower.
+        // Keep one rho strip per HF eta-phi tower.
+        unique.emplace(std::make_tuple(strip.subdet, strip.zside, strip.ieta, strip.iphi), strip);
       }
     }
   };
 
   if (includeHB_)
-    addBins(0);
+    addHBHEBins(0);
   if (includeHE_)
-    addBins(1);
+    addHBHEBins(1);
+  if (includeHF_)
+    addHFBins();
 
   std::vector<Strip> strips;
   strips.reserve(unique.size());
@@ -329,7 +433,7 @@ PFRhoStripTableProducer::makeHCALStrips(const HcalDDDRecConstants& hcal) const {
     strips.push_back(item.second);
 
   std::sort(strips.begin(), strips.end(), [](const Strip& a, const Strip& b) {
-    return std::tie(a.etaBin, a.phiBin) < std::tie(b.etaBin, b.phiBin);
+    return std::tie(a.subdet, a.etaBin, a.phiBin) < std::tie(b.subdet, b.etaBin, b.phiBin);
   });
 
   return strips;
@@ -349,7 +453,7 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
     if (idx < 0)
       continue;
 
-    const float pt = static_cast<float>(cand.pt());
+    const float pt = static_cast<float>(cand.pt()) * (usePuppiWeights_ ? puppiWeightOf(cand) : 1.f);
     const Flavor flavor = flavorOf(cand);
 
     strips[idx].sumPt[kAll] += pt;
@@ -358,39 +462,41 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
     ++strips[idx].n[flavor];
   }
 
-  // Compute FastJet-like rho per eta ring:
+  // Compute FastJet-like rho per HCAL eta ring:
   //   1. Compute each eta-phi strip density: sumPt / area.
-  //   2. For each etaBin and each flavor, take the median over phi strips.
-  // The rho columns below store this median value, repeated for all rows in the same etaBin.
-  std::map<int, std::array<std::vector<float>, kNFlavors>> stripRhoValuesByEtaBin;
+  //      When usePuppiWeights=true, sumPt is filled with cand.pt() * cand.puppiWeight().
+  //   2. For each (subdet, etaBin) and each flavor, take the median over phi strips.
+  // The rho columns below store this median value, repeated for all rows in the same subdetector etaBin.
+  std::map<std::tuple<int, int>, std::array<std::vector<float>, kNFlavors>> stripRhoValuesByEtaBin;
 
   for (const auto& strip : strips) {
     for (unsigned int f = 0; f < kNFlavors; ++f) {
       const float stripRho = strip.area > 0.f ? strip.sumPt[f] / strip.area : 0.f;
-      stripRhoValuesByEtaBin[strip.etaBin][f].push_back(stripRho);
+      stripRhoValuesByEtaBin[std::make_tuple(strip.subdet, strip.etaBin)][f].push_back(stripRho);
     }
   }
 
-  std::map<int, std::array<float, kNFlavors>> medianRhoByEtaBin;
+  std::map<std::tuple<int, int>, std::array<float, kNFlavors>> medianRhoByEtaBin;
 
   for (auto& etaItem : stripRhoValuesByEtaBin) {
-    const int etaBin = etaItem.first;
+    const auto etaKey = etaItem.first;
     auto& valuesByFlavor = etaItem.second;
 
     for (unsigned int f = 0; f < kNFlavors; ++f) {
-      medianRhoByEtaBin[etaBin][f] = median(valuesByFlavor[f]);
+      medianRhoByEtaBin[etaKey][f] = median(valuesByFlavor[f]);
     }
   }
 
   const unsigned int nRows = strips.size();
 
-  std::vector<int> etaBin, phiBin, ieta, zside, iphi;
+  std::vector<int> subdet, etaBin, phiBin, ieta, zside, iphi;
   std::vector<float> etaMin, etaMax, eta, phiMin, phiMax, phi, dEta, dPhi, area;
 
   std::array<std::vector<float>, kNFlavors> sumPt;
   std::array<std::vector<float>, kNFlavors> rho;
   std::array<std::vector<uint16_t>, kNFlavors> n;
 
+  subdet.reserve(nRows);
   etaBin.reserve(nRows);
   phiBin.reserve(nRows);
   ieta.reserve(nRows);
@@ -413,6 +519,7 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
   }
 
   for (const auto& strip : strips) {
+    subdet.push_back(strip.subdet);
     etaBin.push_back(strip.etaBin);
     phiBin.push_back(strip.phiBin);
     ieta.push_back(strip.ieta);
@@ -430,13 +537,16 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
 
     for (unsigned int f = 0; f < kNFlavors; ++f) {
       sumPt[f].push_back(strip.sumPt[f]);
-      rho[f].push_back(medianRhoByEtaBin[strip.etaBin][f]);
+      rho[f].push_back(medianRhoByEtaBin[std::make_tuple(strip.subdet, strip.etaBin)][f]);
       n[f].push_back(strip.n[f]);
     }
   }
 
   auto table = std::make_unique<nanoaod::FlatTable>(nRows, tableName_, false, false);
-  table->setDoc("PF rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE segmentation");
+  const std::string weightedPrefix = usePuppiWeights_ ? "PUPPI-weighted PF" : "PF";
+  const std::string weightedFlavorPrefix = usePuppiWeights_ ? "PUPPI-weighted " : "";
+  table->setDoc(weightedPrefix +
+                " rho as the median eta-phi strip density per eta bin, optionally using physical HCAL HB/HE/HF segmentation");
   
   constexpr int coordBits = 4;
   constexpr int rhoBits   = 4;
@@ -446,6 +556,7 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
       "etaBin", etaBin, "generic eta-bin id: signed HCAL ieta if useHCALGeometry, otherwise custom eta-bin index");
   table->addColumn<int>(
       "phiBin", phiBin, "generic phi-bin id: HCAL iphi if useHCALGeometry, otherwise custom phi-bin index");
+  table->addColumn<int>("subdet", subdet, "HCAL subdetector enum when useHCALGeometry=true: HB=1, HE=2, HF=4; otherwise 0");
   table->addColumn<int>("iEta", ieta, "HCAL ieta when useHCALGeometry=true, otherwise 0");
   table->addColumn<int>("zside", zside, "HCAL zside when useHCALGeometry=true, otherwise sign of eta center");
   table->addColumn<int>("iPhi", iphi, "HCAL iphi when useHCALGeometry=true, otherwise 0");
@@ -460,66 +571,66 @@ void PFRhoStripTableProducer::produce(edm::Event& event, const edm::EventSetup& 
   table->addColumn<float>("dPhi", dPhi, "phi bin width", coordBits);
   table->addColumn<float>("area", area, "eta-phi strip area", coordBits);
 
-  table->addColumn<float>("sumPt", sumPt[kAll], "scalar PF pT sum in this eta-phi strip", ptBits);
-  table->addColumn<float>("rho", rho[kAll], "median PF rho over phi strips in this eta bin", rhoBits);
+  table->addColumn<float>("sumPt", sumPt[kAll], weightedPrefix + " scalar pT sum in this eta-phi strip", ptBits);
+  table->addColumn<float>("rho", rho[kAll], "median " + weightedPrefix + " rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>("n", n[kAll], "number of PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtChargedHadron", sumPt[kChargedHadron],
-      "charged-hadron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "charged-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoChargedHadron", rho[kChargedHadron],
-      "median charged-hadron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "charged-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nChargedHadron", n[kChargedHadron],
       "number of charged-hadron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtNeutralHadron", sumPt[kNeutralHadron],
-      "neutral-hadron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "neutral-hadron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoNeutralHadron", rho[kNeutralHadron],
-      "median neutral-hadron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "neutral-hadron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nNeutralHadron", n[kNeutralHadron],
       "number of neutral-hadron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtPhoton", sumPt[kPhoton],
-      "photon PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "photon PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoPhoton", rho[kPhoton],
-      "median photon PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "photon PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nPhoton", n[kPhoton],
       "number of photon PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtElectron", sumPt[kElectron],
-      "electron PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "electron PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoElectron", rho[kElectron],
-      "median electron PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "electron PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nElectron", n[kElectron],
       "number of electron PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtMuon", sumPt[kMuon],
-      "muon PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "muon PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoMuon", rho[kMuon],
-      "median muon PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "muon PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nMuon", n[kMuon],
       "number of muon PF candidates in this eta-phi strip");
 
   table->addColumn<float>(
       "sumPtOther", sumPt[kOther],
-      "other PF scalar pT sum in this eta-phi strip", ptBits);
+      weightedFlavorPrefix + "other PF scalar pT sum in this eta-phi strip", ptBits);
   table->addColumn<float>(
       "rhoOther", rho[kOther],
-      "median other PF rho over phi strips in this eta bin", rhoBits);
+      "median " + weightedFlavorPrefix + "other PF rho over phi strips in this eta bin", rhoBits);
   table->addColumn<uint16_t>(
       "nOther", n[kOther],
       "number of other PF candidates in this eta-phi strip");
@@ -530,9 +641,11 @@ void PFRhoStripTableProducer::fillDescriptions(edm::ConfigurationDescriptions& d
   edm::ParameterSetDescription desc;
   desc.add<edm::InputTag>("src", edm::InputTag("packedPFCandidates"));
   desc.add<std::string>("name", "PFRhoStrip");
+  desc.add<bool>("usePuppiWeights", false);
   desc.add<bool>("useHCALGeometry", true);
   desc.add<bool>("includeHB", true);
   desc.add<bool>("includeHE", true);
+  desc.add<bool>("includeHF", true);
   desc.add<double>("minPt", 0.0);
 
   // Used only when useHCALGeometry=false.
@@ -543,3 +656,4 @@ void PFRhoStripTableProducer::fillDescriptions(edm::ConfigurationDescriptions& d
 }
 
 DEFINE_FWK_MODULE(PFRhoStripTableProducer);
+

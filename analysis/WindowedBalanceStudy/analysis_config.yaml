@@ -1,0 +1,2 @@
+# After running make_npv_weights.py, point this to the generated JSON.
+npv_weights: "./npv_weights.json"

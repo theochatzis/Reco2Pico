@@ -1,0 +1,7 @@
+file,label,selected_entry,nvtx_branch,nvtx,eta_min,eta_max,probe_mode,energy_source,response_scale,n_total,n_used,n_rejected,valid,offset_GeV,offset_error_approx_GeV,robust_sigma_GeV,response_median,response_mean,median_trackPt_GeV,median_caloEt_GeV,median_ecalEt_GeV,median_hcalEt_GeV
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,-3.0,-2.5,charged,raw,1.0,0,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,-2.5,-1.5,charged,raw,1.0,0,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,-1.5,0.0,charged,raw,1.0,2,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,0.0,1.5,charged,raw,1.0,4,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,1.5,2.5,charged,raw,1.0,0,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
+/eos/user/t/tchatzis/reco2pico/CMSSW_15_0_4/src/Reco2Pico/PicoProducer/python/workflows/test_pico_pfoffset.root,ChargedHadrons,8,PV_npvs,45.0,2.5,3.0,charged,raw,1.0,0,0,0,0,nan,nan,nan,nan,nan,nan,nan,nan,nan
