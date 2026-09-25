@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 Create HTCondor job areas for Reco2Pico cmsRun production.
+Usage:
+  bdriver -c first_cfg.py --steps steps.json -d DATASET -o JOBDIR -fo DESTINATION
+  Add --save-intermediates to retain each step's output.
 Logic:
   * run each job in a temporary scratch WORKDIR
   * keep only small bookkeeping files in the persistent job directory
@@ -28,6 +31,87 @@ def _quote(value):
 def _join_output_path(directory, basename):
     directory = str(directory).rstrip('/')
     return directory + '/' + basename
+
+
+def load_steps(path, default_cmssw, arch):
+    """Resolve follow-up steps against the manifest and submission environment."""
+    if path is None:
+        return []
+    manifest = os.path.abspath(path)
+    with open(manifest) as handle:
+        entries = json.load(handle)
+    if not isinstance(entries, list) or not entries:
+        raise ValueError('--steps must contain a non-empty JSON list')
+    reserved = {'inputFiles', 'secondaryInputFiles', 'output', 'outputFile',
+                'maxEvents', 'skipEvents'}
+    steps = []
+    for number, entry in enumerate(entries, 2):
+        if not isinstance(entry, dict) or set(entry) - {'cfg', 'cmssw', 'args'}:
+            raise ValueError('step {}: expected cfg, optional cmssw and args'.format(number))
+        cfg = entry.get('cfg')
+        area = entry.get('cmssw', default_cmssw)
+        if not isinstance(cfg, str) or not cfg or not isinstance(area, str) or not area:
+            raise ValueError('step {}: cfg and cmssw must be non-empty paths'.format(number))
+        paths = []
+        for value in (cfg, area):
+            value = os.path.expanduser(os.path.expandvars(value))
+            if not os.path.isabs(value):
+                value = os.path.join(os.path.dirname(manifest), value)
+            paths.append(os.path.abspath(value))
+        cfg, area = paths
+        if not os.path.isfile(cfg):
+            raise ValueError('step {}: missing configuration {}'.format(number, cfg))
+        if not os.path.isdir(os.path.join(area, 'src')):
+            raise ValueError('step {}: missing CMSSW src directory {}'.format(number, area))
+        if not arch or not os.path.isdir(os.path.join(area, '.SCRAM', arch)):
+            raise ValueError('step {}: CMSSW area must support {}'.format(number, arch))
+        args = entry.get('args', [])
+        if not isinstance(args, list) or any(not isinstance(arg, str) for arg in args):
+            raise ValueError('step {}: args must be a list of strings'.format(number))
+        for arg in args:
+            key, separator, value = arg.partition('=')
+            if not separator or not key or key in reserved or key.endswith('_load'):
+                raise ValueError('step {}: invalid or driver-owned argument {}'.format(number, arg))
+        steps.append({'cfg': cfg, 'cmssw': area, 'args': args})
+    return steps
+
+
+def chained_commands(steps, basename, destination, jobdir, save_intermediates, arch):
+    """Run each consumer before transferring or deleting its input."""
+    lines = []
+    previous = 'step1_' + basename
+    for number, step in enumerate(steps, 2):
+        last = number == len(steps) + 1
+        output = basename if last else 'step{}_{}'.format(number, basename)
+        report = os.path.join(jobdir, 'logs', 'step{}.xml'.format(number))
+        command = ['cmsRun', '-j', report, step['cfg']] + step['args']
+        command += ['inputFiles=file:' + previous, 'secondaryInputFiles=',
+                    'maxEvents=-1', 'skipEvents=0', 'output=' + output]
+        lines += [
+            'test -s ' + _quote(previous),
+            'echo ' + _quote('[INFO] starting step {}'.format(number)),
+            '(',
+            # Each subshell starts from the first step's environment.
+            'runtime=$(scram runtime -unsh)',
+            'eval "$runtime"',
+            'cd ' + _quote(os.path.join(step['cmssw'], 'src')),
+            'export SCRAM_ARCH=' + _quote(arch),
+            'runtime=$(scram runtime -sh)',
+            'eval "$runtime"',
+            'cd "${WORKDIR}"',
+            ' '.join(_quote(arg) for arg in command),
+            ')',
+            'test -s ' + _quote(output),
+        ]
+        if save_intermediates:
+            lines.append('jme_stageout {} {}'.format(
+                _quote(previous), _quote(_join_output_path(destination, previous))))
+        else:
+            lines.append('rm -- ' + _quote(previous))
+        previous = output
+    lines.append('jme_stageout {} {}'.format(
+        _quote(previous), _quote(_join_output_path(destination, previous))))
+    return [[line] for line in lines]
 
 
 def _is_forbidden_condor_submit_path(path):
@@ -244,6 +328,11 @@ if __name__ == '__main__':
 
    parser.add_argument('-c', '--cfg', dest='cmsRun_cfg', action='store', default=None, required=True,
                        help='path to cmsRun cfg file')
+   parser.add_argument('--steps', help='JSON list of subsequent cmsRun steps')
+   parser.add_argument('--save-intermediates', action='store_true',
+                       help='also transfer intermediate outputs after their consumer succeeds')
+   parser.add_argument('--disk-mb', type=int,
+                       help='Condor scratch-disk request in MiB for the entire chain')
    parser.add_argument('-d', '--dataset', dest='dataset', action='store', default=None, required=True,
                        help='name of input data set in DAS or path to dataset json dump')
    parser.add_argument('-o', '--output', dest='output', action='store', default=None, required=True,
@@ -319,6 +408,22 @@ if __name__ == '__main__':
 
    if not os.path.isfile(opts.cmsRun_cfg):
      KILL(log_prx+'invalid path to cmsRun cfg file [-c]: '+str(opts.cmsRun_cfg))
+
+   if opts.save_intermediates and not opts.steps:
+     parser.error('--save-intermediates requires --steps')
+   if opts.disk_mb is not None and opts.disk_mb <= 0:
+     parser.error('--disk-mb must be positive')
+   try:
+     steps = load_steps(opts.steps, os.environ['CMSSW_BASE'], os.environ.get('SCRAM_ARCH'))
+   except (OSError, ValueError) as error:
+     parser.error(str(error))
+   if steps:
+     reserved = {'inputFiles', 'secondaryInputFiles', 'output', 'outputFile',
+                 'maxEvents', 'skipEvents'}
+     for argument in opts_unknown:
+       key = argument.split('=', 1)[0]
+       if key in reserved or key.endswith('_load'):
+         parser.error('step chaining owns argument '+key)
 
    if OUTPUT_DIR_WAS_REMAPPED:
      print(colored_text('warning:', ['1', '93']),
@@ -461,12 +566,21 @@ if __name__ == '__main__':
    out_cmsRun_cfg = os.path.abspath(OUTPUT_DIR+'/cfg.py')
    EXE('cp '+_quote(opts.cmsRun_cfg)+' '+_quote(out_cmsRun_cfg), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
 
+   for number, step in enumerate(steps, 2):
+     copied_cfg = os.path.abspath(OUTPUT_DIR+'/step{}_cfg.py'.format(number))
+     EXE('cp '+_quote(step['cfg'])+' '+_quote(copied_cfg),
+         verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
+     step['cfg'] = copied_cfg
+   if steps and not opts.dry_run:
+     with open(OUTPUT_DIR+'/steps.json', 'w') as handle:
+       json.dump(steps, handle, indent=2)
+
    out_lumi_json = None
    if opts.lumi_json is not None:
      out_lumi_json = os.path.abspath(OUTPUT_DIR+'/lumiMask.json')
      EXE('cp '+_quote(opts.lumi_json)+' '+_quote(out_lumi_json), verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
 
-   if opts.customize_cfg:
+   if opts.customize_cfg and not opts.dry_run:
      with open(out_cmsRun_cfg, 'a') as cfg_file:
        custom_str = """
 ###
@@ -522,6 +636,16 @@ _driver_output = getattr(opts, 'output', None)
 if _driver_output is None:
     _driver_output = getattr(opts, 'outputFile', None)
 if _driver_output is not None:
+    # cmsDriver may name its output RECOSIMoutput rather than out.
+    # Preserve the legacy handling below for existing configurations.
+    if not any(hasattr(process, name) for name in ('out', 'nanoAODOutput')):
+        _driver_modules = list(process.outputModules_().values())
+        if len(_driver_modules) == 1:
+            _driver_modules[0].fileName = cms.untracked.string(_driver_output)
+        elif len(_driver_modules) > 1:
+            raise RuntimeError('Ambiguous output modules: configure one output per driver step')
+        elif not hasattr(process, 'TFileService'):
+            raise RuntimeError('No supported output module or TFileService found')
     for _modname in ('out', 'nanoAODOutput'):
         if hasattr(process, _modname) and hasattr(getattr(process, _modname), 'fileName'):
             getattr(process, _modname).fileName = cms.untracked.string(_driver_output)
@@ -625,6 +749,9 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
      JobFlavour = opts.JobFlavour.strip('\'"')
      SUBFILE_LINES += ['+JobFlavour = "{:}"'.format(JobFlavour)]
 
+   if opts.disk_mb is not None:
+     SUBFILE_LINES += ['RequestDisk = '+str(opts.disk_mb * 1024)]
+
    if opts.AccountingGroup is not None:
      AccountingGroup = opts.AccountingGroup.strip('\'"')
      SUBFILE_LINES += ['+AccountingGroup = "{:}"'.format(AccountingGroup)]
@@ -702,6 +829,16 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
            for _tmp in cmsRun_addopts:
              cmsRun_opts += ' \\\n '+str(_tmp)
 
+           if steps:
+             # Rebuild as quoted arguments; reserve out_N.root for the final step.
+             first_args = ['cmsRun', '-j', i_OUTPUT_DIR+'/logs/step1.xml', out_cmsRun_cfg]
+             first_args += cmsRun_addopts
+             first_args += ['maxEvents='+str(i_maxEvents), 'skipEvents='+str(skip_events),
+                            'inputFiles='+str(i_inputFile), 'output=step1_'+output_basename]
+             if i_secondaryInputFiles:
+               first_args += ['secondaryInputFiles='+','.join(i_secondaryInputFiles)]
+             first_command = ' '.join(_quote(arg) for arg in first_args)
+
            i_SHELL_COMMANDS = [
              ['cd '+_quote(os.environ['CMSSW_BASE']+'/src')],
              ['eval `scram runtime -sh`'],
@@ -716,6 +853,18 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
              ['jme_stageout '+_quote(output_basename)+' '+_quote(final_output_path)],
              ['touch '+_quote(i_OUTPUT_DIR+'/flag.done')],
            ]
+
+           if steps:
+             # Keep the existing environment setup and completed-job check.
+             i_SHELL_COMMANDS = i_SHELL_COMMANDS[:5]
+             i_SHELL_COMMANDS += [
+               ['echo '+_quote('[INFO] starting step 1')],
+               [first_command],
+             ]
+             i_SHELL_COMMANDS += chained_commands(
+               steps, output_basename, FINAL_OUTPUT_DIR, i_OUTPUT_DIR,
+               opts.save_intermediates, os.environ['SCRAM_ARCH'])
+             i_SHELL_COMMANDS += [['touch '+_quote(i_OUTPUT_DIR+'/flag.done')]]
 
            f_exefile.write('\n'+('\n\n'.join([' \\\n '.join(_tmp) for _tmp in i_SHELL_COMMANDS]))+'\n')
 
