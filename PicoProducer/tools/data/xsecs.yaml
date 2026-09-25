@@ -3,3 +3,10 @@ ZTo2Mu_Bin-M-50to120_13p6TeV:
   process: "ZTo2Mu_Bin-M-50to120"
   xsec: 2219.0
   uncertainty: 0.3693
+
+DYTo2L-2Jets_Par-MLL-50_13p6TeV:
+  das: "DYTo2L-2Jets_Par-MLL-50_TuneCP5_13p6TeV_amcatnloFXFX-pythia8"
+  process: "DYTo2L-2Jets_Par-MLL-50"
+  xsec: 6697.0
+  uncertainty: 8.922
+
