@@ -41,15 +41,6 @@ rootls -t pico.root
 python Reco2Pico/scripts/validate_branches.py pico.root --branches nMuon Muon_pt nJet Jet_pt MET_pt
 ```
 
-Run the example RDataFrame analysis:
-
-```bash
-python Reco2Pico/analysis/rdf/analyze.py \
-  --config Reco2Pico/analysis/configs/example_analysis.yaml \
-  --input pico.root \
-  --output histograms.root
-```
-
 Submit jobs to Condor:
 
 Use examples from `PicoProducer/test/scripts`

@@ -1,4 +1,56 @@
 # Pico production
+
+## Chained batch processing
+
+Use `bdriver -c first_cfg.py --steps steps.json` to run configurations in order.
+The JSON lists subsequent steps; paths are relative to the JSON file:
+
+```json
+[
+  {
+    "cfg": "python/workflows/RECO_to_pico_cfg.py",
+    "args": ["isMC=true", "era=Run3_2024", "globalTag=133X_mcRun3_2024_realistic_v10"]
+  }
+]
+```
+
+An optional `"cmssw": "/absolute/path/to/CMSSW_X_Y_Z"` selects a release area
+for that step. Otherwise it uses the active `CMSSW_BASE` from job preparation,
+even if the preceding step overrides its release. Areas must support the
+submission `SCRAM_ARCH` and be accessible on the workers.
+
+Each subsequent configuration must accept `inputFiles`, `secondaryInputFiles`,
+`output`, `maxEvents`, and `skipEvents`. The driver owns these arguments.
+Only the first step receives the event slice; later steps process its output
+from the beginning. Additional command-line configuration arguments apply
+only to the first step; use each JSON entry's `args` for later steps.
+
+```bash
+bdriver -c reco_cfg.py --customize-cfg --steps steps.json \
+  -d /PRIMARY/PROCESSING/GEN-SIM-RAW -p 0 \
+  -o jobs/raw_to_pico -fo root://hip-cms-se.csc.fi//store/user/USERNAME/picos \
+  -n 100 --cpus 1 --memory 8G --disk-mb 20000 --time 02:00:00
+```
+
+Generate and validate `reco_cfg.py` with `cmsDriver.py` in the intended
+reconstruction release first. `--customize-cfg` adapts the first configuration;
+a generated configuration should have one output module. Reconstruction
+settings and downstream conditions must match the sample and chosen releases.
+
+The last output is always transferred as `out_N.root`. Add
+`--save-intermediates` to also transfer `step1_out_N.root`, `step2_out_N.root`,
+etc. Each intermediate is transferred or removed after its consumer succeeds.
+The job is marked complete only after all steps and required transfers succeed.
+Failed jobs are not resumed from saved intermediate files.
+
+The resource values above are starting points for a small pilot, not measured
+requirements. Request memory for the largest step, runtime for the complete
+chain, and scratch space for adjacent outputs plus processing overhead.
+CPU requests do not automatically configure CMSSW threads.
+For HIP, use an explicit writable XRootD destination; bare `/store/` output
+paths currently target CERN. The destination directory must already exist
+when using a `root://` URL.
+
 For MiniAOD using FlatTables producers to convert the PAT collections directly to Picos. It is exactly the same as Nano just with reduced info and possibiliy to add more info of course.
 
 AOD and RECO can be converted directly
