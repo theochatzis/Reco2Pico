@@ -179,9 +179,49 @@ def _resolve_condor_output_dir(requested_output, condor_workdir, log_prx):
     return os.path.abspath(os.path.join(base, suffix)), requested_abs, True
 
 
-def htc_exe_prologue():
-    return r"""set -euo pipefail
+SUPPORTED_OS = ('el8', 'el9')
 
+
+def _host_os(os_release='/etc/os-release'):
+    """Return el8/el9 from the host's /etc/os-release major version, or None."""
+    try:
+        with open(os_release) as handle:
+            for line in handle:
+                key, separator, value = line.strip().partition('=')
+                if separator and key == 'VERSION_ID':
+                    major = value.strip('"\'').split('.', 1)[0]
+                    if 'el'+major in SUPPORTED_OS:
+                        return 'el'+major
+    except OSError:
+        pass
+    return None
+
+
+def resolve_os(requested, scram_arch=None):
+    """
+    Resolve the job OS.  'el8'/'el9' are returned as-is; 'auto' uses the
+    SCRAM_ARCH prefix (el8_... -> el8, el9_... -> el9), then the host OS, and
+    finally falls back to the historical EL8 behaviour.
+    """
+    if requested in SUPPORTED_OS:
+        return requested
+    if requested != 'auto':
+        raise ValueError('unsupported job OS: {}'.format(requested))
+    if scram_arch is None:
+        scram_arch = os.environ.get('SCRAM_ARCH', '')
+    prefix = str(scram_arch).split('_', 1)[0].lower()
+    if prefix in SUPPORTED_OS:
+        return prefix
+    return _host_os() or 'el8'
+
+
+def htc_exe_prologue(job_os='el8'):
+    if job_os not in SUPPORTED_OS:
+        raise ValueError('unsupported job OS: {}'.format(job_os))
+    prologue = r"""set -euo pipefail
+"""
+    if job_os == 'el8':
+        prologue += r"""
 # ----------------------------------------------------------------------
 # Run the whole job inside the CMS EL8 container when executed on EL9.
 # This avoids:
@@ -195,7 +235,8 @@ if [[ -f /etc/redhat-release ]] && grep -qE 'AlmaLinux.*release 9|Red Hat.*relea
     exec cmssw-el8 -- "$0" "$@"
   fi
 fi
-
+"""
+    prologue += r"""
 # Keep persistent job bookkeeping separate from large temporary ROOT files.
 # Condor starts the job in initialdir=$BASEDIR/job_N; never use that directory
 # as the cmsRun working area.
@@ -318,6 +359,7 @@ jme_stageout() {
   rm -f "${src}"
 }
 """
+    return prologue
 
 
 if __name__ == '__main__':
@@ -358,6 +400,9 @@ if __name__ == '__main__':
                        help='level of parentFiles to be used as secondary input files')
    parser.add_argument('-b', '--batch-system', dest='batch_system', action='store', default='auto', choices=['auto', 'htc', 'slurm'],
                        help='keyword to select batch system')
+   parser.add_argument('--os', dest='os', action='store', default='auto', choices=['auto']+list(SUPPORTED_OS),
+                       help='OS of the batch worker (sets HTCondor MY.WantOS; el8 additionally re-execs the job inside cmssw-el8 on EL9 hosts); '
+                            '"auto" detects it from the $SCRAM_ARCH prefix (el8_..., el9_...), else from the host OS (default: auto)')
    parser.add_argument('--cpus', dest='cpus', action='store', default='1',
                        help='number of CPUs per job')
    parser.add_argument('--memory', dest='memory', action='store', default='50M',
@@ -385,6 +430,11 @@ if __name__ == '__main__':
 
    opts, opts_unknown = parser.parse_known_args()
    log_prx = os.path.basename(__file__)+' -- '
+
+   requested_os = opts.os
+   opts.os = resolve_os(requested_os)
+   if requested_os == 'auto':
+     print(colored_text('job OS:', ['1', '92']), opts.os+' (auto-detected; SCRAM_ARCH='+os.environ.get('SCRAM_ARCH', '<unset>')+')')
 
    # Optional Golden JSON / lumi mask.  If provided, this is used twice:
    #   1) during DAS discovery, to avoid creating jobs for files with no
@@ -739,7 +789,7 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
      'use_x509userproxy = True',
      'should_transfer_files = IF_NEEDED',
      'when_to_transfer_output = ON_EXIT',
-     'MY.WantOS = "el8"',
+     'MY.WantOS = "{}"'.format(opts.os),
      'RequestCpus = '+opts.cpus,
      'RequestMemory = '+memory_htc_str,
      '+MaxRuntime = '+TIME_STR_secs,
@@ -809,7 +859,7 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
        if not opts.dry_run:
          with open(EXEFILE_ABSPATH, 'w') as f_exefile:
            f_exefile.write('#!/bin/bash\n')
-           f_exefile.write(htc_exe_prologue())
+           f_exefile.write(htc_exe_prologue(opts.os))
 
            if opts.export_LD_LIBRARY_PATH and 'LD_LIBRARY_PATH' in os.environ:
              f_exefile.write('\nexport LD_LIBRARY_PATH='+os.environ['LD_LIBRARY_PATH']+'\n')
