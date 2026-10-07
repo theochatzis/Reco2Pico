@@ -18,7 +18,7 @@ Only the step-4 NANO file is staged out (`bdriver --save-intermediates` keeps th
 | `SingleHadronPGun_cfi.py` | cmsDriver generator fragment (`FlatRandomMultiParticlePGunProducer`, one particle per event, flat in p, eta, phi). Defaults: pi+ (211), p 1-200 GeV, 1.6 < eta < 2.9, full phi, no anti-particle, `firstRun=1`. |
 | `gun_varparsing_tail.py` | VarParsing snippet appended to every cfg. Adds `skipEvents`, `output`, `pdgId`, `pMin`, `pMax`, `etaMin`, `etaMax`, `seed` on top of the standard `analysis` options; applies gun parameters, per-job seeds and event/lumi offsets in the GEN step; sets input files / skipEvents in PoolSource steps; renames the output module (and `TFileService`) to `output=`. Marker `phase2_gun: VarParsing tail` keeps the append idempotent. |
 | `make_gun_cfgs.sh [OUTDIR]` | runs the four `cmsDriver.py --no_exec` commands and appends the tail. Env: `GEOM ERA GT GTGEN PU PUINPUT DIGISTEP NANOSTEP`. |
-| `run_gun_local.sh [NEVENTS] [PDGID]` | sets up the release area if needed, builds, generates the cfgs in `$CMSSW_BASE/src/gun_local_test/cfgs`, runs the four steps locally and inspects the NANO branches. |
+| `run_gun_local.sh [NEVENTS] [PDGID]` | generates the cfgs in `$CMSSW_BASE/src/gun_local_test/cfgs`, runs the four steps locally and inspects the NANO branches. |
 | `make_gun_dataset.py` | writes a bdriver dataset JSON with one virtual `gun://jobNNN` "file" per job (validated with `assert_dataset_data`). |
 | `steps_gun_chain.json` | bdriver `--steps` manifest for steps 2-4 (`cfgs/...`, resolved relative to the JSON). |
 | `steps_gun_chain_pu200.json` | same, pointing at `cfgs_pu200/...` for the PU200 recipe. |
@@ -47,12 +47,10 @@ Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`.
 ## Local test
 
 ```bash
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd /eos/user/t/tchatzis/reco2pico/CMSSW_16_1_0_pre2/src && cmsenv
-Reco2Pico/PicoProducer/python/samples_workflows/phase2_gun/run_gun_local.sh 10 211
+./run_gun_local.sh 10 211
 ```
 
-This runs, in `$CMSSW_BASE/src/gun_local_test/`:
+This generates the cfgs and runs, in `$CMSSW_BASE/src/gun_local_test/`:
 
 ```bash
 cmsRun -j step1.xml cfgs/step1_GENSIM_cfg.py inputFiles=gun://job000 maxEvents=10 skipEvents=0 output=step1.root pdgId=211 pMin=1 pMax=200 etaMin=1.6 etaMax=2.9
@@ -65,12 +63,11 @@ and finally prints OK/MISSING for the branch prefixes `ticlTrackstersCLUE3DHigh`
 `ticlSimTrackstersfromCPs`, `TICLCandidates`, `GeneralTrack`, `hgcalLayerClusters`
 and the event count of `step4_nano.root`.
 
-To only (re)generate the cfgs: `./make_gun_cfgs.sh [OUTDIR]` (default `OUTDIR=<this dir>/cfgs`).
+To only (re)generate the cfgs: `./make_gun_cfgs.sh [OUTDIR]` (default `OUTDIR=cfgs`).
 
 ## Condor production
 
 ```bash
-cd $CMSSW_BASE/src/Reco2Pico/PicoProducer/python/samples_workflows/phase2_gun
 ./make_gun_cfgs.sh                       # -> cfgs/step{1..4}_*_cfg.py
 voms-proxy-init --voms cms
 ./submit_gun_bdriver.sh                  # creates the job areas, no submission
@@ -80,7 +77,8 @@ voms-proxy-init --voms cms
 Defaults (all overridable through the environment): `JOBS=200`,
 `EVENTS_PER_JOB=500`, `PMIN=1 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9`,
 `SPECIES="211 -211 321 -321 2212 -2212"`, `FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
-`JOBAREA=<this dir>/jobs`, `OS=el9`, `RUNTIME=20:00:00`.
+`JOBAREA=jobs`, `OS=el9`, `RUNTIME=20:00:00`, `SEED=` (when set, passed as
+`seed=<n>` to all steps; job offsets are added on top).
 
 For each species the script writes `datasets/gun_<label>_p<PMIN>to<PMAX>.json`
 and calls
@@ -100,14 +98,10 @@ under `/eos`, bdriver mirrors the Condor bookkeeping area under
 a job area that already exists makes bdriver stop, so remove it (or change
 `JOBAREA`/`TAGSUFFIX`) before re-running.
 
-Notes:
-
-* `-p 0` (no secondary input files) is required: the gun dataset entries have
-  empty `parentFiles_1/2` lists and bdriver's default `-p 2` stops on an empty
-  secondary-file list.
-* `-t` (`+MaxRuntime`) is passed explicitly because bdriver's default is one
-  hour, which is far too short for 500 full-simulation Phase-2 events.
-* `SEED=<n>` passes `seed=<n>` to all steps (job offsets are added on top).
+`-p 0` is required (the gun dataset entries have no parent files and bdriver's
+default `-p 2` stops on an empty secondary-file list). `-t` is passed explicitly
+because bdriver's default of one hour is far too short for 500 full-simulation
+Phase-2 events.
 
 ## PU200 recipe
 
@@ -115,7 +109,6 @@ Same dataset JSONs (hence the same seeds, event ids and gun kinematics per job),
 second cfg set with pile-up in step 2:
 
 ```bash
-cd $CMSSW_BASE/src/Reco2Pico/PicoProducer/python/samples_workflows/phase2_gun
 PU=200 PUINPUT='das:/RelValMinBias_14TeV/<campaign>-<GT>/GEN-SIM' ./make_gun_cfgs.sh cfgs_pu200
 CFGDIR=$PWD/cfgs_pu200 STEPS=$PWD/steps_gun_chain_pu200.json TAGSUFFIX=_pu200 ./submit_gun_bdriver.sh [--submit]
 ```
@@ -134,21 +127,21 @@ much larger and the reconstruction much slower).
    bdriver passes (`maxEvents`, `skipEvents`, `inputFiles`,
    `secondaryInputFiles`, `output`). For the same reason do not put the reserved
    keys in `steps_gun_chain.json` `args` (bdriver refuses them anyway).
-2. **Job OS.** Historically bdriver hard-coded `MY.WantOS = "el8"` and re-executed
-   the job inside `cmssw-el8` on EL9 workers, which cannot run an
-   `el9_amd64_gcc13` release. The current bdriver has `--os {auto,el8,el9}`
-   (`auto` follows the `SCRAM_ARCH` prefix); `submit_gun_bdriver.sh` passes
-   `--os el9` explicitly. If you use an older bdriver, add that option first.
+2. **Job OS.** `submit_gun_bdriver.sh` passes `--os el9` so the job runs natively
+   on EL9 workers. An older bdriver without `--os` hard-codes `el8` and
+   re-executes inside `cmssw-el8`, which cannot run an `el9_amd64_gcc13` release.
 
-## Release-specific choices (CMSSW_16_1_0_pre2) - please verify
+## Release-specific choices (CMSSW_16_1_0_pre2)
 
-* Verify geometry/era/GT with `runTheMatrix.py -w upgrade -n | grep -i Run4D`
-  and `runTheMatrix.py -w upgrade -l <wf> --dryRun`. In this release the
-  Run4D110 workflow uses `ExtendedRun4D110`, era `Phase2C17I13M9`, GT
-  `auto:phase2_realistic_T35` (there is no `phase2_realistic_T33` alias in
-  `Configuration.AlCa.autoCond`) and HLT menu `@relvalRun4`; the relval
-  GEN-SIM step uses the `_13TeV` GT alias (HL-LHC SimBeamSpot payload for
-  `--beamspot DBrealisticHLLHC`), reproduced by `GTGEN`.
+* Geometry/era/GT follow the Run4D121 relval workflow: `ExtendedRun4D121`,
+  era `Phase2C22I13M9`, GT `auto:phase2_realistic_T35`, HLT menu `@relvalRun4`.
+  D121 is the Phase-2 baseline since CMSSW_15_1_0_pre4 and the geometry of the
+  HGCAL/TICL relvals in the limited matrix (`CloseByPGun_CE_*`). Verify with
+  `runTheMatrix.py -w upgrade -n | grep -i Run4D121`. The GEN-SIM step uses
+  the `_13TeV` GT alias (HL-LHC SimBeamSpot payload for
+  `--beamspot DBrealisticHLLHC`), reproduced by `GTGEN`. Override with
+  `GEOM=... ERA=... GT=...` (e.g. `GEOM=D110 ERA=Phase2C17I13M9` for the
+  previous baseline).
 * `FlatRandomPGunProducer` does not exist in `IOMC/ParticleGuns`;
   `FlatRandomMultiParticlePGunProducer` with a single `PartID` is used instead.
 * The relval DIGI step includes `L1P2GT` (Phase-2 L1 global trigger emulation),

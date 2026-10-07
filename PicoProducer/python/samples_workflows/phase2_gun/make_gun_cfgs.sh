@@ -10,8 +10,8 @@
 # Usage:  make_gun_cfgs.sh [OUTDIR]          (default OUTDIR = <this dir>/cfgs)
 #
 # Environment overrides (defaults in brackets):
-#   GEOM     [D110]                      -> --geometry ExtendedRun4$GEOM
-#   ERA      [Phase2C17I13M9]            -> --era
+#   GEOM     [D121]                      -> --geometry ExtendedRun4$GEOM
+#   ERA      [Phase2C22I13M9]            -> --era
 #   GT       [auto:phase2_realistic_T35] -> --conditions for steps 2-4
 #   GTGEN    [${GT}_13TeV if that alias exists, else $GT]
 #                                        -> --conditions for step 1 (the relval
@@ -25,11 +25,12 @@
 #   NEVT     [10]                        -> -n of the cmsDriver commands (dummy)
 #
 # !! Verify GEOM / ERA / GT against the release you are running in:
-#      runTheMatrix.py -w upgrade -n | grep -i Run4D
-#      runTheMatrix.py -w upgrade -l <D110 workflow number> --dryRun   (then read runall-report-step123-.log / cmdLog)
-#    or  python3 -c "from Configuration.PyReleaseValidation.upgradeWorkflowComponents import upgradeProperties as p; print(p['Run4']['Run4D110'])"
-#    In CMSSW_16_1_0_pre2 the Run4D110 workflow uses GT auto:phase2_realistic_T35
-#    (T33 is not defined there), era Phase2C17I13M9 and HLT menu @relvalRun4.
+#      python3 -c "from Configuration.PyReleaseValidation.upgradeWorkflowComponents import upgradeProperties as p; print(p['Run4']['Run4D121'])"
+#      runTheMatrix.py -w upgrade -n | grep -i Run4D121
+#    D121 is the Phase-2 baseline since CMSSW_15_1_0_pre4 (Configuration/Geometry/README.md)
+#    and the geometry of the HGCAL/TICL relvals in the limited matrix (CloseByPGun_CE_*).
+#    In CMSSW_16_1_0_pre2 the Run4D121 workflow uses GT auto:phase2_realistic_T35,
+#    era Phase2C22I13M9 and HLT menu @relvalRun4.
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
@@ -43,8 +44,8 @@ OUTDIR="${1:-${SCRIPT_DIR}/cfgs}"
 mkdir -p "${OUTDIR}"
 OUTDIR="$(cd "${OUTDIR}" && pwd -P)"
 
-GEOM="${GEOM:-D110}"
-ERA="${ERA:-Phase2C17I13M9}"
+GEOM="${GEOM:-D121}"
+ERA="${ERA:-Phase2C22I13M9}"
 GT="${GT:-auto:phase2_realistic_T35}"
 PU="${PU:-0}"
 PUINPUT="${PUINPUT:-}"
@@ -84,9 +85,8 @@ fi
 
 # --- sanity check of the NANO flavour (cmsDriver's own error is not very explicit)
 NANO_OK=1
-NANOKEY=""
-if [[ "${NANOSTEP}" == *@* ]]; then
-  NANOKEY="${NANOSTEP#*@}"; NANOKEY="${NANOKEY%%[,+]*}"
+NANOKEY="$(sed -nE 's/.*NANO:@([A-Za-z0-9]+).*/\1/p' <<<"${NANOSTEP}")"
+if [ -n "${NANOKEY}" ]; then
   if ! python3 - "${NANOKEY}" <<'PYEOF'
 import sys
 from PhysicsTools.NanoAOD.autoNANO import autoNANO

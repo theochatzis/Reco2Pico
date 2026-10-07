@@ -3,61 +3,27 @@
 # Local end-to-end test of the Phase-2 single-hadron gun chain
 #   step1 GEN-SIM -> step2 DIGI-RAW-HLT -> step3 RECO -> step4 NANO:@HGCALVal
 #
+# Run from a shell where cmsenv has been done.
+#
 # Usage:  run_gun_local.sh [NEVENTS] [PDGID]        (defaults: 10 211)
 #
 # Environment overrides:
-#   WORKAREA   [/eos/user/t/tchatzis/reco2pico]  parent of the CMSSW release area
-#   RELEASE    [CMSSW_16_1_0_pre2]
-#   SCRAM_ARCH [taken from "scram list -c CMSSW" when unset]
-#   REPO       [https://github.com/theochatzis/Reco2Pico.git]
-#   TESTDIR    [$CMSSW_BASE/src/gun_local_test]
+#   TESTDIR    [$CMSSW_BASE/src/gun_local_test]  where cfgs and outputs go
 #   plus everything make_gun_cfgs.sh understands (GEOM, ERA, GT, PU, PUINPUT, ...)
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
 NEVENTS="${1:-10}"
 PDGID="${2:-211}"
-WORKAREA="${WORKAREA:-/eos/user/t/tchatzis/reco2pico}"
-RELEASE="${RELEASE:-CMSSW_16_1_0_pre2}"
-REPO="${REPO:-https://github.com/theochatzis/Reco2Pico.git}"
 
 log() { echo "[run_gun_local] $*"; }
 
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-
-if [ -z "${SCRAM_ARCH:-}" ]; then
-  # "scram list -c CMSSW" prints: CMSSW  <release>  /cvmfs/cms.cern.ch/<arch>/cms/cmssw/<release>
-  SCRAM_ARCH="$(scram list -c CMSSW 2>/dev/null | awk -v r="${RELEASE}" '$2==r {print $3}' | head -n1 \
-                | sed -E 's#^/cvmfs/cms.cern.ch/([^/]+)/.*#\1#')"
-  if [ -z "${SCRAM_ARCH}" ]; then
-    log "ERROR: could not determine SCRAM_ARCH for ${RELEASE} from 'scram list -c CMSSW'; export SCRAM_ARCH explicitly"
-    exit 1
-  fi
-  export SCRAM_ARCH
-fi
-log "SCRAM_ARCH=${SCRAM_ARCH} RELEASE=${RELEASE} WORKAREA=${WORKAREA}"
-
-mkdir -p "${WORKAREA}"
-cd "${WORKAREA}"
-if [ ! -d "${RELEASE}/src" ]; then
-  log "creating release area ${WORKAREA}/${RELEASE}"
-  scram project CMSSW "${RELEASE}"
-fi
-cd "${RELEASE}/src"
-eval "$(scram runtime -sh)"
-log "CMSSW_BASE=${CMSSW_BASE}"
-
-if [ ! -d Reco2Pico/.git ]; then
-  log "cloning ${REPO}"
-  git clone "${REPO}" Reco2Pico
+if [ -z "${CMSSW_BASE:-}" ]; then
+  log "ERROR: CMSSW_BASE is not set; run cmsenv first"
+  exit 1
 fi
 
-GUNDIR="${CMSSW_BASE}/src/Reco2Pico/PicoProducer/python/samples_workflows/phase2_gun"
-touch "${GUNDIR}/../__init__.py" "${GUNDIR}/__init__.py"
-
-log "scram b"
-scram b -j 8 > "${CMSSW_BASE}/src/gun_local_scram.log" 2>&1 || { tail -n 40 "${CMSSW_BASE}/src/gun_local_scram.log"; exit 1; }
-
+GUNDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TESTDIR="${TESTDIR:-${CMSSW_BASE}/src/gun_local_test}"
 mkdir -p "${TESTDIR}"
 log "building cfgs in ${TESTDIR}/cfgs"
