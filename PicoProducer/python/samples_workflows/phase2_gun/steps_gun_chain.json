@@ -1,0 +1,5 @@
+[
+  {"cfg": "cfgs/step2_DIGIRAW_cfg.py"},
+  {"cfg": "cfgs/step3_RECO_cfg.py"},
+  {"cfg": "cfgs/step4_NANO_cfg.py"}
+]
