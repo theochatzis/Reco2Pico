@@ -1,5 +1,4 @@
 [
   {"cfg": "cfgs_pu200/step2_DIGIRAW_cfg.py"},
-  {"cfg": "cfgs_pu200/step3_RECO_cfg.py"},
-  {"cfg": "cfgs_pu200/step4_NANO_cfg.py"}
+  {"cfg": "cfgs_pu200/step3_RECO_cfg.py"}
 ]

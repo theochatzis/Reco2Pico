@@ -7,24 +7,33 @@ step chaining on HTCondor:
     step1  GEN,SIM                                  gun (EmptySource)      -> GEN-SIM
     step2  DIGI:pdigi_valid,L1TrackTrigger,L1,L1P2GT,DIGI2RAW,HLT:@relvalRun4  -> GEN-SIM-DIGI-RAW
     step3  RAW2DIGI,RECO,RECOSIM                                             -> GEN-SIM-RECO
-    step4  NANO:@HGCALVal                                                     -> NANOAODSIM
+    step4  ntuple definition (default hgcalval-nano = NANO:@HGCALVal)          -> NANOAODSIM
 
-Only the step-4 NANO file is staged out (`bdriver --save-intermediates` keeps the others).
+Steps 1-3 define the *sample*; step 4 is an *ntuple definition* chosen with
+`NTUPLE=<name>` from `../common/ntuples/` (`hgcalval-nano`, `hgcal-nano`,
+`phys-nano`, ...). Only the step-4 file is staged out (`bdriver
+--save-intermediates` keeps the others).
+
+The generic machinery (bdriver command-line contract, cmsDriver helpers, local
+test scaffolding, ntuple definitions, generic bdriver submission) lives in
+`../common/` and is shared with any other sample workflow; see
+`../common/README.md`. This directory only holds what is specific to the gun.
 
 ## Files
 
 | file | purpose |
 |------|---------|
 | `SingleHadronPGun_cfi.py` | cmsDriver generator fragment (`FlatRandomMultiParticlePGunProducer`, one particle per event, flat in p, eta, phi). Defaults: pi+ (211), p 1-200 GeV, 1.6 < eta < 2.9, full phi, no anti-particle, `firstRun=1`. |
-| `gun_varparsing_tail.py` | VarParsing snippet appended to every cfg. Adds `skipEvents`, `output`, `pdgId`, `pMin`, `pMax`, `etaMin`, `etaMax`, `seed` on top of the standard `analysis` options; applies gun parameters, per-job seeds and event/lumi offsets in the GEN step; sets input files / skipEvents in PoolSource steps; renames the output module (and `TFileService`) to `output=`. Marker `phase2_gun: VarParsing tail` keeps the append idempotent. |
-| `make_gun_cfgs.sh [OUTDIR]` | runs the four `cmsDriver.py --no_exec` commands and appends the tail. Env: `GEOM ERA GT GTGEN PU PUINPUT DIGISTEP NANOSTEP`. |
-| `run_gun_local.sh [NEVENTS] [PDGID]` | generates the cfgs in `$CMSSW_BASE/src/gun_local_test/cfgs`, runs the four steps locally and inspects the NANO branches. |
+| `gun_options.py` | the gun's extra VarParsing options (`pdgId pMin pMax etaMin etaMax`) and the GEN hook that applies them to `process.generator.PGunParameters`. |
+| `gun_varparsing_tail.py` | four-line snippet appended to every cfg: imports `common.varparsing.apply_varparsing` and `gun_options`, and calls `apply_varparsing(process, extra_options=GUN_OPTIONS, on_gen=apply_gun, tag='phase2_gun')`. The marker line `samples_workflows: VarParsing tail` keeps the append idempotent. |
+| `make_gun_cfgs.sh [OUTDIR]` | three `cmsDriver.py --no_exec` commands (steps 1-3) + the ntuple cfg from the `NTUPLE` definition, then appends the tail. Env: `GEOM ERA GT GTGEN PU PUINPUT DIGISTEP NTUPLE`. Output: `step1_GENSIM_cfg.py step2_DIGIRAW_cfg.py step3_RECO_cfg.py ntuple_<NTUPLE>_cfg.py`. |
+| `run_gun_local.sh [NEVENTS] [PDGID]` | generates the cfgs in `local_test/cfgs`, runs the four steps locally and inspects the ntuple branches (`NTUPLE_INSPECT` of the definition). Asks before wiping an existing `local_test/` (`CLEAN=yes|no` to skip the prompt, `TESTDIR=...` to relocate). |
 | `make_gun_dataset.py` | writes a bdriver dataset JSON with one virtual `gun://jobNNN` "file" per job (validated with `assert_dataset_data`). |
-| `steps_gun_chain.json` | bdriver `--steps` manifest for steps 2-4 (`cfgs/...`, resolved relative to the JSON). |
+| `steps_gun_chain.json` | *sample* steps manifest (steps 2-3, `cfgs/...` relative to the JSON). The ntuple step is appended at submission time. |
 | `steps_gun_chain_pu200.json` | same, pointing at `cfgs_pu200/...` for the PU200 recipe. |
-| `submit_gun_bdriver.sh [--submit]` | one bdriver job area per species (pip pim Kp Km p pbar). |
+| `submit_gun_bdriver.sh [--submit] [--dry-run]` | one bdriver job area per species (pip pim Kp Km p pbar): writes the dataset JSON, composes `datasets/steps_<tag>_<NTUPLE>.json` = sample steps + `cfgs/ntuple_<NTUPLE>_cfg.py`, and calls `../common/submit_bdriver_chain.sh`. |
 
-Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`.
+Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`, `local_test/`.
 
 ## How the pieces fit together
 
@@ -32,13 +41,13 @@ Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`.
   `cmsRun -j step1.xml cfg.py pdgId=.. pMin=.. pMax=.. etaMin=.. etaMax=.. maxEvents=M skipEvents=0 inputFiles=gun://jobNNN output=step1_out_NNN.root`
   and then each step of `steps.json` with
   `inputFiles=file:<previous> secondaryInputFiles= maxEvents=-1 skipEvents=0 output=<next>`.
-* The tail derives the job index from `job(\d+)` in `inputFiles` (fallback:
+* `common/varparsing.py` derives the job index from `job(\d+)` in `inputFiles` (fallback:
   `skipEvents // maxEvents`) and sets, on the GEN step,
   `initialSeed = (seed or 12345) + 1000*job` for every module of
   `RandomNumberGeneratorService` (generator, VtxSmeared, g4SimHits, mix, ...),
   `source.firstEvent = 1 + maxEvents*job` and `source.firstLuminosityBlock = 1 + job`.
   Every job therefore has unique event ids and statistically independent events.
-* In PoolSource steps the tail also recognises bdriver's `step1_out_NNN.root`
+* In PoolSource steps it also recognises bdriver's `step1_out_NNN.root`
   naming and offsets the seeds the same way, so that pile-up mixing in step 2
   is not identical in every job (the default `mix` seed would be).
 * The dataset JSON has `JOBS` entries of `EVENTS_PER_JOB` events; with
@@ -50,42 +59,205 @@ Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`.
 ./run_gun_local.sh 10 211
 ```
 
-This generates the cfgs and runs, in `$CMSSW_BASE/src/gun_local_test/`:
+This generates the cfgs and runs, in `local_test/` next to the script (override with
+`TESTDIR=...`). If that directory already exists the script shows its contents and
+asks whether to wipe it; `CLEAN=yes` or `CLEAN=no` answers non-interactively.
+Re-running on top of old outputs fails in cmsRun with
+`Fatal Root Error: @SUB=TStorageFactorySystem::Unlink Unsupported`, because the
+output module recreates the file and the storage adaptor refuses to delete the
+old one. The steps are:
 
 ```bash
 cmsRun -j step1.xml cfgs/step1_GENSIM_cfg.py inputFiles=gun://job000 maxEvents=10 skipEvents=0 output=step1.root pdgId=211 pMin=1 pMax=200 etaMin=1.6 etaMax=2.9
 cmsRun -j step2.xml cfgs/step2_DIGIRAW_cfg.py inputFiles=file:step1.root maxEvents=-1 skipEvents=0 output=step2.root
 cmsRun -j step3.xml cfgs/step3_RECO_cfg.py   inputFiles=file:step2.root maxEvents=-1 skipEvents=0 output=step3.root
-cmsRun -j step4.xml cfgs/step4_NANO_cfg.py   inputFiles=file:step3.root maxEvents=-1 skipEvents=0 output=step4_nano.root
+cmsRun -j step4.xml cfgs/ntuple_hgcalval-nano_cfg.py inputFiles=file:step3.root maxEvents=-1 skipEvents=0 output=step4_ntuple.root
 ```
 
-and finally prints OK/MISSING for the branch prefixes `ticlTrackstersCLUE3DHigh`,
-`ticlSimTrackstersfromCPs`, `TICLCandidates`, `GeneralTrack`, `hgcalLayerClusters`
-and the event count of `step4_nano.root`.
+and finally prints OK/MISSING for the branch prefixes of the ntuple definition
+(for `hgcalval-nano`: `ticlTrackstersCLUE3DHigh`, `ticlSimTrackstersfromCPs`,
+`TICLCandidates`, `GeneralTrack`, `HGCalLayerClusters`, `SimCl2CPWithFraction`)
+and the event count of `step4_ntuple.root` (`EMPTY` = branches exist but no table
+entry in any event; the script then fails). It finally writes
+`local_test/doc_<NTUPLE>.html` (+ `.csv`), the variable documentation of the
+ntuple: one table per collection with type, size, NanoAOD `doc` string and fill
+statistics (entries, distinct values, min/max, most-common fraction), a
+collections summary with mean multiplicity and a size pie chart, in the style of
+`workflows/doc_PicoAOD.html`. For any other file:
+`python3 ../common/make_ntuple_doc.py out_000.root -o doc.html --csv doc.csv`.
+`NTUPLE=hgcal-nano ./run_gun_local.sh` runs the same chain with another ntuple
+definition.
+
+On a 10-event pi+ sample the only collection empty in every event is
+`TICLCandidatesGsfTrackIdxs` (no electrons, hence no GSF tracks to link).
+Constant branches are placeholders of the release, not of this chain:
+`TICLCandidatesExtra_track_boundary*` is -999 because the candidate tracksters
+carry no `trackIdxs` in this release (the track->HGCAL-boundary extrapolation is
+available per track in `GeneralTrack_hgcal_*`, reachable through
+`TICLCandidatesTrackIdxs`), `HGCalLayerClusters_correctedEnergy` is -1 and the
+tracksters' `regressed_energy` is 0 (not computed in the offline TICL of this
+release), and the `GeneralTrack_isMuon`/`muon_*` columns are -1 (no muons).
 
 To only (re)generate the cfgs: `./make_gun_cfgs.sh [OUTDIR]` (default `OUTDIR=cfgs`).
+
+## Step 4: the NANO prevalidation trick
+
+### The problem
+
+`NANO:@HGCALVal` (`DPGAnalysis/HGCalNanoAOD`, sequence
+`hgcalNanoValidationSequence`) writes, on top of the reco tables of `NANO:@HGCAL`,
+the sim tracksters, the reco<->sim association tables, the layer clusters and the
+gen particles. Those tables consume products that `RAW2DIGI,RECO,RECOSIM` does
+**not** write:
+
+| product | made by |
+|---|---|
+| `ticlSimTracksters`, `ticlSimTrackstersfromCPs` | `ticlSimTrackstersTask` (`RecoHGCal/TICL/python/SimTracksters_cff.py`) |
+| `SimClusterToCaloParticleAssociation:simClusterToCaloParticleMap` | `hgcalAssociators` (`Validation/Configuration/python/hgcalSimValid_cff.py`) |
+| `allTrackstersToSimTrackstersAssociationsByHits:*` | `hgcalAssociators` |
+| `quickTrackAssociatorByHits` (needed by `trackingParticleGsfTrackAssociation` inside `ticlSimTrackstersTask`) | tracking prevalidation (`Validation/RecoTrack`) |
+
+In the release they are produced by the **prevalidation** part of the
+`VALIDATION` step (`globalPrevalidationHGCal = Sequence(hgcalAssociators,
+ticlSimTrackstersTask)` in `Validation/Configuration/python/globalValidation_cff.py`).
+The relval that exercises this flavour (`upgradeWFs['HGCALNanoVal']`, suffix
+`_HGCALNanoVal`) runs
+
+```
+-s RAW2DIGI,RECO,RECOSIM,PAT,NANO:@HGCALVal,VALIDATION:@phase2Validation+@miniAODValidation,DQM:@phase2+@miniAODDQM
+```
+
+i.e. NANO in the *same job* as the validation, so the products are simply there.
+Our chain runs NANO as a separate step on `step3.root`, and the first table dies with
+
+```
+An exception of category 'ProductNotFound' occurred while
+   [1] Running path 'nanoAOD_step'
+   [2] Calling method for module SimClusterCaloParticleFractionFlatTableProducer/'SimCl2CPOneToOneFlatTable'
+Looking for module label: SimClusterToCaloParticleAssociation
+Looking for productInstanceName: simClusterToCaloParticleMap
+```
+
+Merging steps 3 and 4 into one job is not an option here: the VarParsing tail
+requires one output module per step, and `VALIDATION` would also run all the DQM
+validators and add a DQMIO output.
+
+### The fix
+
+`../common/hgcalNanoPrevalidation.py` is a cmsDriver `--customise` function that re-uses the
+release Tasks instead of re-implementing anything, and attaches them to the NANO
+path:
+
+```python
+process.load('Configuration.StandardSequences.Accelerators_cff')  # resolves '@alpaka' ESProducers
+process.load('RecoHGCal.TICL.TICLGeom_cff')                       # TICLGeomLayersHost etc.
+process.load('Validation.Configuration.hgcalSimValid_cff')        # hgcalAssociators (Task)
+process.load('RecoHGCal.TICL.SimTracksters_cff')                  # ticlSimTrackstersTask
+process.load('RecoLocalCalo.HGCalRecProducers.recHitMapProducer_cff')
+process.load('SimTracker.TrackerHitAssociation.tpClusterProducer_cfi')
+process.load('SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi')
+process.load('SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi')
+process.load('SimGeneral.TrackingAnalysis.simHitTPAssociation_cfi')
+process.hgcalNanoPrevalidationInputsTask = cms.Task(process.recHitMapProducer,
+    process.tpClusterProducer, process.quickTrackAssociatorByHits,
+    process.trackingParticleRecoTrackAsssociation, process.simHitTPAssocProducer)
+process.nanoAOD_step.associate(process.hgcalNanoPrevalidationInputsTask,
+                               process.hgcalAssociators,
+                               process.ticlSimTrackstersTask)
+```
+
+Why this works: a `cms.Task` is *unscheduled*. Its modules run only when a
+module on the path consumes their product, and the framework orders them by
+dependency. So the associators and the sim-trackster producer run on demand right
+before the table producers, and nothing else from the `VALIDATION` step (DQM
+histogram fillers, harvesting, DQMIO output) is executed.
+
+Several things a NANO-only job lacks that a RECO job (or the tracking
+prevalidation) provides implicitly had to be added by hand. The first three
+showed up as hard errors; the last three are worse, because the consumers only
+**warn** and produce empty maps, so the sim tables of the NANO come out empty
+without the job failing (`ticlSimTracksters`, every `Reco*2Sim*` / `Sim*2*`
+table and `SimTICLCandidates` had 0 entries in every event):
+
+1. **TICL geometry ESProducers** (`RecoHGCal.TICL.TICLGeom_cff`), otherwise
+   `Cannot find EventSetup module to produce data of type "TICLGeomLayersHost"`.
+2. **Accelerators** (`Configuration.StandardSequences.Accelerators_cff`): the
+   geometry producers are `@alpaka` modules and without it you get
+   `Unable to find plugin 'TICLGeomESProducer@alpaka'`.
+3. **Track<->TrackingParticle associator** (`tpClusterProducer` +
+   `quickTrackAssociatorByHits`): `ticlSimTracksters` links sim tracksters to GSF
+   tracks via `trackingParticleGsfTrackAssociation`, which in the relval is fed by
+   the tracking prevalidation. Without it:
+   `ProductNotFound ... reco::TrackToTrackingParticleAssociator quickTrackAssociatorByHits`.
+4. **HGCAL hit map** (`recHitMapProducer`, `RecoLocalCalo.HGCalRecProducers.recHitMapProducer_cff`):
+   DetId->index map plus the `RefProdVector` of the `HGCalRecHit` collections; it
+   is a transient product of the local reco. Without it every associator logs
+   `Hit map not valid. Producing empty associator`, `RecHitCollections is invalid`,
+   `Missing MultiRecHitCollection` and the sim tracksters find no hits.
+5. **TrackingParticle<->generalTracks association**
+   (`trackingParticleRecoTrackAsssociation`, on top of `quickTrackAssociatorByHits`):
+   `SimTrackstersProducer` returns early with `Missing TP->RecoTrack association`.
+6. **SimTrack->TrackingParticle map** (`simHitTPAssocProducer`,
+   `SimGeneral.TrackingAnalysis.simHitTPAssociation_cfi`), read by
+   `ticlSimTracksters` once 5. is in place.
+
+Always check the sim tables for entries, not only for the presence of branches:
+`sw_inspect_nano` (used by `run_gun_local.sh`) now reports `EMPTY` and fails
+when a checked table has zero entries in every event, and the generated
+`doc_<NTUPLE>.html` flags empty collections and constant branches.
+
+### How it is wired in
+
+The customisation lives in `../common/hgcalNanoPrevalidation.py` (it is about
+`NANO:@HGCALVal`, not about the gun). The ntuple definition
+`../common/ntuples/hgcalval-nano.sh` sets
+
+```
+NTUPLE_CUSTOMISE='Reco2Pico/PicoProducer/samples_workflows/common/hgcalNanoPrevalidation.customise'
+```
+
+and `sw_make_ntuple_cfg` (in `../common/chain_lib.sh`) passes it as `--customise`
+to the ntuple `cmsDriver.py`. cmsDriver turns `A/B/file.func` into
+`from A.B.file import func`; the `python/` directory is implicit because scram
+links it into `$CMSSW_BASE/python`. The call ends up inside the generated
+`ntuple_hgcalval-nano_cfg.py` (`customising the process with customise from
+.../hgcalNanoPrevalidation`), so the Condor chain picks it up through the
+composed manifest with nothing else to configure.
+
+Cost: the associators and sim tracksters run once more in step 4 (they are not
+in `step3.root`); for a single-particle gun this is negligible next to RECO.
+The `hgcal-nano` definition (`NANO:@HGCAL`, reco tables only) does not need it
+and does not set it.
 
 ## Condor production
 
 ```bash
-./make_gun_cfgs.sh                       # -> cfgs/step{1..4}_*_cfg.py
+./make_gun_cfgs.sh                       # -> cfgs/step{1..3}_*_cfg.py + cfgs/ntuple_hgcalval-nano_cfg.py
 voms-proxy-init --voms cms
+./submit_gun_bdriver.sh --dry-run        # prints the bdriver commands only
 ./submit_gun_bdriver.sh                  # creates the job areas, no submission
 ./submit_gun_bdriver.sh --submit         # creates and submits
 ```
 
+Another ntuple: `NTUPLE=hgcal-nano ./make_gun_cfgs.sh` then
+`NTUPLE=hgcal-nano ./submit_gun_bdriver.sh ...` (the submit script refuses to
+run if `cfgs/ntuple_<NTUPLE>_cfg.py` is missing).
+
 Defaults (all overridable through the environment): `JOBS=200`,
 `EVENTS_PER_JOB=500`, `PMIN=1 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9`,
-`SPECIES="211 -211 321 -321 2212 -2212"`, `FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
+`SPECIES="211 -211 321 -321 2212 -2212"`, `NTUPLE=hgcalval-nano`,
+`FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
 `JOBAREA=jobs`, `OS=el9`, `RUNTIME=20:00:00`, `SEED=` (when set, passed as
 `seed=<n>` to all steps; job offsets are added on top).
 
-For each species the script writes `datasets/gun_<label>_p<PMIN>to<PMAX>.json`
-and calls
+For each species the script writes `datasets/gun_<label>_p<PMIN>to<PMAX>.json`,
+composes `datasets/steps_<tag>_<NTUPLE>.json` (absolute paths of
+`cfgs/step2_DIGIRAW_cfg.py`, `cfgs/step3_RECO_cfg.py`, `cfgs/ntuple_<NTUPLE>_cfg.py`)
+and, through `../common/submit_bdriver_chain.sh`, calls
 
 ```bash
 python3 $CMSSW_BASE/src/Reco2Pico/PicoProducer/scripts/bdriver \
-  -c cfgs/step1_GENSIM_cfg.py --steps steps_gun_chain.json -d datasets/gun_<label>_p1to200.json \
+  -c cfgs/step1_GENSIM_cfg.py --steps datasets/steps_<tag>_hgcalval-nano.json -d datasets/gun_<label>_p1to200.json \
   -o jobs/<tag> -fo /eos/user/t/tchatzis/phase2_gun/<tag> -n 500 -p 0 --name gun_<tag> \
   --JobFlavour tomorrow -t 20:00:00 --memory 4G --cpus 1 --disk-mb 8000 --os el9 [--submit] \
   pdgId=<pdg> pMin=1 pMax=200 etaMin=1.6 etaMax=2.9
@@ -110,7 +282,7 @@ second cfg set with pile-up in step 2:
 
 ```bash
 PU=200 PUINPUT='das:/RelValMinBias_14TeV/<campaign>-<GT>/GEN-SIM' ./make_gun_cfgs.sh cfgs_pu200
-CFGDIR=$PWD/cfgs_pu200 STEPS=$PWD/steps_gun_chain_pu200.json TAGSUFFIX=_pu200 ./submit_gun_bdriver.sh [--submit]
+CFGDIR=$PWD/cfgs_pu200 SAMPLE_STEPS=$PWD/steps_gun_chain_pu200.json TAGSUFFIX=_pu200 ./submit_gun_bdriver.sh [--submit]
 ```
 
 Only `mix` differs between `cfgs/` and `cfgs_pu200/`; step 1 is identical
@@ -150,8 +322,6 @@ much larger and the reconstruction much slower).
   `FlatRandomMultiParticlePGunProducer` with a single `PartID` is used instead.
 * The relval DIGI step includes `L1P2GT` (Phase-2 L1 global trigger emulation),
   which the `@relvalRun4` HLT menu consumes; it is kept in `DIGISTEP`.
-* `NANO:@HGCALVal` is **not** defined in `PhysicsTools.NanoAOD.autoNANO` of this
-  release, so `make_gun_cfgs.sh` writes steps 1-3, prints the available flavours
-  and exits with status 2 without `step4_NANO_cfg.py`. Override with
-  `NANOSTEP=NANO:@<flavour>` once an HGCAL/TICL NANO flavour is available (or
-  in a release that has it).
+* `NANO:@HGCALVal` cannot run standalone on a `RECOSIM` file; step 4 needs the
+  `hgcalNanoPrevalidation.py` customisation. See "Step 4: the NANO prevalidation
+  trick" above.
