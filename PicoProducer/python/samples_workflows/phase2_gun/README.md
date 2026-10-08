@@ -131,17 +131,21 @@ much larger and the reconstruction much slower).
    on EL9 workers. An older bdriver without `--os` hard-codes `el8` and
    re-executes inside `cmssw-el8`, which cannot run an `el9_amd64_gcc13` release.
 
-## Release-specific choices (CMSSW_16_1_0_pre2)
+## Release-specific choices (CMSSW_20_1_0_pre3)
 
-* Geometry/era/GT follow the Run4D121 relval workflow: `ExtendedRun4D121`,
-  era `Phase2C22I13M9`, GT `auto:phase2_realistic_T35`, HLT menu `@relvalRun4`.
-  D121 is the Phase-2 baseline since CMSSW_15_1_0_pre4 and the geometry of the
-  HGCAL/TICL relvals in the limited matrix (`CloseByPGun_CE_*`). Verify with
-  `runTheMatrix.py -w upgrade -n | grep -i Run4D121`. The GEN-SIM step uses
+* Geometry/era/GT follow the Run4D127 relval workflow: `ExtendedRun4D127`,
+  era `Phase2C26I13M9`, GT `auto:phase2_realistic_T35`, HLT menu `@relvalRun4`
+  (`HLT_75e33`, see `Configuration/HLT/python/autoHLT.py`).
+  D127 is the Phase-2 baseline since CMSSW_20_1_0_pre2 (`prefixDet=37600` in
+  `relval_Run4.py`) and the geometry of the HGCAL/TICL relvals in the limited
+  matrix (`CloseByPGun_CE_*`). D128 (workflow 38434.0) is the same detector with
+  the M16 muon geometry, "to be used for trigger studies"; it shares era, GT and
+  HLT menu. Verify with
+  `runTheMatrix.py -w upgrade -n -e -l 37634.0,37696.0`. The GEN-SIM step uses
   the `_13TeV` GT alias (HL-LHC SimBeamSpot payload for
   `--beamspot DBrealisticHLLHC`), reproduced by `GTGEN`. Override with
-  `GEOM=... ERA=... GT=...` (e.g. `GEOM=D110 ERA=Phase2C17I13M9` for the
-  previous baseline).
+  `GEOM=... ERA=... GT=...` (e.g. `GEOM=D128`, or `GEOM=D121 ERA=Phase2C22I13M9`
+  for the previous baseline).
 * `FlatRandomPGunProducer` does not exist in `IOMC/ParticleGuns`;
   `FlatRandomMultiParticlePGunProducer` with a single `PartID` is used instead.
 * The relval DIGI step includes `L1P2GT` (Phase-2 L1 global trigger emulation),

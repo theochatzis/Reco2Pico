@@ -10,8 +10,8 @@
 # Usage:  make_gun_cfgs.sh [OUTDIR]          (default OUTDIR = <this dir>/cfgs)
 #
 # Environment overrides (defaults in brackets):
-#   GEOM     [D121]                      -> --geometry ExtendedRun4$GEOM
-#   ERA      [Phase2C22I13M9]            -> --era
+#   GEOM     [D127]                      -> --geometry ExtendedRun4$GEOM
+#   ERA      [Phase2C26I13M9]            -> --era
 #   GT       [auto:phase2_realistic_T35] -> --conditions for steps 2-4
 #   GTGEN    [${GT}_13TeV if that alias exists, else $GT]
 #                                        -> --conditions for step 1 (the relval
@@ -25,12 +25,14 @@
 #   NEVT     [10]                        -> -n of the cmsDriver commands (dummy)
 #
 # !! Verify GEOM / ERA / GT against the release you are running in:
-#      python3 -c "from Configuration.PyReleaseValidation.upgradeWorkflowComponents import upgradeProperties as p; print(p['Run4']['Run4D121'])"
-#      runTheMatrix.py -w upgrade -n | grep -i Run4D121
-#    D121 is the Phase-2 baseline since CMSSW_15_1_0_pre4 (Configuration/Geometry/README.md)
-#    and the geometry of the HGCAL/TICL relvals in the limited matrix (CloseByPGun_CE_*).
-#    In CMSSW_16_1_0_pre2 the Run4D121 workflow uses GT auto:phase2_realistic_T35,
-#    era Phase2C22I13M9 and HLT menu @relvalRun4.
+#      runTheMatrix.py -w upgrade -n -e -l 37634.0,37696.0     (TTbar / CloseByPGun CE_E_Front_120um)
+#      python3 -c "from Configuration.PyReleaseValidation.upgradeWorkflowComponents import upgradeProperties as p; print(p['Run4']['Run4D127'])"
+#    D127 is the Phase-2 baseline since CMSSW_20_1_0_pre2 (Configuration/Geometry/README.md,
+#    prefixDet=37600 in relval_Run4.py) and the geometry of the HGCAL/TICL relvals in the
+#    limited matrix (CloseByPGun_CE_*). D128 (workflow 38434.0) is the same with the M16
+#    muon geometry, "to be used for trigger studies"; same era/GT/HLT menu.
+#    In CMSSW_20_1_0_pre3 the Run4D127 workflow uses GT auto:phase2_realistic_T35,
+#    era Phase2C26I13M9 and HLT menu @relvalRun4 (= HLT_75e33, Configuration/HLT/autoHLT.py).
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
@@ -44,8 +46,8 @@ OUTDIR="${1:-${SCRIPT_DIR}/cfgs}"
 mkdir -p "${OUTDIR}"
 OUTDIR="$(cd "${OUTDIR}" && pwd -P)"
 
-GEOM="${GEOM:-D121}"
-ERA="${ERA:-Phase2C22I13M9}"
+GEOM="${GEOM:-D127}"
+ERA="${ERA:-Phase2C26I13M9}"
 GT="${GT:-auto:phase2_realistic_T35}"
 PU="${PU:-0}"
 PUINPUT="${PUINPUT:-}"
