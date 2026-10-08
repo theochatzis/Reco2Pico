@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>phase2_gun hgcalval-nano (10 events, pdgId 211)</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 2rem; max-width: 1700px; }
+h1 { margin-bottom: 0.3rem; }
+.subtitle { color: #555; margin-bottom: 2rem; }
+h2 { margin-top: 3rem; padding-bottom: 0.3rem; border-bottom: 2px solid #cccccc; }
+table { width: 100%; margin-top: 1rem; margin-bottom: 2rem; }
+td, th { vertical-align: top; padding: 6px; }
+code { background: #f3f3f3; padding: 2px 4px; border-radius: 4px; }
+tr.empty td { background: #fde8e8; }
+tr.const td { background: #fff6dd; }
+.size-summary { font-size: 0.95rem; color: #333; margin: 0.8rem 0; }
+.legend { font-size: 0.9rem; color: #444; }
+.chart-box { width: 100%; max-width: 900px; height: 520px; margin: 1rem 0 3rem 0; }
+</style></head><body>
+<h1>phase2_gun hgcalval-nano (10 events, pdgId 211)</h1>
+<p class="subtitle">Automatically generated from the "Events" TTree of <code>step4_ntuple.root</code>.<br>
+Events in file: 10; statistics computed on 10 events.</p>
+<p class="legend">Rows shaded red: collection empty in every event. Rows shaded yellow: branch with a
+single value in all entries (constant or placeholder such as -999 / -1). "Most common" is the fraction of
+entries equal to the most frequent value.</p>
+<h2 id="summary">Collections</h2>
+<table id="summary-table" class="display compact cell-border">
+<thead><tr><th>Collection</th><th>Mean multiplicity</th><th>Events with &ge;1</th><th>Size [KB/event]</th><th>Status</th></tr></thead>
+<tbody><tr class=""><td><a href="#Event"><code>Event</code></a></td><td></td><td></td><td>0.0712</td><td></td></tr>
+<tr class=""><td><a href="#DST"><code>DST</code></a></td><td></td><td></td><td>0.0091</td><td></td></tr>
+<tr class=""><td><a href="#GSFTrack"><code>GSFTrack</code></a></td><td>0.1</td><td>10%</td><td>0.3599</td><td>sparse</td></tr>
+<tr class=""><td><a href="#GeneralTrack"><code>GeneralTrack</code></a></td><td>1</td><td>100%</td><td>0.5084</td><td></td></tr>
+<tr class=""><td><a href="#HGCalGenPart"><code>HGCalGenPart</code></a></td><td>1</td><td>100%</td><td>0.1813</td><td></td></tr>
+<tr class=""><td><a href="#HGCalLayerClusters"><code>HGCalLayerClusters</code></a></td><td>369</td><td>100%</td><td>5.7713</td><td></td></tr>
+<tr class=""><td><a href="#HLT"><code>HLT</code></a></td><td></td><td></td><td>0.3520</td><td></td></tr>
+<tr class=""><td><a href="#L1TrackTrigger"><code>L1TrackTrigger</code></a></td><td></td><td></td><td>0.0096</td><td></td></tr>
+<tr class=""><td><a href="#L1simulation"><code>L1simulation</code></a></td><td></td><td></td><td>0.0094</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlCandidate2SimCPByHits"><code>RecoticlCandidate2SimCPByHits</code></a></td><td>3.6</td><td>100%</td><td>0.0361</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlCandidate2SimCPByHitsLinks"><code>RecoticlCandidate2SimCPByHitsLinks</code></a></td><td>3.6</td><td>100%</td><td>0.0940</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlCandidate2SimSCByHits"><code>RecoticlCandidate2SimSCByHits</code></a></td><td>3.6</td><td>100%</td><td>0.0381</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlCandidate2SimSCByHitsLinks"><code>RecoticlCandidate2SimSCByHitsLinks</code></a></td><td>12.6</td><td>100%</td><td>0.1711</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinks2SimCPByHits"><code>RecoticlTracksterLinks2SimCPByHits</code></a></td><td>3.8</td><td>100%</td><td>0.0376</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinks2SimCPByHitsLinks"><code>RecoticlTracksterLinks2SimCPByHitsLinks</code></a></td><td>3.8</td><td>100%</td><td>0.0976</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinks2SimSCByHits"><code>RecoticlTracksterLinks2SimSCByHits</code></a></td><td>3.8</td><td>100%</td><td>0.0396</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinks2SimSCByHitsLinks"><code>RecoticlTracksterLinks2SimSCByHitsLinks</code></a></td><td>13.1</td><td>100%</td><td>0.1766</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits"><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits</code></a></td><td>1</td><td>80%</td><td>0.0400</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks"><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks</code></a></td><td>1</td><td>80%</td><td>0.0814</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits"><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits</code></a></td><td>1</td><td>80%</td><td>0.0400</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks"><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks</code></a></td><td>3.8</td><td>80%</td><td>0.1085</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTrackstersCLUE3DHigh2SimCPByHits"><code>RecoticlTrackstersCLUE3DHigh2SimCPByHits</code></a></td><td>6.3</td><td>100%</td><td>0.0401</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks"><code>RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks</code></a></td><td>6.3</td><td>100%</td><td>0.1129</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTrackstersCLUE3DHigh2SimSCByHits"><code>RecoticlTrackstersCLUE3DHigh2SimSCByHits</code></a></td><td>6.3</td><td>100%</td><td>0.0425</td><td></td></tr>
+<tr class=""><td><a href="#RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks"><code>RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks</code></a></td><td>15.6</td><td>100%</td><td>0.1918</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlCandidateByHits"><code>SimCP2ticlCandidateByHits</code></a></td><td>1</td><td>100%</td><td>0.0321</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlCandidateByHitsLinks"><code>SimCP2ticlCandidateByHitsLinks</code></a></td><td>3.6</td><td>100%</td><td>0.0960</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTracksterLinksByHits"><code>SimCP2ticlTracksterLinksByHits</code></a></td><td>1</td><td>100%</td><td>0.0336</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTracksterLinksByHitsLinks"><code>SimCP2ticlTracksterLinksByHitsLinks</code></a></td><td>3.8</td><td>100%</td><td>0.0995</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTracksterLinksSuperclusteringDNNByHits"><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHits</code></a></td><td>1</td><td>100%</td><td>0.0389</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks"><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></a></td><td>1</td><td>80%</td><td>0.0799</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTrackstersCLUE3DHighByHits"><code>SimCP2ticlTrackstersCLUE3DHighByHits</code></a></td><td>1</td><td>100%</td><td>0.0354</td><td></td></tr>
+<tr class=""><td><a href="#SimCP2ticlTrackstersCLUE3DHighByHitsLinks"><code>SimCP2ticlTrackstersCLUE3DHighByHitsLinks</code></a></td><td>6.3</td><td>100%</td><td>0.1241</td><td></td></tr>
+<tr class=""><td><a href="#SimCl2CPWithFraction"><code>SimCl2CPWithFraction</code></a></td><td>7</td><td>100%</td><td>0.0734</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlCandidateByHits"><code>SimSC2ticlCandidateByHits</code></a></td><td>6.9</td><td>100%</td><td>0.0400</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlCandidateByHitsLinks"><code>SimSC2ticlCandidateByHitsLinks</code></a></td><td>12.6</td><td>100%</td><td>0.1719</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTracksterLinksByHits"><code>SimSC2ticlTracksterLinksByHits</code></a></td><td>6.9</td><td>100%</td><td>0.0419</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTracksterLinksByHitsLinks"><code>SimSC2ticlTracksterLinksByHitsLinks</code></a></td><td>13.1</td><td>100%</td><td>0.1777</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTracksterLinksSuperclusteringDNNByHits"><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHits</code></a></td><td>6.9</td><td>100%</td><td>0.0444</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks"><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></a></td><td>3.8</td><td>80%</td><td>0.1050</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTrackstersCLUE3DHighByHits"><code>SimSC2ticlTrackstersCLUE3DHighByHits</code></a></td><td>6.9</td><td>100%</td><td>0.0440</td><td></td></tr>
+<tr class=""><td><a href="#SimSC2ticlTrackstersCLUE3DHighByHitsLinks"><code>SimSC2ticlTrackstersCLUE3DHighByHitsLinks</code></a></td><td>15.6</td><td>100%</td><td>0.1992</td><td></td></tr>
+<tr class=""><td><a href="#SimTICLCandidates"><code>SimTICLCandidates</code></a></td><td>1</td><td>100%</td><td>0.3969</td><td></td></tr>
+<tr class=""><td><a href="#SimTICLCandidatesExtra"><code>SimTICLCandidatesExtra</code></a></td><td>6.9</td><td>100%</td><td>0.2291</td><td></td></tr>
+<tr class=""><td><a href="#SimTICLCandidatesGsfTrackIdxs"><code>SimTICLCandidatesGsfTrackIdxs</code></a></td><td>0.1</td><td>10%</td><td>0.0293</td><td>sparse</td></tr>
+<tr class=""><td><a href="#SimTICLCandidatesTrackIdxs"><code>SimTICLCandidatesTrackIdxs</code></a></td><td>1</td><td>100%</td><td>0.0322</td><td></td></tr>
+<tr class=""><td><a href="#TICLCandidates"><code>TICLCandidates</code></a></td><td>3.6</td><td>100%</td><td>0.5207</td><td></td></tr>
+<tr class=""><td><a href="#TICLCandidatesExtra"><code>TICLCandidatesExtra</code></a></td><td>3.6</td><td>100%</td><td>0.1992</td><td></td></tr>
+<tr class="empty"><td><a href="#TICLCandidatesGsfTrackIdxs"><code>TICLCandidatesGsfTrackIdxs</code></a></td><td>0</td><td>0%</td><td>0.0283</td><td>EMPTY</td></tr>
+<tr class=""><td><a href="#TICLCandidatesTrackIdxs"><code>TICLCandidatesTrackIdxs</code></a></td><td>0.9</td><td>90%</td><td>0.0312</td><td></td></tr>
+<tr class=""><td><a href="#linkedTracksters"><code>linkedTracksters</code></a></td><td>3.8</td><td>100%</td><td>0.0351</td><td></td></tr>
+<tr class=""><td><a href="#ticlCandidate"><code>ticlCandidate</code></a></td><td>3.6</td><td>100%</td><td>0.5282</td><td></td></tr>
+<tr class=""><td><a href="#ticlCandidatevertices"><code>ticlCandidatevertices</code></a></td><td>74.8</td><td>100%</td><td>0.1396</td><td></td></tr>
+<tr class=""><td><a href="#ticlSimTracksters"><code>ticlSimTracksters</code></a></td><td>6.9</td><td>100%</td><td>1.1349</td><td></td></tr>
+<tr class=""><td><a href="#ticlSimTrackstersfromCPs"><code>ticlSimTrackstersfromCPs</code></a></td><td>1</td><td>100%</td><td>0.6112</td><td></td></tr>
+<tr class=""><td><a href="#ticlSimTrackstersfromCPsvertices"><code>ticlSimTrackstersfromCPsvertices</code></a></td><td>369</td><td>100%</td><td>0.5843</td><td></td></tr>
+<tr class=""><td><a href="#ticlSimTrackstersvertices"><code>ticlSimTrackstersvertices</code></a></td><td>413</td><td>100%</td><td>0.9096</td><td></td></tr>
+<tr class=""><td><a href="#ticlTracksterLinks"><code>ticlTracksterLinks</code></a></td><td>3.8</td><td>100%</td><td>0.5434</td><td></td></tr>
+<tr class=""><td><a href="#ticlTracksterLinksSuperclusteringDNN"><code>ticlTracksterLinksSuperclusteringDNN</code></a></td><td>1</td><td>80%</td><td>0.3948</td><td></td></tr>
+<tr class=""><td><a href="#ticlTracksterLinksSuperclusteringDNNvertices"><code>ticlTracksterLinksSuperclusteringDNNvertices</code></a></td><td>24.3</td><td>80%</td><td>0.0862</td><td></td></tr>
+<tr class=""><td><a href="#ticlTracksterLinksvertices"><code>ticlTracksterLinksvertices</code></a></td><td>74.8</td><td>100%</td><td>0.1380</td><td></td></tr>
+<tr class=""><td><a href="#ticlTrackstersCLUE3DHigh"><code>ticlTrackstersCLUE3DHigh</code></a></td><td>6.3</td><td>100%</td><td>0.7140</td><td></td></tr>
+<tr class=""><td><a href="#ticlTrackstersCLUE3DHighvertices"><code>ticlTrackstersCLUE3DHighvertices</code></a></td><td>77.9</td><td>100%</td><td>0.1370</td><td></td></tr></tbody></table>
+
+<h2 id="Event">Event</h2>
+<p class="size-summary"><b>Total size:</b> 0.071191 KB/event</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>HLTriggerFinalPath</code></td><td><code>bool</code></td><td>0.009473</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>bunchCrossing</code></td><td><code>uint32_t</code></td><td>0.011914</td><td>10</td><td>1</td><td>4.295e+09</td><td>4.295e+09</td><td>100%</td><td>bunchCrossing/i</td></tr>
+<tr class=""><td><code>event</code></td><td><code>uint64_t</code></td><td>0.015039</td><td>10</td><td>10</td><td>1</td><td>10</td><td>10%</td><td>event/l</td></tr>
+<tr class="const"><td><code>luminosityBlock</code></td><td><code>uint32_t</code></td><td>0.012109</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>luminosityBlock/i</td></tr>
+<tr class="const"><td><code>orbitNumber</code></td><td><code>uint32_t</code></td><td>0.011719</td><td>10</td><td>1</td><td>4.295e+09</td><td>4.295e+09</td><td>100%</td><td>orbitNumber/i</td></tr>
+<tr class="const"><td><code>run</code></td><td><code>uint32_t</code></td><td>0.010937</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>run/i</td></tr></tbody></table>
+<h2 id="DST">DST</h2>
+<p class="size-summary"><b>Total size:</b> 0.009082 KB/event</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>DST_PFScouting</code></td><td><code>bool</code></td><td>0.009082</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr></tbody></table>
+<h2 id="GSFTrack">GSFTrack</h2>
+<p class="size-summary"><b>Total size:</b> 0.359863 KB/event &nbsp; <b>Mean multiplicity:</b> 0.1 &nbsp; <b>Events with &ge;1:</b> 10%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>GSFTrack_charge</code></td><td><code>int32_t[]</code></td><td>0.013281</td><td>1</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>GSF track charge</td></tr>
+<tr class=""><td><code>GSFTrack_chargeMode</code></td><td><code>int32_t[]</code></td><td>0.013672</td><td>1</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>GSF track charge Mode</td></tr>
+<tr class=""><td><code>GSFTrack_eta</code></td><td><code>float[]</code></td><td>0.012988</td><td>1</td><td>1</td><td>1.874</td><td>1.874</td><td>100%</td><td>GSF track pseudorapidity</td></tr>
+<tr class=""><td><code>GSFTrack_etaMode</code></td><td><code>float[]</code></td><td>0.013379</td><td>1</td><td>1</td><td>1.874</td><td>1.874</td><td>100%</td><td>GSF track Mode pseudorapidity</td></tr>
+<tr class=""><td><code>GSFTrack_etaModeError</code></td><td><code>float[]</code></td><td>0.013867</td><td>1</td><td>1</td><td>9.073e-05</td><td>9.073e-05</td><td>100%</td><td>GSF track Mode pseudorapidity Error</td></tr>
+<tr class=""><td><code>GSFTrack_lambdaMode</code></td><td><code>float[]</code></td><td>0.013672</td><td>1</td><td>1</td><td>1.266</td><td>1.266</td><td>100%</td><td>GSF track lambda Mode</td></tr>
+<tr class=""><td><code>GSFTrack_lambdaModeError</code></td><td><code>float[]</code></td><td>0.014160</td><td>1</td><td>1</td><td>2.721e-05</td><td>2.721e-05</td><td>100%</td><td>GSF track lambda Mode Error</td></tr>
+<tr class=""><td><code>GSFTrack_nhits</code></td><td><code>int32_t[]</code></td><td>0.013184</td><td>1</td><td>1</td><td>11</td><td>11</td><td>100%</td><td>GSF track nHits</td></tr>
+<tr class=""><td><code>GSFTrack_p</code></td><td><code>float[]</code></td><td>0.012793</td><td>1</td><td>1</td><td>199.8</td><td>199.8</td><td>100%</td><td>GSF track momentum magnitude [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_pMode</code></td><td><code>float[]</code></td><td>0.013184</td><td>1</td><td>1</td><td>180.2</td><td>180.2</td><td>100%</td><td>GSF track momentum Mode [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_phi</code></td><td><code>float[]</code></td><td>0.012988</td><td>1</td><td>1</td><td>-0.1722</td><td>-0.1722</td><td>100%</td><td>GSF track phi angle [rad]</td></tr>
+<tr class=""><td><code>GSFTrack_phiMode</code></td><td><code>float[]</code></td><td>0.013379</td><td>1</td><td>1</td><td>-0.1721</td><td>-0.1721</td><td>100%</td><td>GSF track phi angle Mode [rad]</td></tr>
+<tr class=""><td><code>GSFTrack_phiModeError</code></td><td><code>float[]</code></td><td>0.013867</td><td>1</td><td>1</td><td>0.0001057</td><td>0.0001057</td><td>100%</td><td>GSF track phi angle Mode Error</td></tr>
+<tr class=""><td><code>GSFTrack_pt</code></td><td><code>float[]</code></td><td>0.012891</td><td>1</td><td>1</td><td>59.91</td><td>59.91</td><td>100%</td><td>GSF track p_T [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_ptMode</code></td><td><code>float[]</code></td><td>0.013281</td><td>1</td><td>1</td><td>54.04</td><td>54.04</td><td>100%</td><td>GSF track p_T Mode [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_ptModeError</code></td><td><code>float[]</code></td><td>0.013770</td><td>1</td><td>1</td><td>2.241</td><td>2.241</td><td>100%</td><td>GSF track p_T Mode Error</td></tr>
+<tr class=""><td><code>GSFTrack_pxMode</code></td><td><code>float[]</code></td><td>0.013281</td><td>1</td><td>1</td><td>53.24</td><td>53.24</td><td>100%</td><td>GSF track px Mode [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_pyMode</code></td><td><code>float[]</code></td><td>0.013281</td><td>1</td><td>1</td><td>-9.253</td><td>-9.253</td><td>100%</td><td>GSF track py Mode [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_pzMode</code></td><td><code>float[]</code></td><td>0.013281</td><td>1</td><td>1</td><td>171.9</td><td>171.9</td><td>100%</td><td>GSF track pz Mode [GeV]</td></tr>
+<tr class=""><td><code>GSFTrack_qoverpMode</code></td><td><code>float[]</code></td><td>0.013672</td><td>1</td><td>1</td><td>0.00555</td><td>0.00555</td><td>100%</td><td>GSF track qoverp Mode</td></tr>
+<tr class=""><td><code>GSFTrack_qoverpModeError</code></td><td><code>float[]</code></td><td>0.014160</td><td>1</td><td>1</td><td>0.0002301</td><td>0.0002301</td><td>100%</td><td>GSF track qoverp Mode Error</td></tr>
+<tr class=""><td><code>GSFTrack_thetaMode</code></td><td><code>float[]</code></td><td>0.013574</td><td>1</td><td>1</td><td>0.3046</td><td>0.3046</td><td>100%</td><td>GSF track theta Mode</td></tr>
+<tr class=""><td><code>GSFTrack_thetaModeError</code></td><td><code>float[]</code></td><td>0.014063</td><td>1</td><td>1</td><td>2.721e-05</td><td>2.721e-05</td><td>100%</td><td>GSF track theta Mode Error</td></tr>
+<tr class=""><td><code>GSFTrack_vx</code></td><td><code>float[]</code></td><td>0.012891</td><td>1</td><td>1</td><td>0.0001089</td><td>0.0001089</td><td>100%</td><td>GSF track vertex x [cm]</td></tr>
+<tr class=""><td><code>GSFTrack_vy</code></td><td><code>float[]</code></td><td>0.012891</td><td>1</td><td>1</td><td>0.0005727</td><td>0.0005727</td><td>100%</td><td>GSF track vertex y [cm]</td></tr>
+<tr class=""><td><code>GSFTrack_vz</code></td><td><code>float[]</code></td><td>0.012891</td><td>1</td><td>1</td><td>-0.8809</td><td>-0.8809</td><td>100%</td><td>GSF track vertex z [cm]</td></tr>
+<tr class=""><td><code>nGSFTrack</code></td><td><code>int32_t</code></td><td>0.011523</td><td>10</td><td>2</td><td>0</td><td>1</td><td>90%</td><td>GSF tracks</td></tr></tbody></table>
+<h2 id="GeneralTrack">GeneralTrack</h2>
+<p class="size-summary"><b>Total size:</b> 0.508398 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>GeneralTrack_charge</code></td><td><code>int32_t[]</code></td><td>0.017188</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>track charge</td></tr>
+<tr class=""><td><code>GeneralTrack_eta</code></td><td><code>float[]</code></td><td>0.016895</td><td>10</td><td>10</td><td>1.731</td><td>2.872</td><td>10%</td><td>track pseudorapidity</td></tr>
+<tr class=""><td><code>GeneralTrack_etaErr</code></td><td><code>float[]</code></td><td>0.017188</td><td>10</td><td>10</td><td>9.728e-05</td><td>0.0003862</td><td>10%</td><td>track eta error</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_eta</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>1.732</td><td>2.858</td><td>10%</td><td>Track eta at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_phi</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>-2.767</td><td>3.077</td><td>10%</td><td>Track phi at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_px</code></td><td><code>float[]</code></td><td>0.017383</td><td>10</td><td>10</td><td>-22.78</td><td>50.76</td><td>10%</td><td>Track Px at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_py</code></td><td><code>float[]</code></td><td>0.017383</td><td>10</td><td>10</td><td>-10.86</td><td>38.05</td><td>10%</td><td>Track Py at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_pz</code></td><td><code>float[]</code></td><td>0.017383</td><td>10</td><td>10</td><td>51.78</td><td>176.9</td><td>10%</td><td>Track Pz at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_x</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>-43.62</td><td>99.86</td><td>10%</td><td>Track X position at HGCal boundary</td></tr>
+<tr class=""><td><code>GeneralTrack_hgcal_y</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>-64.18</td><td>88.15</td><td>10%</td><td>Track Y position at HGCal boundary</td></tr>
+<tr class="const"><td><code>GeneralTrack_hgcal_z</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>1</td><td>322.2</td><td>322.2</td><td>100%</td><td>Track Z position at HGCal boundary</td></tr>
+<tr class="const"><td><code>GeneralTrack_isMuon</code></td><td><code>int32_t[]</code></td><td>0.017188</td><td>10</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>1 if PFMuonAlgo::isMuon, 0 otherwise, -1 if no muon</td></tr>
+<tr class="const"><td><code>GeneralTrack_isTrackerMuon</code></td><td><code>int32_t[]</code></td><td>0.017871</td><td>10</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>1 if tracker muon, -1 if no muon</td></tr>
+<tr class=""><td><code>GeneralTrack_lambdaErr</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>2.419e-05</td><td>6.618e-05</td><td>10%</td><td>track lambda error</td></tr>
+<tr class=""><td><code>GeneralTrack_missingOuterHits</code></td><td><code>uint8_t[]</code></td><td>0.015234</td><td>10</td><td>3</td><td>0</td><td>2</td><td>60%</td><td>number of missing outer hits</td></tr>
+<tr class="const"><td><code>GeneralTrack_muon_csc_hits</code></td><td><code>int32_t[]</code></td><td>0.017871</td><td>10</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>ST muon CSC hits (-1 if no muon)</td></tr>
+<tr class="const"><td><code>GeneralTrack_muon_dt_hits</code></td><td><code>int32_t[]</code></td><td>0.017773</td><td>10</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>ST muon DT hits (-1 if no muon)</td></tr>
+<tr class="const"><td><code>GeneralTrack_muon_type</code></td><td><code>int32_t[]</code></td><td>0.017480</td><td>10</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>muon type (-1 if no muon)</td></tr>
+<tr class=""><td><code>GeneralTrack_nhits</code></td><td><code>uint16_t[]</code></td><td>0.015137</td><td>10</td><td>8</td><td>9</td><td>28</td><td>20%</td><td>number of valid hits</td></tr>
+<tr class=""><td><code>GeneralTrack_p</code></td><td><code>float[]</code></td><td>0.016699</td><td>10</td><td>10</td><td>55.15</td><td>183.4</td><td>10%</td><td>track momentum magnitude [GeV]</td></tr>
+<tr class=""><td><code>GeneralTrack_phi</code></td><td><code>float[]</code></td><td>0.016895</td><td>10</td><td>10</td><td>-2.755</td><td>3.087</td><td>10%</td><td>track phi angle [rad]</td></tr>
+<tr class=""><td><code>GeneralTrack_phiErr</code></td><td><code>float[]</code></td><td>0.017188</td><td>10</td><td>10</td><td>7.408e-05</td><td>0.0003569</td><td>10%</td><td>track phi error</td></tr>
+<tr class=""><td><code>GeneralTrack_pt</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>7.834</td><td>51.69</td><td>10%</td><td>track p_T [GeV]</td></tr>
+<tr class=""><td><code>GeneralTrack_ptErr</code></td><td><code>float[]</code></td><td>0.017090</td><td>10</td><td>10</td><td>0.1558</td><td>0.8264</td><td>10%</td><td>track p_T error [GeV]</td></tr>
+<tr class=""><td><code>GeneralTrack_qoverpErr</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>7.011e-05</td><td>0.0005033</td><td>10%</td><td>q/p error</td></tr>
+<tr class=""><td><code>GeneralTrack_trackLambda</code></td><td><code>float[]</code></td><td>0.017676</td><td>10</td><td>10</td><td>1.22</td><td>1.458</td><td>10%</td><td>track lambda</td></tr>
+<tr class=""><td><code>GeneralTrack_vx</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-0.0005698</td><td>0.0008569</td><td>10%</td><td>track vertex x [cm]</td></tr>
+<tr class=""><td><code>GeneralTrack_vy</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-0.0008737</td><td>0.0006464</td><td>10%</td><td>track vertex y [cm]</td></tr>
+<tr class=""><td><code>GeneralTrack_vz</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-4.918</td><td>5.982</td><td>10%</td><td>track vertex z [cm]</td></tr>
+<tr class="const"><td><code>nGeneralTrack</code></td><td><code>int32_t</code></td><td>0.011914</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>General reconstructed tracks</td></tr></tbody></table>
+<h2 id="HGCalGenPart">HGCalGenPart</h2>
+<p class="size-summary"><b>Total size:</b> 0.181348 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>HGCalGenPart_energy</code></td><td><code>float[]</code></td><td>0.017188</td><td>10</td><td>10</td><td>56.08</td><td>183.1</td><td>10%</td><td>gen particle energy</td></tr>
+<tr class=""><td><code>HGCalGenPart_eta</code></td><td><code>float[]</code></td><td>0.016895</td><td>10</td><td>10</td><td>1.731</td><td>2.872</td><td>10%</td><td>gen particle eta</td></tr>
+<tr class="const"><td><code>HGCalGenPart_mass</code></td><td><code>float[]</code></td><td>0.016992</td><td>10</td><td>1</td><td>0.1396</td><td>0.1396</td><td>100%</td><td>gen particle mass</td></tr>
+<tr class="const"><td><code>HGCalGenPart_pdgId</code></td><td><code>int32_t[]</code></td><td>0.017090</td><td>10</td><td>1</td><td>211</td><td>211</td><td>100%</td><td>gen particle PDG ID</td></tr>
+<tr class=""><td><code>HGCalGenPart_phi</code></td><td><code>float[]</code></td><td>0.016895</td><td>10</td><td>10</td><td>-2.755</td><td>3.087</td><td>10%</td><td>gen particle phi</td></tr>
+<tr class=""><td><code>HGCalGenPart_pt</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>7.854</td><td>51.66</td><td>10%</td><td>gen particle pT</td></tr>
+<tr class="const"><td><code>HGCalGenPart_status</code></td><td><code>int32_t[]</code></td><td>0.017188</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>gen particle status</td></tr>
+<tr class=""><td><code>HGCalGenPart_vx</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-0.00168</td><td>0.0009906</td><td>10%</td><td>gen particle vx</td></tr>
+<tr class=""><td><code>HGCalGenPart_vy</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-0.0001643</td><td>0.0005229</td><td>10%</td><td>gen particle vy</td></tr>
+<tr class=""><td><code>HGCalGenPart_vz</code></td><td><code>float[]</code></td><td>0.016797</td><td>10</td><td>10</td><td>-4.916</td><td>5.983</td><td>10%</td><td>gen particle vz</td></tr>
+<tr class="const"><td><code>nHGCalGenPart</code></td><td><code>int32_t</code></td><td>0.011914</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Gen particles information</td></tr></tbody></table>
+<h2 id="HGCalLayerClusters">HGCalLayerClusters</h2>
+<p class="size-summary"><b>Total size:</b> 5.771289 KB/event &nbsp; <b>Mean multiplicity:</b> 369 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>HGCalLayerClusters_algoID</code></td><td><code>int32_t[]</code></td><td>0.030762</td><td>3690</td><td>3</td><td>6</td><td>8</td><td>74%</td><td>ID of the algo used for producing LayerCluster</td></tr>
+<tr class="const"><td><code>HGCalLayerClusters_correctedEnergy</code></td><td><code>float[]</code></td><td>0.025781</td><td>3690</td><td>1</td><td>-1</td><td>-1</td><td>100%</td><td>Corrected energy of the LayerCluster [GeV]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_energy</code></td><td><code>float[]</code></td><td>1.085449</td><td>3690</td><td>2348</td><td>0.006922</td><td>30.1</td><td>0%</td><td>Energy of the LayerCluster [GeV]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_nHits</code></td><td><code>int32_t[]</code></td><td>0.147070</td><td>3690</td><td>45</td><td>1</td><td>62</td><td>67%</td><td>Number of RecHits in LayerCluster</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_position_eta</code></td><td><code>float[]</code></td><td>1.062988</td><td>3690</td><td>3685</td><td>1.511</td><td>3.088</td><td>0%</td><td>eta coordinate of the LayerCluster</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_position_phi</code></td><td><code>float[]</code></td><td>1.175488</td><td>3690</td><td>3464</td><td>-3.14</td><td>3.14</td><td>0%</td><td>phi coordinate of the LayerCluster</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_position_x</code></td><td><code>float[]</code></td><td>0.973730</td><td>3690</td><td>2440</td><td>-113.9</td><td>146.8</td><td>0%</td><td>X coordinate of the LayerCluster [cm]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_position_y</code></td><td><code>float[]</code></td><td>1.007715</td><td>3690</td><td>2446</td><td>-104.8</td><td>168.9</td><td>0%</td><td>Y coordinate of the LayerCluster [cm]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_position_z</code></td><td><code>float[]</code></td><td>0.098340</td><td>3690</td><td>57</td><td>322.2</td><td>513.3</td><td>4%</td><td>Z coordinate of the LayerCluster [cm]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_time</code></td><td><code>float[]</code></td><td>0.075488</td><td>3690</td><td>54</td><td>-99</td><td>18</td><td>94%</td><td>LayerCluster time [ns]</td></tr>
+<tr class=""><td><code>HGCalLayerClusters_timeError</code></td><td><code>float[]</code></td><td>0.075977</td><td>3690</td><td>54</td><td>-99</td><td>18</td><td>94%</td><td>LayerCluster timeError [ns]</td></tr>
+<tr class=""><td><code>nHGCalLayerClusters</code></td><td><code>int32_t</code></td><td>0.012500</td><td>10</td><td>10</td><td>97</td><td>916</td><td>10%</td><td>Offline HGCAL Layer Clusters</td></tr></tbody></table>
+<h2 id="HLT">HLT</h2>
+<p class="size-summary"><b>Total size:</b> 0.351953 KB/event</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>HLT_AK4PFPuppiJet520</code></td><td><code>bool</code></td><td>0.009668</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Diphoton30_23_IsoCaloId_L1Seeded</code></td><td><code>bool</code></td><td>0.011230</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Diphoton30_23_IsoCaloId_Unseeded</code></td><td><code>bool</code></td><td>0.011230</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoubleEle23_12_Iso_L1Seeded</code></td><td><code>bool</code></td><td>0.010742</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoubleEle25_CaloIdL_PMS2_L1Seeded</code></td><td><code>bool</code></td><td>0.011328</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoubleEle25_CaloIdL_PMS2_Unseeded</code></td><td><code>bool</code></td><td>0.011328</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoubleMediumChargedIsoPFTauHPS40_eta2p1</code></td><td><code>bool</code></td><td>0.011914</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoubleMediumDeepTauPFTauHPS35_eta2p1</code></td><td><code>bool</code></td><td>0.011621</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepCSV_2p4</code></td><td><code>bool</code></td><td>0.012891</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_DoublePFPuppiJets128_DoublePFPuppiBTagDeepFlavour_2p4</code></td><td><code>bool</code></td><td>0.013281</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele115_NonIso_L1Seeded</code></td><td><code>bool</code></td><td>0.010254</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele26_WP70_L1Seeded</code></td><td><code>bool</code></td><td>0.009961</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele26_WP70_Unseeded</code></td><td><code>bool</code></td><td>0.009961</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele30_WPTight_L1Seeded_LooseDeepTauPFTauHPS30_eta2p1_CrossL1</code></td><td><code>bool</code></td><td>0.013965</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele32_WPTight_L1Seeded</code></td><td><code>bool</code></td><td>0.010254</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Ele32_WPTight_Unseeded</code></td><td><code>bool</code></td><td>0.010254</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_IsoMu20_eta2p1_LooseDeepTauPFTauHPS27_eta2p1_CrossL1</code></td><td><code>bool</code></td><td>0.013184</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_IsoMu24_FromL1TkMuon</code></td><td><code>bool</code></td><td>0.010059</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_LooseDeepTauPFTauHPS150_L1NN_eta2p1</code></td><td><code>bool</code></td><td>0.011523</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_FromL1TkMuon</code></td><td><code>bool</code></td><td>0.012402</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Mu37_Mu27_FromL1TkMuon</code></td><td><code>bool</code></td><td>0.010254</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Mu50_FromL1TkMuon</code></td><td><code>bool</code></td><td>0.009766</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_PFHT200PT30_QuadPFPuppiJet_70_40_30_30_TriplePFPuppiBTagDeepFlavour_2p4</code></td><td><code>bool</code></td><td>0.015039</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_PFHT330PT30_QuadPFPuppiJet_75_60_45_40_TriplePFPuppiBTagDeepFlavour_2p4</code></td><td><code>bool</code></td><td>0.015039</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_PFPuppiHT1070</code></td><td><code>bool</code></td><td>0.009375</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_PFPuppiMETTypeOne140_PFPuppiMHT140</code></td><td><code>bool</code></td><td>0.011426</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Photon108EB_TightID_TightIso_L1Seeded</code></td><td><code>bool</code></td><td>0.011719</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Photon108EB_TightID_TightIso_Unseeded</code></td><td><code>bool</code></td><td>0.011719</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Photon187_L1Seeded</code></td><td><code>bool</code></td><td>0.009863</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_Photon187_Unseeded</code></td><td><code>bool</code></td><td>0.009863</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr>
+<tr class="const"><td><code>HLT_TriMu_10_5_5_DZ_FromL1TkMuon</code></td><td><code>bool</code></td><td>0.010840</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr></tbody></table>
+<h2 id="L1TrackTrigger">L1TrackTrigger</h2>
+<p class="size-summary"><b>Total size:</b> 0.009570 KB/event</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>L1TrackTrigger_step</code></td><td><code>bool</code></td><td>0.009570</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr></tbody></table>
+<h2 id="L1simulation">L1simulation</h2>
+<p class="size-summary"><b>Total size:</b> 0.009375 KB/event</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>L1simulation_step</code></td><td><code>bool</code></td><td>0.009375</td><td>10</td><td>1</td><td></td><td></td><td>100%</td><td>Trigger/flag bit (process: HLT)</td></tr></tbody></table>
+<h2 id="RecoticlCandidate2SimCPByHits">RecoticlCandidate2SimCPByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.036133 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlCandidate2SimCPByHits_nRecoticlCandidate2SimCPByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.022559</td><td>36</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>counts for RecoticlCandidate2SimCPByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlCandidate2SimCPByHits</code></td><td><code>int32_t</code></td><td>0.013574</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>Association between ticlCandidate and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlCandidate2SimCPByHitsLinks">RecoticlCandidate2SimCPByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.094043 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlCandidate2SimCPByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.020508</td><td>36</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlCandidate2SimCPByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.029395</td><td>36</td><td>22</td><td>0</td><td>0.004824</td><td>42%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlCandidate2SimCPByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.030078</td><td>36</td><td>36</td><td>0.9676</td><td>109.2</td><td>3%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlCandidate2SimCPByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014063</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlCandidate2SimSCByHits">RecoticlCandidate2SimSCByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.038086 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlCandidate2SimSCByHits_nRecoticlCandidate2SimSCByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.024512</td><td>36</td><td>9</td><td>1</td><td>14</td><td>58%</td><td>counts for RecoticlCandidate2SimSCByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlCandidate2SimSCByHits</code></td><td><code>int32_t</code></td><td>0.013574</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>Association between ticlCandidate and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlCandidate2SimSCByHitsLinks">RecoticlCandidate2SimSCByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.171094 KB/event &nbsp; <b>Mean multiplicity:</b> 12.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlCandidate2SimSCByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.031836</td><td>126</td><td>21</td><td>0</td><td>28</td><td>23%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlCandidate2SimSCByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.059961</td><td>126</td><td>114</td><td>0</td><td>1</td><td>10%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlCandidate2SimSCByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.065234</td><td>126</td><td>126</td><td>0.004515</td><td>109.2</td><td>1%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlCandidate2SimSCByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014063</td><td>10</td><td>6</td><td>1</td><td>87</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinks2SimCPByHits">RecoticlTracksterLinks2SimCPByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.037598 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTracksterLinks2SimCPByHits_nRecoticlTracksterLinks2SimCPByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.023535</td><td>38</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>counts for RecoticlTracksterLinks2SimCPByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinks2SimCPByHits</code></td><td><code>int32_t</code></td><td>0.014063</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>Association between ticlTracksterLinks and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinks2SimCPByHitsLinks">RecoticlTracksterLinks2SimCPByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.097559 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTracksterLinks2SimCPByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.020996</td><td>38</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinks2SimCPByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.030664</td><td>38</td><td>23</td><td>0</td><td>0.004824</td><td>42%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinks2SimCPByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.031348</td><td>38</td><td>38</td><td>0.9676</td><td>109.2</td><td>3%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinks2SimCPByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014551</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinks2SimSCByHits">RecoticlTracksterLinks2SimSCByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.039551 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTracksterLinks2SimSCByHits_nRecoticlTracksterLinks2SimSCByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.025488</td><td>38</td><td>9</td><td>1</td><td>14</td><td>58%</td><td>counts for RecoticlTracksterLinks2SimSCByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinks2SimSCByHits</code></td><td><code>int32_t</code></td><td>0.014063</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>Association between ticlTracksterLinks and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinks2SimSCByHitsLinks">RecoticlTracksterLinks2SimSCByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.176563 KB/event &nbsp; <b>Mean multiplicity:</b> 13.1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTracksterLinks2SimSCByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.032715</td><td>131</td><td>21</td><td>0</td><td>28</td><td>24%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinks2SimSCByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.061621</td><td>131</td><td>119</td><td>0</td><td>1</td><td>10%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinks2SimSCByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.067676</td><td>131</td><td>131</td><td>0.004515</td><td>109.2</td><td>1%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinks2SimSCByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014551</td><td>10</td><td>6</td><td>1</td><td>91</td><td>20%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits">RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.040039 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits_nRecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.024219</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>counts for RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinksSuperclusteringDNN2SimCPByHits</code></td><td><code>int32_t</code></td><td>0.015820</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>Association between ticlTracksterLinksSuperclusteringDNN and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks">RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.081445 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.021484</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.021484</td><td>10</td><td>7</td><td>0</td><td>6.265e-06</td><td>40%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.022168</td><td>10</td><td>10</td><td>21.88</td><td>107.7</td><td>10%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks</code></td><td><code>int32_t</code></td><td>0.016309</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits">RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.040039 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits_nRecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.024219</td><td>10</td><td>4</td><td>1</td><td>14</td><td>70%</td><td>counts for RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinksSuperclusteringDNN2SimSCByHits</code></td><td><code>int32_t</code></td><td>0.015820</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>Association between ticlTracksterLinksSuperclusteringDNN and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks">RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.108496 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.026660</td><td>38</td><td>14</td><td>0</td><td>28</td><td>26%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.032422</td><td>38</td><td>35</td><td>0</td><td>1</td><td>11%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.033105</td><td>38</td><td>38</td><td>0.005774</td><td>107.7</td><td>3%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks</code></td><td><code>int32_t</code></td><td>0.016309</td><td>10</td><td>3</td><td>0</td><td>31</td><td>70%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTrackstersCLUE3DHigh2SimCPByHits">RecoticlTrackstersCLUE3DHigh2SimCPByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.040137 KB/event &nbsp; <b>Mean multiplicity:</b> 6.3 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTrackstersCLUE3DHigh2SimCPByHits_nRecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.025488</td><td>63</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>counts for RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTrackstersCLUE3DHigh2SimCPByHits</code></td><td><code>int32_t</code></td><td>0.014648</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>Association between ticlTrackstersCLUE3DHigh and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks">RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.112891 KB/event &nbsp; <b>Mean multiplicity:</b> 6.3 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.021582</td><td>63</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.034473</td><td>63</td><td>28</td><td>0</td><td>0.004824</td><td>57%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.041699</td><td>63</td><td>63</td><td>0.7337</td><td>107.7</td><td>2%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks</code></td><td><code>int32_t</code></td><td>0.015137</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="RecoticlTrackstersCLUE3DHigh2SimSCByHits">RecoticlTrackstersCLUE3DHigh2SimSCByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.042480 KB/event &nbsp; <b>Mean multiplicity:</b> 6.3 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimSCByHits_nRecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.027832</td><td>63</td><td>9</td><td>1</td><td>14</td><td>75%</td><td>counts for RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks</td></tr>
+<tr class=""><td><code>nRecoticlTrackstersCLUE3DHigh2SimSCByHits</code></td><td><code>int32_t</code></td><td>0.014648</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>Association between ticlTrackstersCLUE3DHigh and SimTracksters, by hits.</td></tr></tbody></table>
+<h2 id="RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks">RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.191797 KB/event &nbsp; <b>Mean multiplicity:</b> 15.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.033691</td><td>156</td><td>21</td><td>0</td><td>28</td><td>35%</td><td>Index of the associated SimTrackster.</td></tr>
+<tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.064941</td><td>156</td><td>124</td><td>0</td><td>1</td><td>21%</td><td>Reco2Sim Association score.</td></tr>
+<tr class=""><td><code>RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.078027</td><td>156</td><td>156</td><td>0.004515</td><td>107.7</td><td>1%</td><td>Shared energy with associated SimTrackster.</td></tr>
+<tr class=""><td><code>nRecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks</code></td><td><code>int32_t</code></td><td>0.015137</td><td>10</td><td>8</td><td>2</td><td>91</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimCP2ticlCandidateByHits">SimCP2ticlCandidateByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.032129 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlCandidateByHits_nSimCP2ticlCandidateByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.018945</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>counts for SimCP2ticlCandidateByHitsLinks</td></tr>
+<tr class="const"><td><code>nSimCP2ticlCandidateByHits</code></td><td><code>int32_t</code></td><td>0.013184</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Association between SimTracksters and ticlCandidate, by hits.</td></tr></tbody></table>
+<h2 id="SimCP2ticlCandidateByHitsLinks">SimCP2ticlCandidateByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.095996 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlCandidateByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.023633</td><td>36</td><td>12</td><td>0</td><td>11</td><td>28%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimCP2ticlCandidateByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.029004</td><td>36</td><td>36</td><td>0.0334</td><td>0.9985</td><td>3%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimCP2ticlCandidateByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.029687</td><td>36</td><td>36</td><td>0.9676</td><td>109.2</td><td>3%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimCP2ticlCandidateByHitsLinks</code></td><td><code>int32_t</code></td><td>0.013672</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTracksterLinksByHits">SimCP2ticlTracksterLinksByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.033594 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTracksterLinksByHits_nSimCP2ticlTracksterLinksByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.019922</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>counts for SimCP2ticlTracksterLinksByHitsLinks</td></tr>
+<tr class="const"><td><code>nSimCP2ticlTracksterLinksByHits</code></td><td><code>int32_t</code></td><td>0.013672</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Association between SimTracksters and ticlTracksterLinks, by hits.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTracksterLinksByHitsLinks">SimCP2ticlTracksterLinksByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.099512 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTracksterLinksByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.024121</td><td>38</td><td>13</td><td>0</td><td>12</td><td>26%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimCP2ticlTracksterLinksByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.030273</td><td>38</td><td>38</td><td>0.0334</td><td>0.9985</td><td>3%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimCP2ticlTracksterLinksByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.030957</td><td>38</td><td>38</td><td>0.9676</td><td>109.2</td><td>3%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimCP2ticlTracksterLinksByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014160</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTracksterLinksSuperclusteringDNNByHits">SimCP2ticlTracksterLinksSuperclusteringDNNByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.038867 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHits_nSimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.023438</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>counts for SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks</td></tr>
+<tr class="const"><td><code>nSimCP2ticlTracksterLinksSuperclusteringDNNByHits</code></td><td><code>int32_t</code></td><td>0.015430</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Association between SimTracksters and ticlTracksterLinksSuperclusteringDNN, by hits.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks">SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.079883 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.021094</td><td>10</td><td>3</td><td>0</td><td>2</td><td>80%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.021094</td><td>10</td><td>10</td><td>0.0334</td><td>0.8767</td><td>10%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.021777</td><td>10</td><td>10</td><td>21.88</td><td>107.7</td><td>10%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></td><td><code>int32_t</code></td><td>0.015918</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTrackstersCLUE3DHighByHits">SimCP2ticlTrackstersCLUE3DHighByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.035352 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTrackstersCLUE3DHighByHits_nSimCP2ticlTrackstersCLUE3DHighByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.021094</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>counts for SimCP2ticlTrackstersCLUE3DHighByHitsLinks</td></tr>
+<tr class="const"><td><code>nSimCP2ticlTrackstersCLUE3DHighByHits</code></td><td><code>int32_t</code></td><td>0.014258</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Association between SimTracksters and ticlTrackstersCLUE3DHigh, by hits.</td></tr></tbody></table>
+<h2 id="SimCP2ticlTrackstersCLUE3DHighByHitsLinks">SimCP2ticlTrackstersCLUE3DHighByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.124121 KB/event &nbsp; <b>Mean multiplicity:</b> 6.3 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCP2ticlTrackstersCLUE3DHighByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.027441</td><td>63</td><td>13</td><td>0</td><td>12</td><td>16%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimCP2ticlTrackstersCLUE3DHighByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.040625</td><td>63</td><td>63</td><td>0.0334</td><td>0.9988</td><td>2%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimCP2ticlTrackstersCLUE3DHighByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.041309</td><td>63</td><td>63</td><td>0.7337</td><td>107.7</td><td>2%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimCP2ticlTrackstersCLUE3DHighByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014746</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimCl2CPWithFraction">SimCl2CPWithFraction</h2>
+<p class="size-summary"><b>Total size:</b> 0.073438 KB/event &nbsp; <b>Mean multiplicity:</b> 7 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimCl2CPWithFraction_fraction</code></td><td><code>float[]</code></td><td>0.041602</td><td>70</td><td>63</td><td>6.347e-05</td><td>1</td><td>11%</td><td>Fraction of linked CaloParticle.</td></tr>
+<tr class="const"><td><code>SimCl2CPWithFraction_index</code></td><td><code>int32_t[]</code></td><td>0.019141</td><td>70</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of linked CaloParticle.</td></tr>
+<tr class=""><td><code>nSimCl2CPWithFraction</code></td><td><code>int32_t</code></td><td>0.012695</td><td>10</td><td>3</td><td>1</td><td>33</td><td>80%</td><td>Association between SimClusters and CaloParticles.</td></tr></tbody></table>
+<h2 id="SimSC2ticlCandidateByHits">SimSC2ticlCandidateByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.040039 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlCandidateByHits_nSimSC2ticlCandidateByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.026855</td><td>69</td><td>9</td><td>0</td><td>9</td><td>45%</td><td>counts for SimSC2ticlCandidateByHitsLinks</td></tr>
+<tr class=""><td><code>nSimSC2ticlCandidateByHits</code></td><td><code>int32_t</code></td><td>0.013184</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Association between SimTracksters and ticlCandidate, by hits.</td></tr></tbody></table>
+<h2 id="SimSC2ticlCandidateByHitsLinks">SimSC2ticlCandidateByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.171875 KB/event &nbsp; <b>Mean multiplicity:</b> 12.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlCandidateByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.031055</td><td>126</td><td>12</td><td>0</td><td>11</td><td>21%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimSC2ticlCandidateByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.062305</td><td>126</td><td>126</td><td>0</td><td>1</td><td>1%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimSC2ticlCandidateByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.064844</td><td>126</td><td>126</td><td>0.004515</td><td>109.2</td><td>1%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimSC2ticlCandidateByHitsLinks</code></td><td><code>int32_t</code></td><td>0.013672</td><td>10</td><td>6</td><td>1</td><td>87</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTracksterLinksByHits">SimSC2ticlTracksterLinksByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.041895 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTracksterLinksByHits_nSimSC2ticlTracksterLinksByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.028223</td><td>69</td><td>11</td><td>0</td><td>10</td><td>45%</td><td>counts for SimSC2ticlTracksterLinksByHitsLinks</td></tr>
+<tr class=""><td><code>nSimSC2ticlTracksterLinksByHits</code></td><td><code>int32_t</code></td><td>0.013672</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Association between SimTracksters and ticlTracksterLinks, by hits.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTracksterLinksByHitsLinks">SimSC2ticlTracksterLinksByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.177734 KB/event &nbsp; <b>Mean multiplicity:</b> 13.1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTracksterLinksByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.032324</td><td>131</td><td>13</td><td>0</td><td>12</td><td>21%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimSC2ticlTracksterLinksByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.063965</td><td>131</td><td>131</td><td>0</td><td>1</td><td>1%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimSC2ticlTracksterLinksByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.067285</td><td>131</td><td>131</td><td>0.004515</td><td>109.2</td><td>1%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimSC2ticlTracksterLinksByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014160</td><td>10</td><td>6</td><td>1</td><td>91</td><td>20%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTracksterLinksSuperclusteringDNNByHits">SimSC2ticlTracksterLinksSuperclusteringDNNByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.044434 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHits_nSimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.029004</td><td>69</td><td>4</td><td>0</td><td>3</td><td>70%</td><td>counts for SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks</td></tr>
+<tr class=""><td><code>nSimSC2ticlTracksterLinksSuperclusteringDNNByHits</code></td><td><code>int32_t</code></td><td>0.015430</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Association between SimTracksters and ticlTracksterLinksSuperclusteringDNN, by hits.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks">SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.104980 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.024316</td><td>38</td><td>3</td><td>0</td><td>2</td><td>55%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.032031</td><td>38</td><td>38</td><td>0.02165</td><td>1</td><td>3%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.032715</td><td>38</td><td>38</td><td>0.005774</td><td>107.7</td><td>3%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks</code></td><td><code>int32_t</code></td><td>0.015918</td><td>10</td><td>3</td><td>0</td><td>31</td><td>70%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTrackstersCLUE3DHighByHits">SimSC2ticlTrackstersCLUE3DHighByHits</h2>
+<p class="size-summary"><b>Total size:</b> 0.044043 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTrackstersCLUE3DHighByHits_nSimSC2ticlTrackstersCLUE3DHighByHitsLinks</code></td><td><code>uint16_t[]</code></td><td>0.029785</td><td>69</td><td>11</td><td>0</td><td>10</td><td>45%</td><td>counts for SimSC2ticlTrackstersCLUE3DHighByHitsLinks</td></tr>
+<tr class=""><td><code>nSimSC2ticlTrackstersCLUE3DHighByHits</code></td><td><code>int32_t</code></td><td>0.014258</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Association between SimTracksters and ticlTrackstersCLUE3DHigh, by hits.</td></tr></tbody></table>
+<h2 id="SimSC2ticlTrackstersCLUE3DHighByHitsLinks">SimSC2ticlTrackstersCLUE3DHighByHitsLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.199219 KB/event &nbsp; <b>Mean multiplicity:</b> 15.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimSC2ticlTrackstersCLUE3DHighByHitsLinks_index</code></td><td><code>uint32_t[]</code></td><td>0.034863</td><td>156</td><td>13</td><td>0</td><td>12</td><td>12%</td><td>Index of the associated Trackster.</td></tr>
+<tr class=""><td><code>SimSC2ticlTrackstersCLUE3DHighByHitsLinks_score</code></td><td><code>float[]</code></td><td>0.071973</td><td>156</td><td>156</td><td>0</td><td>1</td><td>1%</td><td>Sim2Reco Association score.</td></tr>
+<tr class=""><td><code>SimSC2ticlTrackstersCLUE3DHighByHitsLinks_sharedEnergy</code></td><td><code>float[]</code></td><td>0.077637</td><td>156</td><td>156</td><td>0.004515</td><td>107.7</td><td>1%</td><td>Shared energy with associated Trackster.</td></tr>
+<tr class=""><td><code>nSimSC2ticlTrackstersCLUE3DHighByHitsLinks</code></td><td><code>int32_t</code></td><td>0.014746</td><td>10</td><td>8</td><td>2</td><td>91</td><td>30%</td><td>Association links.</td></tr></tbody></table>
+<h2 id="SimTICLCandidates">SimTICLCandidates</h2>
+<p class="size-summary"><b>Total size:</b> 0.396875 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimTICLCandidates_MTDtime</code></td><td><code>float[]</code></td><td>0.017773</td><td>10</td><td>10</td><td>9.916</td><td>24.24</td><td>10%</td><td>TICLCandidate associated MTDTime, meaningful only for offline reconstruction</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_MTDtimeError</code></td><td><code>float[]</code></td><td>0.018262</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Trackster associated MTD time error, meaningful only for offline reconstruction</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_charge</code></td><td><code>int32_t[]</code></td><td>0.017676</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>TICLCandidate assigned charge</td></tr>
+<tr class=""><td><code>SimTICLCandidates_energy</code></td><td><code>float[]</code></td><td>0.017676</td><td>10</td><td>10</td><td>56.02</td><td>183.1</td><td>10%</td><td>Energy of the TICLCandidate, computed from the raw energy of the associated Trackster or from the associated track</td></tr>
+<tr class=""><td><code>SimTICLCandidates_eta</code></td><td><code>float[]</code></td><td>0.017383</td><td>10</td><td>10</td><td>1.731</td><td>2.872</td><td>10%</td><td>TICLCandidate pseudorapidity, derived from p4 built from associated Tracksters or from associated Track</td></tr>
+<tr class=""><td><code>SimTICLCandidates_gsftrackIdx</code></td><td><code>int32_t[]</code></td><td>0.018164</td><td>10</td><td>2</td><td>-2.147e+09</td><td>0</td><td>90%</td><td>Index of GSFTrack associated with SimTICLCandidate</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_isPU</code></td><td><code>int32_t[]</code></td><td>0.017480</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>PU flag of the candidate&#x27;s parent CaloParticle: 1 = pileup (non-zero event/bx), 0 = otherwise, -1 = unresolved</td></tr>
+<tr class=""><td><code>SimTICLCandidates_mass</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>-2.751e-06</td><td>3.686e-06</td><td>10%</td><td>TICLCandidate mass</td></tr>
+<tr class=""><td><code>SimTICLCandidates_nGsfTrackIdxs</code></td><td><code>uint16_t[]</code></td><td>0.016406</td><td>10</td><td>2</td><td>0</td><td>1</td><td>90%</td><td>Number of GSFTracks associated with candidate</td></tr>
+<tr class=""><td><code>SimTICLCandidates_nSimTICLCandidatesExtra</code></td><td><code>uint16_t[]</code></td><td>0.017383</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Count for SimTICLCandidatesExtra</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_nTrackIdxs</code></td><td><code>uint16_t[]</code></td><td>0.016113</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Number of generalTracks associated with candidate</td></tr>
+<tr class=""><td><code>SimTICLCandidates_p</code></td><td><code>float[]</code></td><td>0.017188</td><td>10</td><td>10</td><td>56.02</td><td>183.1</td><td>10%</td><td>TICLCandidate momentum magnitude, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_pdgID</code></td><td><code>int32_t[]</code></td><td>0.017578</td><td>10</td><td>1</td><td>211</td><td>211</td><td>100%</td><td>TICLCandidate assigned pdgID</td></tr>
+<tr class=""><td><code>SimTICLCandidates_phi</code></td><td><code>float[]</code></td><td>0.017383</td><td>10</td><td>10</td><td>-2.755</td><td>3.087</td><td>10%</td><td>TICLCandidate phi, derived from p4 built from associated Tracksters or from associated Track</td></tr>
+<tr class=""><td><code>SimTICLCandidates_pt</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>7.853</td><td>51.11</td><td>10%</td><td>TICLCandidate pT, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>SimTICLCandidates_px</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>-23.65</td><td>50.36</td><td>10%</td><td>TICLCandidate x component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>SimTICLCandidates_py</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>-9.918</td><td>37.81</td><td>10%</td><td>TICLCandidate y component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>SimTICLCandidates_pz</code></td><td><code>float[]</code></td><td>0.017285</td><td>10</td><td>10</td><td>52.62</td><td>179.4</td><td>10%</td><td>TICLCandidate z component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>SimTICLCandidates_raw_energy</code></td><td><code>float[]</code></td><td>0.018066</td><td>10</td><td>10</td><td>57.02</td><td>169.4</td><td>10%</td><td>Raw Energy of the TICLCandidate [GeV]</td></tr>
+<tr class=""><td><code>SimTICLCandidates_time</code></td><td><code>float[]</code></td><td>0.017480</td><td>10</td><td>10</td><td>-0.1876</td><td>0.2304</td><td>10%</td><td>TICLCandidate time, obtained from combination HGCAL and MTD time (offline) or HGCAL only (HLT)</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_timeError</code></td><td><code>float[]</code></td><td>0.017969</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Trackster HGCAL time error</td></tr>
+<tr class="const"><td><code>SimTICLCandidates_trackIdx</code></td><td><code>int32_t[]</code></td><td>0.017871</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of generalTrack associated with SimTICLCandidate</td></tr>
+<tr class="const"><td><code>nSimTICLCandidates</code></td><td><code>int32_t</code></td><td>0.012402</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>SimTICLCandidates</td></tr></tbody></table>
+<h2 id="SimTICLCandidatesExtra">SimTICLCandidatesExtra</h2>
+<p class="size-summary"><b>Total size:</b> 0.229102 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryEta</code></td><td><code>float[]</code></td><td>0.024414</td><td>69</td><td>9</td><td>-999</td><td>2.848</td><td>88%</td><td>Track eta at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryPhi</code></td><td><code>float[]</code></td><td>0.024414</td><td>69</td><td>9</td><td>-999</td><td>3.077</td><td>88%</td><td>Track phi at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryPx</code></td><td><code>float[]</code></td><td>0.024316</td><td>69</td><td>9</td><td>-999</td><td>20.66</td><td>88%</td><td>Track Px at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryPy</code></td><td><code>float[]</code></td><td>0.024316</td><td>69</td><td>9</td><td>-999</td><td>38.05</td><td>88%</td><td>Track Py at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryPz</code></td><td><code>float[]</code></td><td>0.024316</td><td>69</td><td>9</td><td>-999</td><td>176.9</td><td>88%</td><td>Track Pz at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryX</code></td><td><code>float[]</code></td><td>0.024219</td><td>69</td><td>9</td><td>-999</td><td>98.64</td><td>88%</td><td>Track X position at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryY</code></td><td><code>float[]</code></td><td>0.024219</td><td>69</td><td>9</td><td>-999</td><td>88.15</td><td>88%</td><td>Track Y position at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_track_boundaryZ</code></td><td><code>float[]</code></td><td>0.021484</td><td>69</td><td>2</td><td>-999</td><td>322.2</td><td>88%</td><td>Track Z position at HGCal boundary</td></tr>
+<tr class=""><td><code>SimTICLCandidatesExtra_tracksterIndex</code></td><td><code>uint32_t[]</code></td><td>0.024512</td><td>69</td><td>32</td><td>0</td><td>31</td><td>14%</td><td>Index of associated Trackster</td></tr>
+<tr class=""><td><code>nSimTICLCandidatesExtra</code></td><td><code>int32_t</code></td><td>0.012891</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>Tracksters linked to SimTICLCandidates with track boundary information</td></tr></tbody></table>
+<h2 id="SimTICLCandidatesGsfTrackIdxs">SimTICLCandidatesGsfTrackIdxs</h2>
+<p class="size-summary"><b>Total size:</b> 0.029297 KB/event &nbsp; <b>Mean multiplicity:</b> 0.1 &nbsp; <b>Events with &ge;1:</b> 10%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>SimTICLCandidatesGsfTrackIdxs_trackIndex</code></td><td><code>uint32_t[]</code></td><td>0.015723</td><td>1</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of associated GSFTrack</td></tr>
+<tr class=""><td><code>nSimTICLCandidatesGsfTrackIdxs</code></td><td><code>int32_t</code></td><td>0.013574</td><td>10</td><td>2</td><td>0</td><td>1</td><td>90%</td><td>Full list of GSFTrack indices associated with the candidate</td></tr></tbody></table>
+<h2 id="SimTICLCandidatesTrackIdxs">SimTICLCandidatesTrackIdxs</h2>
+<p class="size-summary"><b>Total size:</b> 0.032227 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>SimTICLCandidatesTrackIdxs_trackIndex</code></td><td><code>uint32_t[]</code></td><td>0.018945</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of associated generalTrack</td></tr>
+<tr class="const"><td><code>nSimTICLCandidatesTrackIdxs</code></td><td><code>int32_t</code></td><td>0.013281</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Full list of generalTrack indices associated with the candidate</td></tr></tbody></table>
+<h2 id="TICLCandidates">TICLCandidates</h2>
+<p class="size-summary"><b>Total size:</b> 0.520703 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>TICLCandidates_MTDtime</code></td><td><code>float[]</code></td><td>0.022656</td><td>36</td><td>9</td><td>0</td><td>10.81</td><td>78%</td><td>TICLCandidate associated MTDTime, meaningful only for offline reconstruction</td></tr>
+<tr class=""><td><code>TICLCandidates_MTDtimeError</code></td><td><code>float[]</code></td><td>0.021582</td><td>36</td><td>3</td><td>-1</td><td>0.037</td><td>78%</td><td>Trackster associated MTD time error, meaningful only for offline reconstruction</td></tr>
+<tr class=""><td><code>TICLCandidates_charge</code></td><td><code>int32_t[]</code></td><td>0.019824</td><td>36</td><td>2</td><td>0</td><td>1</td><td>75%</td><td>TICLCandidate assigned charge</td></tr>
+<tr class=""><td><code>TICLCandidates_energy</code></td><td><code>float[]</code></td><td>0.027539</td><td>36</td><td>36</td><td>0.9676</td><td>124.2</td><td>3%</td><td>Energy of the TICLCandidate, computed from the raw energy of the associated Trackster or from the associated track</td></tr>
+<tr class=""><td><code>TICLCandidates_eta</code></td><td><code>float[]</code></td><td>0.027246</td><td>36</td><td>36</td><td>1.631</td><td>2.864</td><td>3%</td><td>TICLCandidate pseudorapidity, derived from p4 built from associated Tracksters or from associated Track</td></tr>
+<tr class=""><td><code>TICLCandidates_mass</code></td><td><code>float[]</code></td><td>0.027344</td><td>36</td><td>36</td><td>-0.008737</td><td>0.0124</td><td>3%</td><td>TICLCandidate mass</td></tr>
+<tr class="const"><td><code>TICLCandidates_nGsfTrackIdxs</code></td><td><code>uint16_t[]</code></td><td>0.018945</td><td>36</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Number of GSFTracks associated with candidate</td></tr>
+<tr class=""><td><code>TICLCandidates_nLinkedTracksters</code></td><td><code>uint16_t[]</code></td><td>0.020117</td><td>36</td><td>2</td><td>1</td><td>2</td><td>94%</td><td>Number of Tracksters linked to candidate before final linking/merging</td></tr>
+<tr class="const"><td><code>TICLCandidates_nTICLCandidatesExtra</code></td><td><code>uint16_t[]</code></td><td>0.019629</td><td>36</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Count for TICLCandidatesExtra</td></tr>
+<tr class=""><td><code>TICLCandidates_nTrackIdxs</code></td><td><code>uint16_t[]</code></td><td>0.019824</td><td>36</td><td>2</td><td>0</td><td>1</td><td>75%</td><td>Number of generalTracks associated with candidate</td></tr>
+<tr class=""><td><code>TICLCandidates_p</code></td><td><code>float[]</code></td><td>0.027051</td><td>36</td><td>36</td><td>0.9676</td><td>124.2</td><td>3%</td><td>TICLCandidate momentum magnitude, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_pdgID</code></td><td><code>int32_t[]</code></td><td>0.020898</td><td>36</td><td>4</td><td>11</td><td>211</td><td>53%</td><td>TICLCandidate assigned pdgID</td></tr>
+<tr class=""><td><code>TICLCandidates_phi</code></td><td><code>float[]</code></td><td>0.027246</td><td>36</td><td>36</td><td>-3.095</td><td>3.087</td><td>3%</td><td>TICLCandidate phi, derived from p4 built from associated Tracksters or from associated Track</td></tr>
+<tr class=""><td><code>TICLCandidates_pt</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>0.2563</td><td>28.01</td><td>3%</td><td>TICLCandidate pT, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_px</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>-16.23</td><td>16.23</td><td>3%</td><td>TICLCandidate x component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_py</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>-9.767</td><td>24.24</td><td>3%</td><td>TICLCandidate y component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_pz</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>0.9162</td><td>123.1</td><td>3%</td><td>TICLCandidate z component of mementum, computed from trackster raw energy and direction or from associated track [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_raw_energy</code></td><td><code>float[]</code></td><td>0.027930</td><td>36</td><td>36</td><td>0.9676</td><td>109.3</td><td>3%</td><td>Raw Energy of the TICLCandidate [GeV]</td></tr>
+<tr class=""><td><code>TICLCandidates_time</code></td><td><code>float[]</code></td><td>0.027344</td><td>36</td><td>26</td><td>-0.3013</td><td>0.3224</td><td>31%</td><td>TICLCandidate time, obtained from combination HGCAL and MTD time (offline) or HGCAL only (HLT)</td></tr>
+<tr class=""><td><code>TICLCandidates_timeError</code></td><td><code>float[]</code></td><td>0.024805</td><td>36</td><td>11</td><td>-1</td><td>0.07738</td><td>31%</td><td>Trackster HGCAL time error</td></tr>
+<tr class=""><td><code>TICLCandidates_trackIdx</code></td><td><code>int32_t[]</code></td><td>0.020020</td><td>36</td><td>2</td><td>-2.147e+09</td><td>0</td><td>75%</td><td>Index of generalTrack associated with TICLCandidate</td></tr>
+<tr class=""><td><code>nTICLCandidates</code></td><td><code>int32_t</code></td><td>0.012109</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>TICLCandidates</td></tr></tbody></table>
+<h2 id="TICLCandidatesExtra">TICLCandidatesExtra</h2>
+<p class="size-summary"><b>Total size:</b> 0.199219 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>TICLCandidatesExtra_track_boundaryEta</code></td><td><code>float[]</code></td><td>0.020605</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track eta at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryPhi</code></td><td><code>float[]</code></td><td>0.020605</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track phi at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryPx</code></td><td><code>float[]</code></td><td>0.020508</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track Px at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryPy</code></td><td><code>float[]</code></td><td>0.020508</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track Py at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryPz</code></td><td><code>float[]</code></td><td>0.020508</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track Pz at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryX</code></td><td><code>float[]</code></td><td>0.020410</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track X position at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryY</code></td><td><code>float[]</code></td><td>0.020410</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track Y position at HGCal boundary</td></tr>
+<tr class="const"><td><code>TICLCandidatesExtra_track_boundaryZ</code></td><td><code>float[]</code></td><td>0.020410</td><td>36</td><td>1</td><td>-999</td><td>-999</td><td>100%</td><td>Track Z position at HGCal boundary</td></tr>
+<tr class=""><td><code>TICLCandidatesExtra_tracksterIndex</code></td><td><code>uint32_t[]</code></td><td>0.022656</td><td>36</td><td>12</td><td>0</td><td>11</td><td>28%</td><td>Index of associated Trackster</td></tr>
+<tr class=""><td><code>nTICLCandidatesExtra</code></td><td><code>int32_t</code></td><td>0.012598</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>Tracksters linked to TICLCandidates with track boundary information</td></tr></tbody></table>
+<h2 id="TICLCandidatesGsfTrackIdxs">TICLCandidatesGsfTrackIdxs</h2>
+<p class="size-summary"><b>Total size:</b> 0.028320 KB/event &nbsp; <b>Mean multiplicity:</b> 0 &nbsp; <b>Events with &ge;1:</b> 0%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>TICLCandidatesGsfTrackIdxs_trackIndex</code></td><td><code>uint32_t[]</code></td><td>0.015039</td><td>0</td><td></td><td></td><td></td><td></td><td>Index of associated GSFTrack</td></tr>
+<tr class="const"><td><code>nTICLCandidatesGsfTrackIdxs</code></td><td><code>int32_t</code></td><td>0.013281</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Full list of GSFTrack indices associated with the candidate</td></tr></tbody></table>
+<h2 id="TICLCandidatesTrackIdxs">TICLCandidatesTrackIdxs</h2>
+<p class="size-summary"><b>Total size:</b> 0.031250 KB/event &nbsp; <b>Mean multiplicity:</b> 0.9 &nbsp; <b>Events with &ge;1:</b> 90%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>TICLCandidatesTrackIdxs_trackIndex</code></td><td><code>uint32_t[]</code></td><td>0.018262</td><td>9</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of associated generalTrack</td></tr>
+<tr class=""><td><code>nTICLCandidatesTrackIdxs</code></td><td><code>int32_t</code></td><td>0.012988</td><td>10</td><td>2</td><td>0</td><td>1</td><td>90%</td><td>Full list of generalTrack indices associated with the candidate</td></tr></tbody></table>
+<h2 id="linkedTracksters">linkedTracksters</h2>
+<p class="size-summary"><b>Total size:</b> 0.035059 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>linkedTracksters_tracksterIndex</code></td><td><code>uint32_t[]</code></td><td>0.022754</td><td>38</td><td>13</td><td>0</td><td>12</td><td>37%</td><td>Index of linked Trackster</td></tr>
+<tr class=""><td><code>nlinkedTracksters</code></td><td><code>int32_t</code></td><td>0.012305</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>Tracksters linked to candidate before final linking/merging</td></tr></tbody></table>
+<h2 id="ticlCandidate">ticlCandidate</h2>
+<p class="size-summary"><b>Total size:</b> 0.528223 KB/event &nbsp; <b>Mean multiplicity:</b> 3.6 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlCandidate</code></td><td><code>int32_t</code></td><td>0.012012</td><td>10</td><td>6</td><td>1</td><td>12</td><td>30%</td><td>ticlCandidate</td></tr>
+<tr class=""><td><code>ticlCandidate_EV1</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>0</td><td>2985</td><td>3%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlCandidate_EV2</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>0</td><td>5.183</td><td>3%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlCandidate_EV3</code></td><td><code>float[]</code></td><td>0.027148</td><td>36</td><td>36</td><td>-8.531e-06</td><td>2.267</td><td>3%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlCandidate_barycenter_eta</code></td><td><code>float[]</code></td><td>0.028223</td><td>36</td><td>36</td><td>1.631</td><td>2.854</td><td>3%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlCandidate_barycenter_phi</code></td><td><code>float[]</code></td><td>0.028223</td><td>36</td><td>36</td><td>-3.095</td><td>3.08</td><td>3%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlCandidate_barycenter_x</code></td><td><code>float[]</code></td><td>0.028027</td><td>36</td><td>36</td><td>-59.23</td><td>133.2</td><td>3%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlCandidate_barycenter_y</code></td><td><code>float[]</code></td><td>0.028027</td><td>36</td><td>36</td><td>-69.59</td><td>122.4</td><td>3%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlCandidate_barycenter_z</code></td><td><code>float[]</code></td><td>0.028027</td><td>36</td><td>36</td><td>327.6</td><td>495.7</td><td>3%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlCandidate_eVector0_x</code></td><td><code>float[]</code></td><td>0.027832</td><td>36</td><td>36</td><td>-0.4292</td><td>0.6735</td><td>3%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlCandidate_eVector0_y</code></td><td><code>float[]</code></td><td>0.027832</td><td>36</td><td>36</td><td>0</td><td>0.999</td><td>3%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlCandidate_eVector0_z</code></td><td><code>float[]</code></td><td>0.027832</td><td>36</td><td>36</td><td>-0.3013</td><td>0.7706</td><td>3%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlCandidate_nticlCandidatevertices</code></td><td><code>uint16_t[]</code></td><td>0.021973</td><td>36</td><td>27</td><td>2</td><td>118</td><td>11%</td><td>counts for ticlCandidatevertices</td></tr>
+<tr class=""><td><code>ticlCandidate_oticlCandidatevertices</code></td><td><code>uint16_t[]</code></td><td>0.021973</td><td>36</td><td>26</td><td>0</td><td>194</td><td>28%</td><td>offsets for ticlCandidatevertices</td></tr>
+<tr class=""><td><code>ticlCandidate_raw_em_energy</code></td><td><code>float[]</code></td><td>0.028125</td><td>36</td><td>31</td><td>0</td><td>108</td><td>17%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlCandidate_raw_energy</code></td><td><code>float[]</code></td><td>0.027832</td><td>36</td><td>36</td><td>0.9676</td><td>109.3</td><td>3%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlCandidate_raw_pt</code></td><td><code>float[]</code></td><td>0.027441</td><td>36</td><td>36</td><td>0.2563</td><td>25.57</td><td>3%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class=""><td><code>ticlCandidate_regressed_energy</code></td><td><code>float[]</code></td><td>0.028418</td><td>36</td><td>36</td><td>0.9676</td><td>124.2</td><td>3%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlCandidate_time</code></td><td><code>float[]</code></td><td>0.027246</td><td>36</td><td>26</td><td>-99</td><td>16.85</td><td>31%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlCandidate_timeError</code></td><td><code>float[]</code></td><td>0.027734</td><td>36</td><td>26</td><td>-1</td><td>0.07738</td><td>31%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlCandidatevertices">ticlCandidatevertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.139648 KB/event &nbsp; <b>Mean multiplicity:</b> 74.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlCandidatevertices</code></td><td><code>int32_t</code></td><td>0.012793</td><td>10</td><td>10</td><td>9</td><td>198</td><td>10%</td><td>Vertex properties</td></tr>
+<tr class="const"><td><code>ticlCandidatevertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.022168</td><td>748</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlCandidatevertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.104688</td><td>748</td><td>463</td><td>0</td><td>830</td><td>1%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2 id="ticlSimTracksters">ticlSimTracksters</h2>
+<p class="size-summary"><b>Total size:</b> 1.134863 KB/event &nbsp; <b>Mean multiplicity:</b> 6.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlSimTracksters</code></td><td><code>int32_t</code></td><td>0.012402</td><td>10</td><td>3</td><td>1</td><td>32</td><td>80%</td><td>ticlSimTracksters</td></tr>
+<tr class=""><td><code>ticlSimTracksters_EV1</code></td><td><code>float[]</code></td><td>0.040430</td><td>69</td><td>63</td><td>0</td><td>2617</td><td>10%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlSimTracksters_EV2</code></td><td><code>float[]</code></td><td>0.040430</td><td>69</td><td>63</td><td>0</td><td>374.2</td><td>10%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlSimTracksters_EV3</code></td><td><code>float[]</code></td><td>0.040430</td><td>69</td><td>63</td><td>-5.627e-06</td><td>201.6</td><td>10%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlSimTracksters_barycenter_eta</code></td><td><code>float[]</code></td><td>0.041504</td><td>69</td><td>69</td><td>1.629</td><td>3.033</td><td>1%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlSimTracksters_barycenter_phi</code></td><td><code>float[]</code></td><td>0.041504</td><td>69</td><td>69</td><td>-2.764</td><td>3.079</td><td>1%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlSimTracksters_barycenter_x</code></td><td><code>float[]</code></td><td>0.041309</td><td>69</td><td>69</td><td>-102.1</td><td>133.7</td><td>1%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_barycenter_y</code></td><td><code>float[]</code></td><td>0.041309</td><td>69</td><td>69</td><td>-69.68</td><td>112.6</td><td>1%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_barycenter_z</code></td><td><code>float[]</code></td><td>0.041309</td><td>69</td><td>66</td><td>322.2</td><td>494.8</td><td>6%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryEta</code></td><td><code>float[]</code></td><td>0.030371</td><td>69</td><td>48</td><td>1.672</td><td>3.438</td><td>6%</td><td>CaloVolume boundary pseudorapidity of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryPhi</code></td><td><code>float[]</code></td><td>0.034668</td><td>69</td><td>65</td><td>-2.766</td><td>3.078</td><td>3%</td><td>CaloVolume boundary phi of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryPx</code></td><td><code>float[]</code></td><td>0.035352</td><td>69</td><td>68</td><td>-23.62</td><td>18.5</td><td>3%</td><td>X component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryPy</code></td><td><code>float[]</code></td><td>0.035742</td><td>69</td><td>69</td><td>-10.94</td><td>38.25</td><td>1%</td><td>Y component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryPz</code></td><td><code>float[]</code></td><td>0.033789</td><td>69</td><td>67</td><td>0.007172</td><td>179</td><td>3%</td><td>Z component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryX</code></td><td><code>float[]</code></td><td>0.030957</td><td>69</td><td>56</td><td>-83.5</td><td>113</td><td>4%</td><td>CaloVolume boundary Position X [cm] of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_boundaryY</code></td><td><code>float[]</code></td><td>0.034473</td><td>69</td><td>67</td><td>-58.25</td><td>80.5</td><td>3%</td><td>CaloVolume boundary Position Y [cm] of associated Simobject</td></tr>
+<tr class="const"><td><code>ticlSimTracksters_boundaryZ</code></td><td><code>float[]</code></td><td>0.019629</td><td>69</td><td>1</td><td>294</td><td>294</td><td>100%</td><td>CaloVolume boundary Position Z [cm] of associated Simobject</td></tr>
+<tr class="const"><td><code>ticlSimTracksters_caloParticleIdx</code></td><td><code>int32_t[]</code></td><td>0.019824</td><td>69</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the parent CaloParticle in the CaloParticle collection</td></tr>
+<tr class=""><td><code>ticlSimTracksters_eVector0_x</code></td><td><code>float[]</code></td><td>0.041113</td><td>69</td><td>63</td><td>-0.854</td><td>0.7935</td><td>10%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlSimTracksters_eVector0_y</code></td><td><code>float[]</code></td><td>0.041113</td><td>69</td><td>63</td><td>0</td><td>0.9996</td><td>10%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlSimTracksters_eVector0_z</code></td><td><code>float[]</code></td><td>0.041113</td><td>69</td><td>63</td><td>-0.9353</td><td>0.8803</td><td>10%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlSimTracksters_genPt</code></td><td><code>float[]</code></td><td>0.033691</td><td>69</td><td>68</td><td>0.0009766</td><td>43.75</td><td>3%</td><td>Gen-pT associated with SimObject</td></tr>
+<tr class="const"><td><code>ticlSimTracksters_isPU</code></td><td><code>int32_t[]</code></td><td>0.018750</td><td>69</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>PU flag of the associated Simobject: 1 = pileup (non-zero event/bx), 0 = otherwise</td></tr>
+<tr class=""><td><code>ticlSimTracksters_mass</code></td><td><code>float[]</code></td><td>0.031641</td><td>69</td><td>44</td><td>-0.006897</td><td>0.9414</td><td>29%</td><td>mass associated with SimObject</td></tr>
+<tr class=""><td><code>ticlSimTracksters_nticlSimTrackstersvertices</code></td><td><code>uint16_t[]</code></td><td>0.029199</td><td>69</td><td>47</td><td>1</td><td>568</td><td>7%</td><td>counts for ticlSimTrackstersvertices</td></tr>
+<tr class=""><td><code>ticlSimTracksters_oticlSimTrackstersvertices</code></td><td><code>uint16_t[]</code></td><td>0.029199</td><td>69</td><td>60</td><td>0</td><td>1269</td><td>14%</td><td>offsets for ticlSimTrackstersvertices</td></tr>
+<tr class=""><td><code>ticlSimTracksters_raw_em_energy</code></td><td><code>float[]</code></td><td>0.041406</td><td>69</td><td>69</td><td>0.01211</td><td>143</td><td>1%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_raw_energy</code></td><td><code>float[]</code></td><td>0.041113</td><td>69</td><td>69</td><td>0.01211</td><td>169.4</td><td>1%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_raw_pt</code></td><td><code>float[]</code></td><td>0.040723</td><td>69</td><td>69</td><td>0.003408</td><td>39.84</td><td>1%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_regressed_energy</code></td><td><code>float[]</code></td><td>0.041699</td><td>69</td><td>69</td><td>0.007251</td><td>183.1</td><td>1%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlSimTracksters_simTime</code></td><td><code>float[]</code></td><td>0.022168</td><td>69</td><td>10</td><td>-0.1875</td><td>0.2305</td><td>46%</td><td>Sim-Time of simulated object [ns]</td></tr>
+<tr class=""><td><code>ticlSimTracksters_time</code></td><td><code>float[]</code></td><td>0.033203</td><td>69</td><td>33</td><td>-99</td><td>16.82</td><td>54%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlSimTracksters_timeError</code></td><td><code>float[]</code></td><td>0.033301</td><td>69</td><td>30</td><td>-1</td><td>0.07738</td><td>54%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlSimTrackstersfromCPs">ticlSimTrackstersfromCPs</h2>
+<p class="size-summary"><b>Total size:</b> 0.611230 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class="const"><td><code>nticlSimTrackstersfromCPs</code></td><td><code>int32_t</code></td><td>0.013086</td><td>10</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>ticlSimTrackstersfromCPs</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_EV1</code></td><td><code>float[]</code></td><td>0.018066</td><td>10</td><td>10</td><td>80.34</td><td>2617</td><td>10%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_EV2</code></td><td><code>float[]</code></td><td>0.018066</td><td>10</td><td>10</td><td>8.383</td><td>344.3</td><td>10%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_EV3</code></td><td><code>float[]</code></td><td>0.018066</td><td>10</td><td>10</td><td>6.77</td><td>265.9</td><td>10%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_barycenter_eta</code></td><td><code>float[]</code></td><td>0.019141</td><td>10</td><td>10</td><td>1.733</td><td>2.845</td><td>10%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_barycenter_phi</code></td><td><code>float[]</code></td><td>0.019141</td><td>10</td><td>10</td><td>-2.764</td><td>3.079</td><td>10%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_barycenter_x</code></td><td><code>float[]</code></td><td>0.018945</td><td>10</td><td>10</td><td>-55.85</td><td>106.9</td><td>10%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_barycenter_y</code></td><td><code>float[]</code></td><td>0.018945</td><td>10</td><td>10</td><td>-69.68</td><td>112.6</td><td>10%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_barycenter_z</code></td><td><code>float[]</code></td><td>0.018945</td><td>10</td><td>10</td><td>338.9</td><td>494.8</td><td>10%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryEta</code></td><td><code>float[]</code></td><td>0.018848</td><td>10</td><td>9</td><td>0</td><td>2.844</td><td>20%</td><td>CaloVolume boundary pseudorapidity of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryPhi</code></td><td><code>float[]</code></td><td>0.018848</td><td>10</td><td>9</td><td>-2.766</td><td>3.078</td><td>20%</td><td>CaloVolume boundary phi of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryPx</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>9</td><td>-23.62</td><td>18.5</td><td>20%</td><td>X component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryPy</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>9</td><td>-10.94</td><td>38.25</td><td>20%</td><td>Y component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryPz</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>9</td><td>0</td><td>179</td><td>20%</td><td>Z component of momentum at CaloVolume boundary of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryX</code></td><td><code>float[]</code></td><td>0.018652</td><td>10</td><td>9</td><td>-39.75</td><td>90</td><td>20%</td><td>CaloVolume boundary Position X [cm] of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryY</code></td><td><code>float[]</code></td><td>0.018652</td><td>10</td><td>9</td><td>-58.25</td><td>80.5</td><td>20%</td><td>CaloVolume boundary Position Y [cm] of associated Simobject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_boundaryZ</code></td><td><code>float[]</code></td><td>0.018652</td><td>10</td><td>2</td><td>0</td><td>294</td><td>80%</td><td>CaloVolume boundary Position Z [cm] of associated Simobject</td></tr>
+<tr class="const"><td><code>ticlSimTrackstersfromCPs_caloParticleIdx</code></td><td><code>int32_t[]</code></td><td>0.019238</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Index of the parent CaloParticle in the CaloParticle collection</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_eVector0_x</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>10</td><td>-0.3055</td><td>0.3101</td><td>10%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_eVector0_y</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>10</td><td>0.918</td><td>0.9996</td><td>10%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_eVector0_z</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>10</td><td>-0.1798</td><td>0.3617</td><td>10%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_genPt</code></td><td><code>float[]</code></td><td>0.018262</td><td>10</td><td>10</td><td>7.844</td><td>51.75</td><td>10%</td><td>Gen-pT associated with SimObject</td></tr>
+<tr class="const"><td><code>ticlSimTrackstersfromCPs_isPU</code></td><td><code>int32_t[]</code></td><td>0.018164</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>PU flag of the associated Simobject: 1 = pileup (non-zero event/bx), 0 = otherwise</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_mass</code></td><td><code>float[]</code></td><td>0.018164</td><td>10</td><td>6</td><td>0.1357</td><td>0.1523</td><td>40%</td><td>mass associated with SimObject</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_nticlSimTrackstersfromCPsvertices</code></td><td><code>uint16_t[]</code></td><td>0.019043</td><td>10</td><td>10</td><td>97</td><td>916</td><td>10%</td><td>counts for ticlSimTrackstersfromCPsvertices</td></tr>
+<tr class="const"><td><code>ticlSimTrackstersfromCPs_oticlSimTrackstersfromCPsvertices</code></td><td><code>uint16_t[]</code></td><td>0.019043</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>offsets for ticlSimTrackstersfromCPsvertices</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_raw_em_energy</code></td><td><code>float[]</code></td><td>0.019043</td><td>10</td><td>10</td><td>0.08181</td><td>143.8</td><td>10%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_raw_energy</code></td><td><code>float[]</code></td><td>0.018750</td><td>10</td><td>10</td><td>57.02</td><td>169.4</td><td>10%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_raw_pt</code></td><td><code>float[]</code></td><td>0.018359</td><td>10</td><td>10</td><td>9.392</td><td>46.15</td><td>10%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_regressed_energy</code></td><td><code>float[]</code></td><td>0.019336</td><td>10</td><td>10</td><td>56.02</td><td>183.1</td><td>10%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_simTime</code></td><td><code>float[]</code></td><td>0.018457</td><td>10</td><td>10</td><td>-0.1875</td><td>0.2305</td><td>10%</td><td>Sim-Time of simulated object [ns]</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_time</code></td><td><code>float[]</code></td><td>0.018164</td><td>10</td><td>10</td><td>-99</td><td>16.82</td><td>10%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPs_timeError</code></td><td><code>float[]</code></td><td>0.018652</td><td>10</td><td>10</td><td>-1</td><td>0.01373</td><td>10%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlSimTrackstersfromCPsvertices">ticlSimTrackstersfromCPsvertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.584277 KB/event &nbsp; <b>Mean multiplicity:</b> 369 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlSimTrackstersfromCPsvertices</code></td><td><code>int32_t</code></td><td>0.013867</td><td>10</td><td>10</td><td>97</td><td>916</td><td>10%</td><td>Vertex properties</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPsvertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.071289</td><td>3690</td><td>95</td><td>1</td><td>1.447</td><td>97%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlSimTrackstersfromCPsvertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.499121</td><td>3690</td><td>916</td><td>0</td><td>915</td><td>0%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2 id="ticlSimTrackstersvertices">ticlSimTrackstersvertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.909570 KB/event &nbsp; <b>Mean multiplicity:</b> 413 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlSimTrackstersvertices</code></td><td><code>int32_t</code></td><td>0.013184</td><td>10</td><td>10</td><td>97</td><td>1298</td><td>10%</td><td>Vertex properties</td></tr>
+<tr class=""><td><code>ticlSimTrackstersvertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.337793</td><td>4132</td><td>759</td><td>1</td><td>3073</td><td>81%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlSimTrackstersvertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.558594</td><td>4132</td><td>916</td><td>0</td><td>915</td><td>0%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2 id="ticlTracksterLinks">ticlTracksterLinks</h2>
+<p class="size-summary"><b>Total size:</b> 0.543359 KB/event &nbsp; <b>Mean multiplicity:</b> 3.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTracksterLinks</code></td><td><code>int32_t</code></td><td>0.012500</td><td>10</td><td>6</td><td>1</td><td>13</td><td>20%</td><td>ticlTracksterLinks</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_EV1</code></td><td><code>float[]</code></td><td>0.028418</td><td>38</td><td>38</td><td>0</td><td>2985</td><td>3%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_EV2</code></td><td><code>float[]</code></td><td>0.028418</td><td>38</td><td>38</td><td>0</td><td>5.183</td><td>3%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_EV3</code></td><td><code>float[]</code></td><td>0.028418</td><td>38</td><td>38</td><td>-8.531e-06</td><td>2.267</td><td>3%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_barycenter_eta</code></td><td><code>float[]</code></td><td>0.029492</td><td>38</td><td>38</td><td>1.631</td><td>2.854</td><td>3%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_barycenter_phi</code></td><td><code>float[]</code></td><td>0.029492</td><td>38</td><td>38</td><td>-3.095</td><td>3.08</td><td>3%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_barycenter_x</code></td><td><code>float[]</code></td><td>0.029297</td><td>38</td><td>38</td><td>-59.23</td><td>133.2</td><td>3%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_barycenter_y</code></td><td><code>float[]</code></td><td>0.029297</td><td>38</td><td>38</td><td>-69.59</td><td>122.4</td><td>3%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_barycenter_z</code></td><td><code>float[]</code></td><td>0.029297</td><td>38</td><td>38</td><td>327.6</td><td>495.7</td><td>3%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_eVector0_x</code></td><td><code>float[]</code></td><td>0.029102</td><td>38</td><td>38</td><td>-0.4292</td><td>0.6735</td><td>3%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_eVector0_y</code></td><td><code>float[]</code></td><td>0.029102</td><td>38</td><td>38</td><td>0</td><td>0.999</td><td>3%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_eVector0_z</code></td><td><code>float[]</code></td><td>0.029102</td><td>38</td><td>38</td><td>-0.3675</td><td>0.7706</td><td>3%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_nticlTracksterLinksvertices</code></td><td><code>uint16_t[]</code></td><td>0.023340</td><td>38</td><td>27</td><td>2</td><td>81</td><td>13%</td><td>counts for ticlTracksterLinksvertices</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_oticlTracksterLinksvertices</code></td><td><code>uint16_t[]</code></td><td>0.023340</td><td>38</td><td>27</td><td>0</td><td>194</td><td>26%</td><td>offsets for ticlTracksterLinksvertices</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_raw_em_energy</code></td><td><code>float[]</code></td><td>0.029395</td><td>38</td><td>33</td><td>0</td><td>108</td><td>16%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_raw_energy</code></td><td><code>float[]</code></td><td>0.029102</td><td>38</td><td>38</td><td>0.9676</td><td>109.3</td><td>3%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_raw_pt</code></td><td><code>float[]</code></td><td>0.028711</td><td>38</td><td>38</td><td>0.2563</td><td>25.57</td><td>3%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class="const"><td><code>ticlTracksterLinks_regressed_energy</code></td><td><code>float[]</code></td><td>0.020020</td><td>38</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_time</code></td><td><code>float[]</code></td><td>0.028516</td><td>38</td><td>27</td><td>-99</td><td>16.85</td><td>32%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlTracksterLinks_timeError</code></td><td><code>float[]</code></td><td>0.029004</td><td>38</td><td>27</td><td>-1</td><td>0.07738</td><td>32%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlTracksterLinksSuperclusteringDNN">ticlTracksterLinksSuperclusteringDNN</h2>
+<p class="size-summary"><b>Total size:</b> 0.394824 KB/event &nbsp; <b>Mean multiplicity:</b> 1 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTracksterLinksSuperclusteringDNN</code></td><td><code>int32_t</code></td><td>0.014258</td><td>10</td><td>3</td><td>0</td><td>3</td><td>70%</td><td>ticlTracksterLinksSuperclusteringDNN</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_EV1</code></td><td><code>float[]</code></td><td>0.019238</td><td>10</td><td>10</td><td>29.62</td><td>158.3</td><td>10%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_EV2</code></td><td><code>float[]</code></td><td>0.019238</td><td>10</td><td>10</td><td>0.09568</td><td>0.818</td><td>10%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_EV3</code></td><td><code>float[]</code></td><td>0.019238</td><td>10</td><td>10</td><td>-8.531e-06</td><td>0.5937</td><td>10%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_barycenter_eta</code></td><td><code>float[]</code></td><td>0.020313</td><td>10</td><td>10</td><td>1.732</td><td>2.854</td><td>10%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_barycenter_phi</code></td><td><code>float[]</code></td><td>0.020313</td><td>10</td><td>10</td><td>-2.769</td><td>3.068</td><td>10%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_barycenter_x</code></td><td><code>float[]</code></td><td>0.020117</td><td>10</td><td>10</td><td>-54.1</td><td>106.7</td><td>10%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_barycenter_y</code></td><td><code>float[]</code></td><td>0.020117</td><td>10</td><td>10</td><td>-69.59</td><td>70.88</td><td>10%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_barycenter_z</code></td><td><code>float[]</code></td><td>0.020117</td><td>10</td><td>10</td><td>332.8</td><td>495.7</td><td>10%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_eVector0_x</code></td><td><code>float[]</code></td><td>0.019922</td><td>10</td><td>10</td><td>-0.1227</td><td>0.3197</td><td>10%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_eVector0_y</code></td><td><code>float[]</code></td><td>0.019922</td><td>10</td><td>10</td><td>0.9359</td><td>0.9971</td><td>10%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_eVector0_z</code></td><td><code>float[]</code></td><td>0.019922</td><td>10</td><td>10</td><td>-0.1728</td><td>0.1899</td><td>10%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_nticlTracksterLinksSuperclusteringDNNvertices</code></td><td><code>uint16_t[]</code></td><td>0.021387</td><td>10</td><td>10</td><td>3</td><td>62</td><td>10%</td><td>counts for ticlTracksterLinksSuperclusteringDNNvertices</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_oticlTracksterLinksSuperclusteringDNNvertices</code></td><td><code>uint16_t[]</code></td><td>0.021387</td><td>10</td><td>3</td><td>0</td><td>59</td><td>80%</td><td>offsets for ticlTracksterLinksSuperclusteringDNNvertices</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_raw_em_energy</code></td><td><code>float[]</code></td><td>0.020215</td><td>10</td><td>9</td><td>0</td><td>107.7</td><td>20%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_raw_energy</code></td><td><code>float[]</code></td><td>0.019922</td><td>10</td><td>10</td><td>21.88</td><td>107.7</td><td>10%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_raw_pt</code></td><td><code>float[]</code></td><td>0.019531</td><td>10</td><td>10</td><td>4.363</td><td>25.22</td><td>10%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class="const"><td><code>ticlTracksterLinksSuperclusteringDNN_regressed_energy</code></td><td><code>float[]</code></td><td>0.020508</td><td>10</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_time</code></td><td><code>float[]</code></td><td>0.019336</td><td>10</td><td>10</td><td>-99</td><td>16.85</td><td>10%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNN_timeError</code></td><td><code>float[]</code></td><td>0.019824</td><td>10</td><td>10</td><td>-1</td><td>0.006176</td><td>10%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlTracksterLinksSuperclusteringDNNvertices">ticlTracksterLinksSuperclusteringDNNvertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.086230 KB/event &nbsp; <b>Mean multiplicity:</b> 24.3 &nbsp; <b>Events with &ge;1:</b> 80%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTracksterLinksSuperclusteringDNNvertices</code></td><td><code>int32_t</code></td><td>0.015039</td><td>10</td><td>9</td><td>0</td><td>80</td><td>20%</td><td>Vertex properties</td></tr>
+<tr class="const"><td><code>ticlTracksterLinksSuperclusteringDNNvertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.022852</td><td>243</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlTracksterLinksSuperclusteringDNNvertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.048340</td><td>243</td><td>200</td><td>4</td><td>797</td><td>1%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2 id="ticlTracksterLinksvertices">ticlTracksterLinksvertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.137988 KB/event &nbsp; <b>Mean multiplicity:</b> 74.8 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTracksterLinksvertices</code></td><td><code>int32_t</code></td><td>0.013281</td><td>10</td><td>10</td><td>9</td><td>198</td><td>10%</td><td>Vertex properties</td></tr>
+<tr class="const"><td><code>ticlTracksterLinksvertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.022656</td><td>748</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlTracksterLinksvertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.102051</td><td>748</td><td>463</td><td>0</td><td>830</td><td>1%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2 id="ticlTrackstersCLUE3DHigh">ticlTrackstersCLUE3DHigh</h2>
+<p class="size-summary"><b>Total size:</b> 0.713965 KB/event &nbsp; <b>Mean multiplicity:</b> 6.3 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTrackstersCLUE3DHigh</code></td><td><code>int32_t</code></td><td>0.013086</td><td>10</td><td>7</td><td>2</td><td>13</td><td>30%</td><td>ticlTrackstersCLUE3DHigh</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_EV1</code></td><td><code>float[]</code></td><td>0.038770</td><td>63</td><td>57</td><td>0</td><td>442.7</td><td>11%</td><td>Trackster PCA eigenvalues 0</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_EV2</code></td><td><code>float[]</code></td><td>0.038770</td><td>63</td><td>57</td><td>0</td><td>5.718</td><td>11%</td><td>Trackster PCA eigenvalues 1</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_EV3</code></td><td><code>float[]</code></td><td>0.038770</td><td>63</td><td>57</td><td>-1.001e-05</td><td>0.7924</td><td>11%</td><td>Trackster PCA eigenvalues 2</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_barycenter_eta</code></td><td><code>float[]</code></td><td>0.039844</td><td>63</td><td>63</td><td>1.631</td><td>2.947</td><td>2%</td><td>Trackster barycenter pseudorapidity</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_barycenter_phi</code></td><td><code>float[]</code></td><td>0.039844</td><td>63</td><td>63</td><td>-3.095</td><td>3.136</td><td>2%</td><td>Trackster barycenter phi</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_barycenter_x</code></td><td><code>float[]</code></td><td>0.039648</td><td>63</td><td>63</td><td>-63.34</td><td>133.2</td><td>2%</td><td>Trackster barycenter x [cm]</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_barycenter_y</code></td><td><code>float[]</code></td><td>0.039648</td><td>63</td><td>63</td><td>-71.55</td><td>147.6</td><td>2%</td><td>Trackster barycenter y [cm]</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_barycenter_z</code></td><td><code>float[]</code></td><td>0.039648</td><td>63</td><td>63</td><td>327.6</td><td>510.7</td><td>2%</td><td>Trackster barycenter z [cm]</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_eVector0_x</code></td><td><code>float[]</code></td><td>0.039453</td><td>63</td><td>57</td><td>-0.4142</td><td>0.6735</td><td>11%</td><td>Trackster PCA principal axis, x component</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_eVector0_y</code></td><td><code>float[]</code></td><td>0.039453</td><td>63</td><td>57</td><td>0</td><td>0.999</td><td>11%</td><td>Trackster PCA principal axis, y component</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_eVector0_z</code></td><td><code>float[]</code></td><td>0.039453</td><td>63</td><td>57</td><td>-0.3864</td><td>0.7432</td><td>11%</td><td>Trackster PCA principal axis, z component</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_nticlTrackstersCLUE3DHighvertices</code></td><td><code>uint16_t[]</code></td><td>0.029395</td><td>63</td><td>28</td><td>2</td><td>62</td><td>16%</td><td>counts for ticlTrackstersCLUE3DHighvertices</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_oticlTrackstersCLUE3DHighvertices</code></td><td><code>uint16_t[]</code></td><td>0.029395</td><td>63</td><td>46</td><td>0</td><td>191</td><td>16%</td><td>offsets for ticlTrackstersCLUE3DHighvertices</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_raw_em_energy</code></td><td><code>float[]</code></td><td>0.037891</td><td>63</td><td>41</td><td>0</td><td>107.7</td><td>37%</td><td>EM raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_raw_energy</code></td><td><code>float[]</code></td><td>0.039453</td><td>63</td><td>63</td><td>0.7337</td><td>107.7</td><td>2%</td><td>Raw Energy of the trackster [GeV]</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_raw_pt</code></td><td><code>float[]</code></td><td>0.039062</td><td>63</td><td>63</td><td>0.1218</td><td>25.22</td><td>2%</td><td>Trackster raw pT, computed from trackster raw energy and direction [GeV]</td></tr>
+<tr class="const"><td><code>ticlTrackstersCLUE3DHigh_regressed_energy</code></td><td><code>float[]</code></td><td>0.020605</td><td>63</td><td>1</td><td>0</td><td>0</td><td>100%</td><td>Regressed Energy of the trackster, for the SimTrackster it corresponds to the GEN-energy</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_time</code></td><td><code>float[]</code></td><td>0.034668</td><td>63</td><td>37</td><td>-99</td><td>17.9</td><td>43%</td><td>Trackster HGCAL time</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHigh_timeError</code></td><td><code>float[]</code></td><td>0.037109</td><td>63</td><td>37</td><td>-1</td><td>0.07738</td><td>43%</td><td>Trackster HGCAL time error</td></tr></tbody></table>
+<h2 id="ticlTrackstersCLUE3DHighvertices">ticlTrackstersCLUE3DHighvertices</h2>
+<p class="size-summary"><b>Total size:</b> 0.137012 KB/event &nbsp; <b>Mean multiplicity:</b> 77.9 &nbsp; <b>Events with &ge;1:</b> 100%</p>
+<table class="display compact cell-border">
+<thead><tr><th>Variable</th><th>Type</th><th>Size [KB/event]</th><th>Entries</th><th>Distinct</th>
+<th>Min</th><th>Max</th><th>Most common</th><th>Description</th></tr></thead>
+<tbody><tr class=""><td><code>nticlTrackstersCLUE3DHighvertices</code></td><td><code>int32_t</code></td><td>0.013867</td><td>10</td><td>10</td><td>19</td><td>198</td><td>10%</td><td>Vertex properties</td></tr>
+<tr class="const"><td><code>ticlTrackstersCLUE3DHighvertices_vertex_mult</code></td><td><code>float[]</code></td><td>0.023633</td><td>779</td><td>1</td><td>1</td><td>1</td><td>100%</td><td>Fraction of Layer cluster energy used by the Trackster.</td></tr>
+<tr class=""><td><code>ticlTrackstersCLUE3DHighvertices_vertices</code></td><td><code>uint32_t[]</code></td><td>0.099512</td><td>779</td><td>466</td><td>0</td><td>830</td><td>1%</td><td>Layer clusters indices.</td></tr></tbody></table>
+<h2>Size by collection</h2>
+<div id="collection-size-pie" class="chart-box"></div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('table.display').not('#summary-table').DataTable({ paging: false, searching: true, info: false, order: [[0, 'asc']] });
+  $('#summary-table').DataTable({ paging: false, searching: true, info: false, order: [[3, 'desc']] });
+  Plotly.newPlot('collection-size-pie', [{ type: 'pie', labels: ["HGCalLayerClusters", "ticlSimTracksters", "ticlSimTrackstersvertices", "ticlTrackstersCLUE3DHigh", "ticlSimTrackstersfromCPs", "ticlSimTrackstersfromCPsvertices", "ticlTracksterLinks", "ticlCandidate", "TICLCandidates", "GeneralTrack", "SimTICLCandidates", "ticlTracksterLinksSuperclusteringDNN", "GSFTrack", "HLT", "SimTICLCandidatesExtra", "TICLCandidatesExtra", "SimSC2ticlTrackstersCLUE3DHighByHitsLinks", "RecoticlTrackstersCLUE3DHigh2SimSCByHitsLinks", "HGCalGenPart", "SimSC2ticlTracksterLinksByHitsLinks", "RecoticlTracksterLinks2SimSCByHitsLinks", "SimSC2ticlCandidateByHitsLinks", "RecoticlCandidate2SimSCByHitsLinks", "ticlCandidatevertices", "ticlTracksterLinksvertices", "ticlTrackstersCLUE3DHighvertices", "SimCP2ticlTrackstersCLUE3DHighByHitsLinks", "RecoticlTrackstersCLUE3DHigh2SimCPByHitsLinks", "RecoticlTracksterLinksSuperclusteringDNN2SimSCByHitsLinks", "SimSC2ticlTracksterLinksSuperclusteringDNNByHitsLinks", "SimCP2ticlTracksterLinksByHitsLinks", "RecoticlTracksterLinks2SimCPByHitsLinks", "SimCP2ticlCandidateByHitsLinks", "RecoticlCandidate2SimCPByHitsLinks", "ticlTracksterLinksSuperclusteringDNNvertices", "RecoticlTracksterLinksSuperclusteringDNN2SimCPByHitsLinks", "SimCP2ticlTracksterLinksSuperclusteringDNNByHitsLinks", "SimCl2CPWithFraction", "Event", "SimSC2ticlTracksterLinksSuperclusteringDNNByHits", "SimSC2ticlTrackstersCLUE3DHighByHits", "RecoticlTrackstersCLUE3DHigh2SimSCByHits", "SimSC2ticlTracksterLinksByHits", "RecoticlTrackstersCLUE3DHigh2SimCPByHits", "SimSC2ticlCandidateByHits", "RecoticlTracksterLinksSuperclusteringDNN2SimSCByHits", "RecoticlTracksterLinksSuperclusteringDNN2SimCPByHits", "RecoticlTracksterLinks2SimSCByHits", "SimCP2ticlTracksterLinksSuperclusteringDNNByHits", "RecoticlCandidate2SimSCByHits", "RecoticlTracksterLinks2SimCPByHits", "RecoticlCandidate2SimCPByHits", "SimCP2ticlTrackstersCLUE3DHighByHits", "linkedTracksters", "SimCP2ticlTracksterLinksByHits", "SimTICLCandidatesTrackIdxs", "SimCP2ticlCandidateByHits", "TICLCandidatesTrackIdxs", "SimTICLCandidatesGsfTrackIdxs", "TICLCandidatesGsfTrackIdxs", "L1TrackTrigger", "L1simulation", "DST"], values: [5.7712890625, 1.1348632812500004, 0.9095703125, 0.71396484375, 0.6112304687500003, 0.5842773437500001, 0.5433593750000001, 0.52822265625, 0.520703125, 0.5083984374999999, 0.396875, 0.39482421874999996, 0.35986328124999994, 0.351953125, 0.2291015625, 0.19921875, 0.19921875, 0.191796875, 0.18134765624999996, 0.177734375, 0.1765625, 0.171875, 0.17109375, 0.1396484375, 0.13798828124999998, 0.13701171875, 0.12412109375000001, 0.11289062500000001, 0.10849609375, 0.10498046875, 0.09951171875, 0.09755859375, 0.09599609375000001, 0.09404296875, 0.08623046875000001, 0.0814453125, 0.07988281250000001, 0.0734375, 0.07119140625, 0.04443359375, 0.04404296875, 0.04248046875, 0.04189453125, 0.04013671875, 0.0400390625, 0.0400390625, 0.0400390625, 0.03955078125, 0.0388671875, 0.0380859375, 0.03759765625, 0.0361328125, 0.0353515625, 0.03505859375, 0.03359375, 0.0322265625, 0.03212890625, 0.03125, 0.029296875, 0.0283203125, 0.0095703125, 0.009375, 0.00908203125],
+    textinfo: 'label+percent', hovertemplate: '%{label}<br>%{value:.6f} KB/event<extra></extra>' }],
+    { title: 'Total size by collection [KB/event]', height: 520 });
+});
+</script></body></html>
