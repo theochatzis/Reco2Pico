@@ -1,0 +1,5 @@
+#!/bin/bash
+# Variable documentation (HTML + CSV) of a NanoAOD-style ntuple; see
+# samples_workflows/common/make_ntuple_doc.py. Installed in $CMSSW_BASE/bin by scram.
+common="$("$(dirname "${BASH_SOURCE[0]}")/samples_workflows_common")" || exit 1
+exec python3 "${common}/make_ntuple_doc.py" "$@"

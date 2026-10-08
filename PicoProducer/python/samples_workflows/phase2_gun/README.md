@@ -83,8 +83,9 @@ entry in any event; the script then fails). It finally writes
 ntuple: one table per collection with type, size, NanoAOD `doc` string and fill
 statistics (entries, distinct values, min/max, most-common fraction), a
 collections summary with mean multiplicity and a size pie chart, in the style of
-`workflows/doc_PicoAOD.html`. For any other file:
-`python3 ../common/make_ntuple_doc.py out_000.root -o doc.html --csv doc.csv`.
+`workflows/doc_PicoAOD.html`. For any other file, from any directory after `cmsenv`:
+`make_ntuple_doc out_000.root -o doc.html --csv doc.csv` (wrapper installed by
+`scram b` from `Reco2Pico/PicoProducer/scripts/`).
 `NTUPLE=hgcal-nano ./run_gun_local.sh` runs the same chain with another ntuple
 definition.
 

@@ -14,6 +14,23 @@ common/
   ntuples/<name>.sh          ntuple definitions (the last step of every chain)
 ```
 
+## Calling the tools from anywhere
+
+`Reco2Pico/PicoProducer/scripts/` holds thin wrappers that scram installs into
+`$CMSSW_BASE/bin/$SCRAM_ARCH` on `scram b` (the same mechanism as `bdriver`), so
+after `cmsenv` these work from any directory:
+
+| command | runs |
+|---|---|
+| `make_ntuple_doc FILE.root [-o doc.html] [--csv ...]` | `common/make_ntuple_doc.py` |
+| `submit_bdriver_chain ...` | `common/submit_bdriver_chain.sh` |
+| `samples_workflows_common` | prints the absolute path of this directory, e.g. `source "$(samples_workflows_common)/chain_lib.sh"` |
+
+The wrappers resolve `common/` through `CMSSW_BASE` first and `CMSSW_RELEASE_BASE`
+as fallback, so a checked-out copy wins over an installed one. After adding a new
+wrapper, run `scram b` once so it appears in `bin/`. The Python modules are also
+importable as `Reco2Pico.PicoProducer.samples_workflows.common.<module>`.
+
 ## The chain model
 
     sample steps (workflow)           ntuple step (common/ntuples)
@@ -125,7 +142,8 @@ size, `EMPTY` flag) and, per branch, entries, distinct values, min/max and the
 fraction of entries equal to the most common value, so that empty tables and
 constant placeholders (-999, -1, 0) stand out. The description column is the
 NanoAOD `doc` string (branch title). `run_gun_local.sh` writes
-`local_test/doc_<NTUPLE>.html`; run it by hand on any staged `out_NNN.root`.
+`local_test/doc_<NTUPLE>.html`; on any staged `out_NNN.root` run
+`make_ntuple_doc out_NNN.root -o doc.html --csv doc.csv` (wrapper in `bin/`, see above).
 
 ## submit_bdriver_chain.sh
 

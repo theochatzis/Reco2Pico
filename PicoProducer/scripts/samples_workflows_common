@@ -1,0 +1,13 @@
+#!/bin/bash
+# Print the absolute path of Reco2Pico/PicoProducer/python/samples_workflows/common
+# (developer area first, release area as fallback). Installed in $CMSSW_BASE/bin by
+# scram, so other scripts can do:
+#     source "$(samples_workflows_common)/chain_lib.sh"
+rel="Reco2Pico/PicoProducer/python/samples_workflows/common"
+for base in "${CMSSW_BASE:-}" "${CMSSW_RELEASE_BASE:-}"; do
+  if [ -n "${base}" ] && [ -d "${base}/src/${rel}" ]; then
+    echo "${base}/src/${rel}"; exit 0
+  fi
+done
+echo "samples_workflows_common: ${rel} not found under CMSSW_BASE/CMSSW_RELEASE_BASE (run cmsenv)" >&2
+exit 1
