@@ -31,7 +31,7 @@ test scaffolding, ntuple definitions, generic bdriver submission) lives in
 | `make_gun_dataset.py` | writes a bdriver dataset JSON with one virtual `gun://jobNNN` "file" per job (validated with `assert_dataset_data`). |
 | `steps_gun_chain.json` | *sample* steps manifest (steps 2-3, `cfgs/...` relative to the JSON). The ntuple step is appended at submission time. |
 | `steps_gun_chain_pu200.json` | same, pointing at `cfgs_pu200/...` for the PU200 recipe. |
-| `submit_gun_bdriver.sh [--submit] [--dry-run]` | one bdriver job area per species (pip pim Kp Km p pbar): writes the dataset JSON, composes `datasets/steps_<tag>_<NTUPLE>.json` = sample steps + `cfgs/ntuple_<NTUPLE>_cfg.py`, and calls `../common/submit_bdriver_chain.sh`. |
+| `submit_gun_bdriver.sh [--submit] [--dry-run]` | one bdriver job area per species (pi0 pip pim Kp Km p pbar): writes the dataset JSON, composes `datasets/steps_<tag>_<NTUPLE>.json` = sample steps + `cfgs/ntuple_<NTUPLE>_cfg.py`, and calls `../common/submit_bdriver_chain.sh`. |
 
 Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`, `local_test/`.
 
@@ -246,7 +246,7 @@ run if `cfgs/ntuple_<NTUPLE>_cfg.py` is missing).
 
 Defaults (all overridable through the environment): `JOBS=200`,
 `EVENTS_PER_JOB=500`, `PMIN=1 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9`,
-`SPECIES="211 -211 321 -321 2212 -2212"`, `NTUPLE=hgcalval-nano`,
+`SPECIES="111 211 -211 321 -321 2212 -2212"`, `NTUPLE=hgcalval-nano`,
 `FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
 `JOBAREA=jobs`, `OS=el9`, `RUNTIME=20:00:00`, `SEED=` (when set, passed as
 `seed=<n>` to all steps; job offsets are added on top).

@@ -10,7 +10,7 @@
 #   EVENTS_PER_JOB [500]        events per job
 #   PMIN PMAX      [1] [200]    |p| range [GeV]
 #   ETAMIN ETAMAX  [1.6] [2.9]
-#   SPECIES        ["211 -211 321 -321 2212 -2212"]  labels: pip pim Kp Km p pbar
+#   SPECIES        ["111 211 -211 321 -321 2212 -2212"]  labels: pi0 pip pim Kp Km p pbar
 #   NTUPLE         [hgcalval-nano]  ntuple definition (../common/ntuples/); the
 #                               cfgs must have been built with the same NTUPLE
 #   FINAL_OUTPUT   [/eos/user/t/tchatzis/phase2_gun]  EOS destination of the ntuples
@@ -48,7 +48,7 @@ PMIN="${PMIN:-1}"
 PMAX="${PMAX:-200}"
 ETAMIN="${ETAMIN:-1.6}"
 ETAMAX="${ETAMAX:-2.9}"
-SPECIES="${SPECIES:-211 -211 321 -321 2212 -2212}"
+SPECIES="${SPECIES:-111 211 -211 321 -321 2212 -2212}"
 NTUPLE="${NTUPLE:-hgcalval-nano}"
 FINAL_OUTPUT="${FINAL_OUTPUT:-/eos/user/t/tchatzis/phase2_gun}"
 JOBAREA="${JOBAREA:-${SCRIPT_DIR}/jobs}"
@@ -69,6 +69,7 @@ done
 
 species_label() {
   case "$1" in
+    111)   echo pi0 ;;
     211)   echo pip ;;
     -211)  echo pim ;;
     321)   echo Kp ;;
