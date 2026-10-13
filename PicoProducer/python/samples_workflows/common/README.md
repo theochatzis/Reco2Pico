@@ -74,6 +74,10 @@ for the log prefix. Functions:
 
 | function | purpose |
 |---|---|
+| `sw_log MSG` / `sw_warn MSG` / `sw_die MSG` | `[SW_LOG] MSG` (warn/die to stderr; die exits 1) |
+| `sw_section TITLE` | bold `==> TITLE` header separating blocks (e.g. one per species) |
+| `sw_kv KEY VALUE` | aligned `key: value` summary line |
+| `sw_print_cmd ARGS...` | echo a long command one option per line (used for the bdriver call) |
 | `sw_require_cmssw` | abort unless `cmsenv` was done |
 | `sw_gtgen GT` | `GT_13TeV` if that `autoCond` alias exists (HL-LHC beam spot for `--beamspot DBrealisticHLLHC`), else `GT` |
 | `sw_run_driver ARGS` | echo + `cmsDriver.py ARGS` |
@@ -86,6 +90,11 @@ for the log prefix. Functions:
 | `sw_run_step N CFG ARGS` | `cmsRun -j stepN.xml`, log `stepN.log`, exit on failure (PIPESTATUS handled correctly under `pipefail`) |
 | `sw_inspect_nano FILE PREFIX...` | per table prefix: `OK` (with entry count), `EMPTY` (branches but 0 entries in every event) or `MISSING`; non-zero exit on EMPTY/MISSING |
 | `sw_make_ntuple_doc FILE [OUT.html] [TITLE]` | variable documentation via `make_ntuple_doc.py` (+ CSV next to the HTML) |
+
+Colours (log prefixes, headers, option names; also bdriver's labels) are on when
+stdout is a terminal. `NO_COLOR=1` or `SW_COLOR=0` turns them off, `SW_COLOR=1`
+forces them, e.g. `SW_COLOR=1 ./submit_gun_bdriver.sh 2>&1 | less -R`. bdriver
+shows a single in-place job counter per dataset; `-v` lists every `exe.sh`.
 
 ## Ntuple definitions (`ntuples/<name>.sh`)
 

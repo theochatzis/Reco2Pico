@@ -5,6 +5,11 @@
 #
 #   SW_LOG                  log prefix used by sw_log (default: samples_workflows)
 #   sw_log MSG              / sw_die MSG
+#   sw_section TITLE        bold header line (visual separator between blocks)
+#   sw_kv KEY VALUE         aligned "key: value" line (bold key)
+#   sw_print_cmd ARGS...    command echo, one option per line (option names colored)
+#   Colors: on when stdout is a terminal; off with NO_COLOR=1 or SW_COLOR=0,
+#           forced on with SW_COLOR=1 (e.g. when piping through less -R)
 #   sw_require_cmssw        abort unless cmsenv was done
 #   sw_gtgen GT             echo GT_13TeV when that autoCond alias exists, else GT
 #                           (the relval GenSimHLBeamSpot step uses it: HL-LHC
@@ -28,8 +33,42 @@
 SW_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 SW_TAIL_MARKER="samples_workflows: VarParsing tail"
 
-sw_log() { echo "[${SW_LOG:-samples_workflows}] $*"; }
-sw_die() { sw_log "ERROR: $*" >&2; exit 1; }
+# --- colors ------------------------------------------------------------------
+if [ "${SW_COLOR:-}" = "1" ] || { [ "${SW_COLOR:-}" != "0" ] && [ -z "${NO_COLOR:-}" ] && [ -t 1 ]; }; then
+  SW_C_RESET=$'\033[0m' SW_C_BOLD=$'\033[1m'
+  SW_C_RED=$'\033[1;91m' SW_C_GREEN=$'\033[1;92m' SW_C_YELLOW=$'\033[1;93m' SW_C_BLUE=$'\033[1;94m' SW_C_CYAN=$'\033[1;96m'
+else
+  SW_C_RESET='' SW_C_BOLD='' SW_C_RED='' SW_C_GREEN='' SW_C_YELLOW='' SW_C_BLUE='' SW_C_CYAN=''
+fi
+
+sw_log() { echo "${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET} $*"; }
+sw_die() { echo "${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET} ${SW_C_RED}ERROR:${SW_C_RESET} $*" >&2; exit 1; }
+sw_warn() { echo "${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET} ${SW_C_YELLOW}warning:${SW_C_RESET} $*" >&2; }
+sw_section() { echo; echo "${SW_C_GREEN}==>${SW_C_RESET} ${SW_C_BOLD}$*${SW_C_RESET}"; }
+sw_kv() { printf '  %s%-16s%s %s\n' "${SW_C_BOLD}" "$1:" "${SW_C_RESET}" "${*:2}"; }
+
+# sw_print_cmd ARGS...: program on the first line, then one "--opt value" (or
+# "key=value" / bare argument) per line, so long bdriver/cmsDriver calls can be read.
+sw_print_cmd() {
+  local a line="" want_value=0 lines=()
+  for a in "$@"; do
+    if [[ "${a}" == -* && "${a}" != -*=* ]]; then            # option: new line
+      [ -n "${line}" ] && lines+=("${line}")
+      line="${SW_C_BLUE}${a}${SW_C_RESET}"; want_value=1
+    elif [ "${want_value}" = 1 ] && [[ "${a}" != *=* ]]; then   # its value
+      line="${line} $(printf '%q' "${a}")"; want_value=0
+    elif [ ${#lines[@]} -eq 0 ] && [[ "${line}" != "${SW_C_BLUE}"-* ]]; then  # program + its args
+      line="${line:+${line} }$(printf '%q' "${a}")"; want_value=0
+    else                                                     # key=value / bare arg
+      [ -n "${line}" ] && lines+=("${line}")
+      line="$(printf '%q' "${a}")"; want_value=0
+    fi
+  done
+  [ -n "${line}" ] && lines+=("${line}")
+  printf '  %s\n' "${lines[0]}"
+  [ ${#lines[@]} -gt 1 ] && printf '    %s\n' "${lines[@]:1}"
+  return 0
+}
 
 sw_require_cmssw() {
   [ -n "${CMSSW_BASE:-}" ] || sw_die "CMSSW_BASE is not set; run cmsenv first"
@@ -114,7 +153,7 @@ sw_make_ntuple_cfg() {
 
 sw_compose_steps() {
   local out="$1" sample="$2" ntuple_cfg="$3"
-  python3 - "${out}" "${sample}" "${ntuple_cfg}" <<'PYEOF'
+  SW_PREFIX="${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET}" python3 - "${out}" "${sample}" "${ntuple_cfg}" <<'PYEOF'
 import json, os, sys
 out, sample, ntuple = sys.argv[1:4]
 base = os.path.dirname(os.path.abspath(sample))
@@ -130,7 +169,7 @@ for s in steps:
 os.makedirs(os.path.dirname(os.path.abspath(out)) or '.', exist_ok=True)
 json.dump(steps, open(out, 'w'), indent=2)
 open(out, 'a').write('\n')
-print('[samples_workflows] steps manifest %s: %s' % (out, ' -> '.join(os.path.basename(s['cfg']) for s in steps)))
+print(os.environ.get('SW_PREFIX', '[samples_workflows]') + ' steps manifest %s: %s' % (os.path.basename(out), ' -> '.join(os.path.basename(s['cfg']) for s in steps)))
 PYEOF
 }
 

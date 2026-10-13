@@ -92,7 +92,7 @@ def chained_commands(steps, basename, destination, jobdir, save_intermediates, a
             'echo ' + _quote('[INFO] starting step {}'.format(number)),
             '(',
             # Each subshell starts from the first step's environment.
-            'runtime=$(scram runtime -unsh)',
+            'runtime=$(scram unsetenv -sh)',
             'eval "$runtime"',
             'cd ' + _quote(os.path.join(step['cmssw'], 'src')),
             'export SCRAM_ARCH=' + _quote(arch),
@@ -426,7 +426,7 @@ if __name__ == '__main__':
    parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False,
                        help='enable dry-run mode')
    parser.add_argument('-v', '--verbosity', dest='verbosity', nargs='?', type=int, default=0, const=1,
-                       help='level of verbosity')
+                       help='level of verbosity (>0: list every job executable and the executed commands)')
 
    opts, opts_unknown = parser.parse_known_args()
    log_prx = os.path.basename(__file__)+' -- '
@@ -535,13 +535,6 @@ if __name__ == '__main__':
 
    cmsRun_addopts = opts_unknown[:]
 
-   if opts.verbosity > 0 and len(cmsRun_addopts):
-     print('-'*50)
-     print(colored_text('additional cmsRun command-line arguments:', ['1']))
-     for _tmp in cmsRun_addopts:
-       print(' '+str(_tmp))
-     print('-'*50)
-
    if os.path.isfile(opts.dataset):
      input_dset = skim_das_jsondump(
        file_path=opts.dataset,
@@ -605,8 +598,30 @@ if __name__ == '__main__':
    else:
      FINAL_OUTPUT_DIR = os.path.abspath(opts.final_output).rstrip('/')
 
-   print(colored_text('final output:', ['1', '92']), FINAL_OUTPUT_DIR)
-   print(colored_text('condor job area:', ['1', '92']), OUTPUT_DIR)
+   # Input summary: what the jobs will run on, before anything is created.
+   _label = lambda txt: colored_text(txt.ljust(18), ['1', '94'])
+   _dset_desc = os.path.abspath(opts.dataset) if os.path.isfile(opts.dataset) else opts.dataset
+   _dset_desc += ' ({} files, {} events)'.format(
+     len(input_dset['files']), sum(_f['nevents'] for _f in input_dset['files']))
+   print(colored_text('--- inputs', ['1']))
+   print(_label('dataset:'), _dset_desc)
+   print(_label('step 1 cfg:'), os.path.abspath(opts.cmsRun_cfg))
+   for _number, _step in enumerate(steps, 2):
+     print(_label('step {} cfg:'.format(_number)), _step['cfg']+(' '+' '.join(_step['args']) if _step['args'] else ''))
+   if cmsRun_addopts:
+     print(_label('cmsRun arguments:'), ' '.join(cmsRun_addopts))
+   print(_label('events per job:'), opts.n_events if opts.n_events > 0 else 'all events of each file')
+   print(_label('parent files:'), 'level '+str(opts.parentFiles_level))
+   if opts.lumi_json is not None:
+     print(_label('lumi mask:'), opts.lumi_json)
+   print(_label('resources:'), 'memory={} cpus={} disk={} time={} flavour={} os={}'.format(
+     opts.memory, opts.cpus, (str(opts.disk_mb)+'MB' if opts.disk_mb else 'default'),
+     opts.time, opts.JobFlavour or 'none', opts.os))
+   if opts.job_name:
+     print(_label('job name:'), opts.job_name)
+   print(colored_text('--- outputs', ['1']))
+   print(colored_text('final output:'.ljust(18), ['1', '92']), FINAL_OUTPUT_DIR)
+   print(colored_text('condor job area:'.ljust(18), ['1', '92']), OUTPUT_DIR)
 
    MKDIRP(OUTPUT_DIR, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
    MKDIRP(OUTPUT_DIR+'/logs', verbose=(opts.verbosity > 0), dry_run=opts.dry_run)
@@ -920,7 +935,10 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
 
          os.chmod(EXEFILE_ABSPATH, os.stat(EXEFILE_ABSPATH).st_mode | stat.S_IEXEC)
 
-       print(colored_text('output:', ['1', '94']), os.path.relpath(EXEFILE_ABSPATH, os.environ['PWD']))
+       if opts.verbosity > 0:
+         print(colored_text('output:', ['1', '94']), EXEFILE_ABSPATH)
+       elif sys.stdout.isatty():
+         print('\r'+colored_text('preparing job:', ['1', '94']), jobCounter+1, end='', flush=True)
 
        jobCounter += 1
 
@@ -930,8 +948,10 @@ process.source.lumisToProcess = LumiList.LumiList(filename={:}).getVLuminosityBl
      if breakLoop:
        break
 
-   print(colored_text('prepared jobs:', ['1', '92']), jobCounter)
-   print(colored_text('submit file:', ['1', '92']), SUBFILE_ABSPATH)
+   if opts.verbosity == 0 and sys.stdout.isatty() and jobCounter > 0:
+     print('\r', end='')
+   print(colored_text('prepared jobs:'.ljust(18), ['1', '92']), jobCounter, '(executables: '+OUTPUT_DIR+'/job_*/exe.sh)')
+   print(colored_text('submit file:'.ljust(18), ['1', '92']), SUBFILE_ABSPATH)
 
    if opts.submit:
      EXE('condor_submit '+_quote(SUBFILE_ABSPATH), suspend=False, verbose=(opts.verbosity > 0), dry_run=opts.dry_run)

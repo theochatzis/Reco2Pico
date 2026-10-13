@@ -76,7 +76,7 @@ def main(argv=None):
     with open(args.output, 'w') as handle:
         json.dump(dset, handle, indent=2)
         handle.write('\n')
-    print('[make_gun_dataset] {}: {} jobs x {} events -> {}'.format(
+    print(os.environ.get('SW_PREFIX', '[make_gun_dataset]') + ' {}: {} jobs x {} events -> {}'.format(
         dset['DAS'], args.jobs, args.events_per_job, args.output))
     return 0
 

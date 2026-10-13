@@ -88,7 +88,7 @@ cmd=(python3 "${BDRIVER}"
 [ -n "${SUBMIT}" ] && cmd+=("${SUBMIT}")
 [ ${#EXTRA_ARGS[@]} -gt 0 ] && cmd+=("${EXTRA_ARGS[@]}")
 
-sw_log "${NAME}:"
-printf '  %q' "${cmd[@]}"; echo
+sw_log "${SW_C_BOLD}${NAME}${SW_C_RESET}: $(basename "${DATASET}") -> ${FINAL_OUTPUT}"
+sw_print_cmd "${cmd[@]}"
 [ -n "${DRYRUN}" ] && { sw_log "dry run, not executing"; exit 0; }
 "${cmd[@]}"

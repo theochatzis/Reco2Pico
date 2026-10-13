@@ -84,13 +84,24 @@ mkdir -p "${DATASETS}"
 EXTRA_ARGS=("pMin=${PMIN}" "pMax=${PMAX}" "etaMin=${ETAMIN}" "etaMax=${ETAMAX}")
 [ -n "${SEED}" ] && EXTRA_ARGS+=("seed=${SEED}")
 
+sw_section "phase2 gun chain${TAGSUFFIX:+ (${TAGSUFFIX#_})}"
+sw_kv species "${SPECIES}"
+sw_kv jobs "${JOBS} x ${EVENTS_PER_JOB} events per species"
+sw_kv "p range" "${PMIN} - ${PMAX} GeV, ${ETAMIN} < eta < ${ETAMAX}${SEED:+, seed=${SEED}}"
+sw_kv ntuple "${NTUPLE}"
+sw_kv steps "$(basename "${SAMPLE_STEPS}")"
+sw_kv "job area" "${JOBAREA}"
+sw_kv "final output" "${FINAL_OUTPUT}"
+sw_kv mode "${PASS[*]:-prepare only (no --submit)}"
+
 for pdg in ${SPECIES}; do
   label="$(species_label "${pdg}")"
+  sw_section "${label} (pdgId=${pdg})"
   tag="${label}_p${PMIN}to${PMAX}${TAGSUFFIX}"
   json="${DATASETS}/gun_${label}_p${PMIN}to${PMAX}.json"
   steps="${DATASETS}/steps_${tag}_${NTUPLE}.json"
 
-  python3 "${SCRIPT_DIR}/make_gun_dataset.py" \
+  SW_PREFIX="${SW_C_CYAN}[make_gun_dataset]${SW_C_RESET}" python3 "${SCRIPT_DIR}/make_gun_dataset.py" \
     --name "gun_${label}_p${PMIN}to${PMAX}" --jobs "${JOBS}" --events-per-job "${EVENTS_PER_JOB}" -o "${json}"
   sw_compose_steps "${steps}" "${SAMPLE_STEPS}" "${NTUPLE_CFG}"
 
