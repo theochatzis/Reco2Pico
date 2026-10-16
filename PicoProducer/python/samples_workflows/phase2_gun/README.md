@@ -1,7 +1,7 @@
 # Phase-2 single charged-hadron gun chain
 
 Full-simulation chain for single charged hadrons in the HGCAL acceptance,
-flat in |p| (1-200 GeV) and eta (1.6-2.9), run with Reco2Pico's `bdriver`
+flat in |p| (0.2-200 GeV) and |eta| (1.6-2.9, both endcaps), run with Reco2Pico's `bdriver`
 step chaining on HTCondor:
 
     step1  GEN,SIM                                  gun (EmptySource)      -> GEN-SIM
@@ -23,30 +23,36 @@ test scaffolding, ntuple definitions, generic bdriver submission) lives in
 
 | file | purpose |
 |------|---------|
-| `SingleHadronPGun_cfi.py` | cmsDriver generator fragment (`FlatRandomMultiParticlePGunProducer`, one particle per event, flat in p, eta, phi). Defaults: pi+ (211), p 1-200 GeV, 1.6 < eta < 2.9, full phi, no anti-particle, `firstRun=1`. |
-| `gun_options.py` | the gun's extra VarParsing options (`pdgId pMin pMax etaMin etaMax`) and the GEN hook that applies them to `process.generator.PGunParameters`. |
-| `gun_varparsing_tail.py` | four-line snippet appended to every cfg: imports `common.varparsing.apply_varparsing` and `gun_options`, and calls `apply_varparsing(process, extra_options=GUN_OPTIONS, on_gen=apply_gun, tag='phase2_gun')`. The marker line `samples_workflows: VarParsing tail` keeps the append idempotent. |
+| `SingleHadronPGun_cfi.py` | cmsDriver generator fragment (`FlatRandomMultiParticlePGunProducer`, one particle per event, flat in p, eta, phi). Defaults: pi+ (211), p 0.2-200 GeV, 1.6 < eta < 2.9, full phi, no anti-particle, `firstRun=1`. The gun draws eta in one interval; `apply_gun` flips it to [-2.9, -1.6] in odd-numbered jobs (`etaSide=both`), so a dataset covers both endcaps job by job. |
+| `gun_options.py` | the gun's extra VarParsing options (`pdgId pMin pMax etaMin etaMax etaSide cpMinE genPtMin`), the GEN hook `apply_gun` (species and kinematics into `process.generator.PGunParameters`) and the every-step hook `apply_gun_thresholds` (CaloParticle `MinEnergy` in step 2, `HGCalGenPart` pT cut in the nano step; see [Low-energy thresholds](#low-energy-thresholds)). |
+| `gun_varparsing_tail.py` | snippet appended to every cfg: imports `common.varparsing.apply_varparsing` and `gun_options`, and calls `apply_varparsing(process, extra_options=GUN_OPTIONS, on_gen=apply_gun, on_process=apply_gun_thresholds, tag='phase2_gun')`. The marker line `samples_workflows: VarParsing tail` lets `sw_append_tail` replace an old copy. |
 | `make_gun_cfgs.sh [OUTDIR]` | three `cmsDriver.py --no_exec` commands (steps 1-3) + the ntuple cfg from the `NTUPLE` definition, then appends the tail. Env: `GEOM ERA GT GTGEN PU PUINPUT DIGISTEP NTUPLE`. Output: `step1_GENSIM_cfg.py step2_DIGIRAW_cfg.py step3_RECO_cfg.py ntuple_<NTUPLE>_cfg.py`. |
-| `run_gun_local.sh [NEVENTS] [PDGID]` | generates the cfgs in `local_test/cfgs`, runs the four steps locally and inspects the ntuple branches (`NTUPLE_INSPECT` of the definition). Asks before wiping an existing `local_test/` (`CLEAN=yes|no` to skip the prompt, `TESTDIR=...` to relocate). |
+| `run_gun_local.sh [NEVENTS] [PDGID]` | generates the cfgs in `local_test/cfgs`, runs the four steps locally and inspects the ntuple branches (`NTUPLE_INSPECT` of the definition). Asks before wiping an existing `local_test/` (`CLEAN=yes|no` to skip the prompt, `TESTDIR=...` to relocate). Env: `PMIN PMAX ETAMIN ETAMAX CPMINE GENPTMIN` (same defaults as the submit script). |
 | `make_gun_dataset.py` | writes a bdriver dataset JSON with one virtual `gun://jobNNN` "file" per job (validated with `assert_dataset_data`). |
 | `steps_gun_chain.json` | *sample* steps manifest (steps 2-3, `cfgs/...` relative to the JSON). The ntuple step is appended at submission time. |
 | `steps_gun_chain_pu200.json` | same, pointing at `cfgs_pu200/...` for the PU200 recipe. |
-| `submit_gun_bdriver.sh [--submit] [--dry-run]` | one bdriver job area per species (pi0 pip pim Kp Km p pbar): writes the dataset JSON, composes `datasets/steps_<tag>_<NTUPLE>.json` = sample steps + `cfgs/ntuple_<NTUPLE>_cfg.py`, and calls `../common/submit_bdriver_chain.sh`. |
+| `submit_gun_bdriver.sh [--submit] [--dry-run]` | one bdriver job area per species (pi0 pip pim Kp Km p pbar): writes the dataset JSON, composes `datasets/steps_<tag>_<NTUPLE>.json` = sample steps + `cfgs/ntuple_<NTUPLE>_cfg.py` with the gun arguments as per-step `args`, and calls `../common/submit_bdriver_chain.sh`. |
 
 Generated, not versioned: `cfgs/`, `cfgs_pu200/`, `datasets/`, `jobs/`, `local_test/`.
 
 ## How the pieces fit together
 
 * bdriver runs step 1 as
-  `cmsRun -j step1.xml cfg.py pdgId=.. pMin=.. pMax=.. etaMin=.. etaMax=.. maxEvents=M skipEvents=0 inputFiles=gun://jobNNN output=step1_out_NNN.root`
+  `cmsRun -j step1.xml cfg.py pdgId=.. pMin=.. pMax=.. etaMin=.. etaMax=.. etaSide=.. cpMinE=.. genPtMin=.. maxEvents=M skipEvents=0 inputFiles=gun://jobNNN output=step1_out_NNN.root`
   and then each step of `steps.json` with
-  `inputFiles=file:<previous> secondaryInputFiles= maxEvents=-1 skipEvents=0 output=<next>`.
+  `<its "args"> inputFiles=file:<previous> secondaryInputFiles= maxEvents=-1 skipEvents=0 output=<next>`.
+  bdriver's trailing arguments reach step 1 only, so `submit_gun_bdriver.sh` stores the
+  same gun arguments as `args` of every step in the composed manifest (the
+  thresholds `cpMinE` / `genPtMin` act in steps 2 and 4; the rest is ignored there).
 * `common/varparsing.py` derives the job index from `job(\d+)` in `inputFiles` (fallback:
   `skipEvents // maxEvents`) and sets, on the GEN step,
   `initialSeed = (seed or 12345) + 1000*job` for every module of
   `RandomNumberGeneratorService` (generator, VtxSmeared, g4SimHits, mix, ...),
   `source.firstEvent = 1 + maxEvents*job` and `source.firstLuminosityBlock = 1 + job`.
   Every job therefore has unique event ids and statistically independent events.
+  The job index also selects the endcap: `etaSide=both` (default) gives even jobs
+  `[etaMin, etaMax]` and odd jobs `[-etaMax, -etaMin]`; `pos` / `neg` force one side.
+  (No release gun draws from a two-sided eta window, hence per job rather than per event.)
 * In PoolSource steps it also recognises bdriver's `step1_out_NNN.root`
   naming and offsets the seeds the same way, so that pile-up mixing in step 2
   is not identical in every job (the default `mix` seed would be).
@@ -68,10 +74,11 @@ output module recreates the file and the storage adaptor refuses to delete the
 old one. The steps are:
 
 ```bash
-cmsRun -j step1.xml cfgs/step1_GENSIM_cfg.py inputFiles=gun://job000 maxEvents=10 skipEvents=0 output=step1.root pdgId=211 pMin=1 pMax=200 etaMin=1.6 etaMax=2.9
-cmsRun -j step2.xml cfgs/step2_DIGIRAW_cfg.py inputFiles=file:step1.root maxEvents=-1 skipEvents=0 output=step2.root
-cmsRun -j step3.xml cfgs/step3_RECO_cfg.py   inputFiles=file:step2.root maxEvents=-1 skipEvents=0 output=step3.root
-cmsRun -j step4.xml cfgs/ntuple_hgcalval-nano_cfg.py inputFiles=file:step3.root maxEvents=-1 skipEvents=0 output=step4_ntuple.root
+GUN="pdgId=211 pMin=0.2 pMax=200 etaMin=1.6 etaMax=2.9 etaSide=both cpMinE=0.1 genPtMin=0"
+cmsRun -j step1.xml cfgs/step1_GENSIM_cfg.py inputFiles=gun://job000 maxEvents=10 skipEvents=0 output=step1.root $GUN
+cmsRun -j step2.xml cfgs/step2_DIGIRAW_cfg.py inputFiles=file:step1.root maxEvents=-1 skipEvents=0 output=step2.root $GUN
+cmsRun -j step3.xml cfgs/step3_RECO_cfg.py   inputFiles=file:step2.root maxEvents=-1 skipEvents=0 output=step3.root $GUN
+cmsRun -j step4.xml cfgs/ntuple_hgcalval-nano_cfg.py inputFiles=file:step3.root maxEvents=-1 skipEvents=0 output=step4_ntuple.root $GUN
 ```
 
 and finally prints OK/MISSING for the branch prefixes of the ntuple definition
@@ -100,6 +107,33 @@ tracksters' `regressed_energy` is 0 (not computed in the offline TICL of this
 release), and the `GeneralTrack_isMuon`/`muon_*` columns are -1 (no muons).
 
 To only (re)generate the cfgs: `./make_gun_cfgs.sh [OUTDIR]` (default `OUTDIR=cfgs`).
+
+## Low-energy thresholds
+
+Three independent thresholds decide down to which energy a gun particle is
+visible in the `hgcalval-nano` ntuple. The gun is flat in |p|, and
+E = sqrt(p^2 + m^2), so `pMin=0.2` means E >= 0.24 GeV (pi), 0.53 GeV (K),
+0.96 GeV (p):
+
+| where | release value | what it does | this chain |
+|-------|---------------|--------------|------------|
+| step 1, `PGunParameters.MinP` (`pMin=`) | 1 GeV (old default of this fragment) | lower edge of the flat \|p\| spectrum | `0.2` |
+| step 2, `process.mix.digitizers.calotruth.MinEnergy` (`cpMinE=`) | 0.5 GeV (`SimGeneral/MixingModule/python/caloTruthProducer_cfi.py`) | `CaloTruthAccumulator` only creates a CaloParticle for a gen-matched SimTrack with E above it; without a CaloParticle there is no `ticlSimTrackstersfromCPs` entry, no `SimCl2CPWithFraction`, no CP associations | `0.1` |
+| step 4, `hgcalGenPartTable.cut` (`genPtMin=`) | `status==1 && pt > 0.5` (`DPGAnalysis/HGCalNanoAOD/python/hgcalGen_cfi.py`) | pT cut of the `HGCalGenPart` table; at 1.6 < eta < 2.9, pT > 0.5 means \|p\| > 0.5 cosh(eta) = 1.3-4.6 GeV, so with `pMin=1` the table was empty in ~0.8% of the events and its \|p\| spectrum only became flat above ~5 GeV | `0` (`status==1`) |
+
+`gun_options.apply_gun_thresholds` is called by `apply_varparsing` on every step
+(`on_process=`) and touches a module only if the process has it; `-1` keeps the
+release value. The reco side has no such knob: whether a 0.2 GeV hadron gives a
+CLUE3D trackster is up to the reconstruction (already in the 1-200 GeV sample
+~5% of the events have no `ticlTrackstersCLUE3DHigh`), so the sim tables are
+what makes the low-energy end usable. With pile-up, `MinEnergy` also applies to
+the in-time pile-up particles, so lowering it adds low-energy PU CaloParticles.
+
+A CaloParticle also needs HGCAL SimHits from the particle or its descendants
+(`cumulative_simHits != 0`): in a 10-event local test with `PMAX=1` every event
+had its `HGCalGenPart` entry (E down to 0.44 GeV) but only the two pions with
+E ~ 0.9 GeV got a CaloParticle, the others never reached the calorimeter. That
+limit is physics (curling and energy loss in the tracker), not a threshold.
 
 ## Step 4: the NANO prevalidation trick
 
@@ -245,26 +279,31 @@ Another ntuple: `NTUPLE=hgcal-nano ./make_gun_cfgs.sh` then
 run if `cfgs/ntuple_<NTUPLE>_cfg.py` is missing).
 
 Defaults (all overridable through the environment): `JOBS=200`,
-`EVENTS_PER_JOB=500`, `PMIN=1 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9`,
+`EVENTS_PER_JOB=500`, `PMIN=0.2 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9 ETASIDE=both`, `CPMINE=0.1 GENPTMIN=0`,
 `SPECIES="111 211 -211 321 -321 2212 -2212"`, `NTUPLE=hgcalval-nano`,
 `FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
 `JOBAREA=jobs`, `OS=el9`, `RUNTIME=20:00:00`, `SEED=` (when set, passed as
 `seed=<n>` to all steps; job offsets are added on top).
 
-For each species the script writes `datasets/gun_<label>_p<PMIN>to<PMAX>.json`,
+For each species the script writes `datasets/gun_<label>_<ptag>.json` with
+`<ptag> = p<PMIN>to<PMAX>` and `.` replaced by `p` (default `p0p2to200`),
 composes `datasets/steps_<tag>_<NTUPLE>.json` (absolute paths of
-`cfgs/step2_DIGIRAW_cfg.py`, `cfgs/step3_RECO_cfg.py`, `cfgs/ntuple_<NTUPLE>_cfg.py`)
-and, through `../common/submit_bdriver_chain.sh`, calls
+`cfgs/step2_DIGIRAW_cfg.py`, `cfgs/step3_RECO_cfg.py`, `cfgs/ntuple_<NTUPLE>_cfg.py`,
+each with the gun arguments as `args`) and, through
+`../common/submit_bdriver_chain.sh`, calls
 
 ```bash
 python3 $CMSSW_BASE/src/Reco2Pico/PicoProducer/scripts/bdriver \
-  -c cfgs/step1_GENSIM_cfg.py --steps datasets/steps_<tag>_hgcalval-nano.json -d datasets/gun_<label>_p1to200.json \
+  -c cfgs/step1_GENSIM_cfg.py --steps datasets/steps_<tag>_hgcalval-nano.json -d datasets/gun_<label>_p0p2to200.json \
   -o jobs/<tag> -fo /eos/user/t/tchatzis/phase2_gun/<tag> -n 500 -p 0 --name gun_<tag> \
   --JobFlavour tomorrow -t 20:00:00 --memory 4G --cpus 1 --disk-mb 8000 --os el9 [--submit] \
-  pdgId=<pdg> pMin=1 pMax=200 etaMin=1.6 etaMax=2.9
+  pdgId=<pdg> pMin=0.2 pMax=200 etaMin=1.6 etaMax=2.9 etaSide=both cpMinE=0.1 genPtMin=0
 ```
 
-with `<tag> = <label>_p1to200`. Outputs land in
+with `<tag> = <label>_p0p2to200`. The first production (October 2026, tags
+`<label>_p1to200`) was made with `pMin=1` and the release thresholds, i.e. with
+`HGCalGenPart` missing in the ~1% of events below |p| = 0.5 cosh(eta), and only
+in the positive endcap. Outputs land in
 `/eos/user/t/tchatzis/phase2_gun/<tag>/out_NNN.root`. Because `-o` resolves
 under `/eos`, bdriver mirrors the Condor bookkeeping area under
 `/afs/cern.ch/user/t/tchatzis/condor_jobs_files/...` (see its `paths.json`);

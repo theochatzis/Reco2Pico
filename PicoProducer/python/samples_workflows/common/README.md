@@ -38,7 +38,10 @@ importable as `Reco2Pico.PicoProducer.samples_workflows.common.<module>`.
 
 bdriver runs step 1 with the workflow's arguments plus
 `maxEvents= skipEvents= inputFiles= output=`, and every later step with
-`inputFiles=file:<previous> secondaryInputFiles= maxEvents=-1 skipEvents=0 output=<next>`.
+`<the step's "args" from the manifest> inputFiles=file:<previous> secondaryInputFiles= maxEvents=-1 skipEvents=0 output=<next>`.
+The trailing arguments of the bdriver command line reach step 1 only; a
+workflow that needs them in later steps stores them in the manifest
+(`sw_compose_steps OUT SAMPLE NTUPLE_CFG -- key=value ...` adds them to every step).
 Only the last step's output is transferred to the final destination. Any cfg
 that honours these arguments can be a step, so the ntuple step is pluggable.
 
@@ -46,7 +49,7 @@ that honours these arguments can be a step, so the ntuple step is pluggable.
 
 ```python
 from Reco2Pico.PicoProducer.samples_workflows.common.varparsing import apply_varparsing
-process = apply_varparsing(process, extra_options=OPTS, on_gen=hook, tag='my_workflow')
+process = apply_varparsing(process, extra_options=OPTS, on_gen=hook, on_process=step_hook, tag='my_workflow')
 ```
 
 * registers `skipEvents`, `output`, `seed` and `extra_options`
@@ -61,10 +64,15 @@ process = apply_varparsing(process, extra_options=OPTS, on_gen=hook, tag='my_wor
 * PoolSource steps: `fileNames`, `secondaryFileNames`, `skipEvents`; seeds are
   offset the same way when the job index came from the input name (so pile-up
   mixing differs between jobs);
-* renames the single output module (and `TFileService`) to `output=`.
+* renames the single output module (and `TFileService`) to `output=`;
+* finally calls `on_process(process, opts, job)` on every step, GEN or not, for
+  settings that live in later steps (the gun uses it for the CaloParticle and
+  `HGCalGenPart` thresholds); the hook checks for the modules it touches and may
+  return a string that is printed.
 
 A workflow appends a few lines to each cfg (see `../phase2_gun/gun_varparsing_tail.py`);
-the marker `samples_workflows: VarParsing tail` makes the append idempotent and
+the marker `samples_workflows: VarParsing tail` lets `sw_append_tail` replace an
+old copy of the block (up to `# --- end samples_workflows VarParsing tail`) and
 is what `submit_bdriver_chain.sh` checks for.
 
 ## chain_lib.sh

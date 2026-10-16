@@ -94,7 +94,10 @@ sw_append_tail() {
   [ -f "${cfg}" ] || sw_die "sw_append_tail: no such cfg ${cfg}"
   [ -f "${tail}" ] || sw_die "sw_append_tail: no such tail ${tail}"
   if grep -q "${SW_TAIL_MARKER}" "${cfg}"; then
-    sw_log "$(basename "${cfg}"): VarParsing tail already present"
+    # replace the old block (marker line .. end marker, or EOF) so that a changed tail takes effect
+    sed -i "/${SW_TAIL_MARKER}/,/^# --- end samples_workflows VarParsing tail/d" "${cfg}"
+    cat "${tail}" >> "${cfg}"
+    sw_log "$(basename "${cfg}"): VarParsing tail replaced"
   else
     cat "${tail}" >> "${cfg}"
     sw_log "$(basename "${cfg}"): VarParsing tail appended"
@@ -151,11 +154,19 @@ sw_make_ntuple_cfg() {
   esac
 }
 
+# sw_compose_steps OUT SAMPLE_STEPS NTUPLE_CFG [-- key=value ...]
+#   writes OUT = SAMPLE_STEPS (cfg paths made absolute) + the ntuple cfg; the
+#   optional key=value list is stored as "args" of every step, because bdriver
+#   passes its own trailing arguments to step 1 only (chained steps get just the
+#   manifest's "args" + inputFiles/maxEvents/skipEvents/output).
 sw_compose_steps() {
   local out="$1" sample="$2" ntuple_cfg="$3"
-  SW_PREFIX="${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET}" python3 - "${out}" "${sample}" "${ntuple_cfg}" <<'PYEOF'
+  shift 3
+  [ "${1:-}" = "--" ] && shift
+  SW_PREFIX="${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET}" python3 - "${out}" "${sample}" "${ntuple_cfg}" "$@" <<'PYEOF'
 import json, os, sys
 out, sample, ntuple = sys.argv[1:4]
+args = sys.argv[4:]
 base = os.path.dirname(os.path.abspath(sample))
 steps = json.load(open(sample))
 if not isinstance(steps, list) or not steps:
@@ -166,10 +177,12 @@ steps.append({'cfg': os.path.abspath(ntuple)})
 for s in steps:
     if not os.path.isfile(s['cfg']):
         sys.exit('sw_compose_steps: missing cfg %s' % s['cfg'])
+    if args:
+        s['args'] = list(s.get('args', [])) + args
 os.makedirs(os.path.dirname(os.path.abspath(out)) or '.', exist_ok=True)
 json.dump(steps, open(out, 'w'), indent=2)
 open(out, 'a').write('\n')
-print(os.environ.get('SW_PREFIX', '[samples_workflows]') + ' steps manifest %s: %s' % (os.path.basename(out), ' -> '.join(os.path.basename(s['cfg']) for s in steps)))
+print(os.environ.get('SW_PREFIX', '[samples_workflows]') + ' steps manifest %s: %s%s' % (os.path.basename(out), ' -> '.join(os.path.basename(s['cfg']) for s in steps), (' (args: ' + ' '.join(args) + ')') if args else ''))
 PYEOF
 }
 

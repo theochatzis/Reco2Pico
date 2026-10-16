@@ -7,7 +7,7 @@ creates one job per entry (use -n EVENTS_PER_JOB with the same value), passes
 inputFiles=gun://jobNNN to step 1, and gun_varparsing_tail.py turns NNN into
 the random-seed / firstEvent / firstLuminosityBlock offsets.
 
-    make_gun_dataset.py --name gun_pip_p1to200 --jobs 200 --events-per-job 500 -o datasets/gun_pip_p1to200.json
+    make_gun_dataset.py --name gun_pip_p0p2to200 --jobs 200 --events-per-job 500 -o datasets/gun_pip_p0p2to200.json
 """
 import argparse
 import json

@@ -14,7 +14,7 @@ Any cfg that is part of a chain (cmsDriver-generated or hand-written) calls
     from Reco2Pico.PicoProducer.samples_workflows.common.varparsing import apply_varparsing
     process = apply_varparsing(process)                       # plain step
     process = apply_varparsing(process, extra_options=OPTS,   # step with workflow options
-                               on_gen=my_gen_hook, tag='phase2_gun')
+                               on_gen=my_gen_hook, on_process=my_step_hook, tag='phase2_gun')
 
 which
   * registers skipEvents, output, seed (+ the workflow's extra_options) on top of
@@ -28,7 +28,10 @@ which
   * PoolSource steps: sets fileNames / secondaryFileNames / skipEvents and offsets
     the seeds the same way when a job index was found in inputFiles (so that
     e.g. pile-up mixing differs between jobs);
-  * renames the single output module (and TFileService, if any) to output=.
+  * renames the single output module (and TFileService, if any) to output=;
+  * finally calls on_process(process, opts, job) on EVERY step (GEN or not) for
+    workflow settings that live in later steps (e.g. sim/ntuple thresholds); the
+    hook must check for the modules it touches and may return a detail string.
 
 extra_options: iterable of (name, default, VarParsing.varType.*, doc).
 Options are singletons; re-registration of an existing one is tolerated.
@@ -104,7 +107,7 @@ def set_output(process, filename, tag):
         process.TFileService.fileName = cms.string(filename)
 
 
-def apply_varparsing(process, extra_options=(), on_gen=None, tag='samples_workflows'):
+def apply_varparsing(process, extra_options=(), on_gen=None, on_process=None, tag='samples_workflows'):
     opts = parse_options(extra_options)
     input_files = [f for f in list(opts.inputFiles) if f]
     secondary_files = [f for f in list(opts.secondaryInputFiles) if f]
@@ -137,5 +140,10 @@ def apply_varparsing(process, extra_options=(), on_gen=None, tag='samples_workfl
 
     if opts.output:
         set_output(process, opts.output, tag)
+
+    if on_process is not None:
+        detail = on_process(process, opts, job)
+        if detail:
+            print('{}: {}'.format(tag, detail))
 
     return process
