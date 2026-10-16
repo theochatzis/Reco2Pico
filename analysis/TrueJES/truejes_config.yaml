@@ -1,0 +1,10 @@
+# TrueJES analysis configuration
+# a gen jet counts as matched at a level when the best pair for it has
+#   genFraction  >= min_gen_fraction   (share of the gen jet found in the jet)
+#   simFraction / recoFraction >= min_other_fraction  (purity of the jet; not applied to the
+#   signal-only and shared-energy responses, which count the gen jet's own energy by construction)
+min_gen_fraction: 0.5
+min_other_fraction: 0.5
+# gen jets within lepton_veto_dr of a generator muon above lepton_min_pt (the Z decay) are excluded
+lepton_veto_dr: 0.4
+lepton_min_pt: 10.0

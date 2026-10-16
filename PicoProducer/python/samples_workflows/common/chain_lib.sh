@@ -21,8 +21,10 @@
 #   sw_ntuple_cfg_name      echo the cfg file name of the loaded ntuple
 #   sw_make_ntuple_cfg OUTDIR FILEIN -- CMSDRIVER_COMMON_ARGS...
 #                           write OUTDIR/<sw_ntuple_cfg_name> for the loaded ntuple
-#   sw_compose_steps OUT.json SAMPLE_STEPS.json NTUPLE_CFG
-#                           bdriver manifest = sample steps (made absolute) + ntuple
+#   sw_compose_steps OUT.json SAMPLE_STEPS.json NTUPLE_CFG [NTUPLE_ARGS] [-- key=value ...]
+#                           bdriver manifest = sample steps (made absolute, may be
+#                           an empty list) + ntuple step (with NTUPLE_ARGS as its
+#                           args); -- key=value ... are added to every step
 #   sw_prepare_testdir DIR CLEAN   (CLEAN = ask | yes | no)
 #   sw_run_step N CFG ARGS...      cmsRun -j stepN.xml, log stepN.log, exit on failure
 #   sw_inspect_nano FILE PREFIX... OK/EMPTY/MISSING per table prefix + event count
@@ -108,7 +110,7 @@ sw_append_tail() {
 sw_load_ntuple() {
   local name="$1" def="${SW_COMMON_DIR}/ntuples/$1.sh"
   [ -f "${def}" ] || sw_die "unknown ntuple '${name}'; available: $(ls "${SW_COMMON_DIR}/ntuples" | sed 's/\.sh$//' | tr '\n' ' ')"
-  unset NTUPLE_KIND NTUPLE_STEP NTUPLE_EVENTCONTENT NTUPLE_DATATIER NTUPLE_CUSTOMISE NTUPLE_CFG NTUPLE_INSPECT NTUPLE_DESCRIPTION
+  unset NTUPLE_KIND NTUPLE_STEP NTUPLE_EVENTCONTENT NTUPLE_DATATIER NTUPLE_CUSTOMISE NTUPLE_CFG NTUPLE_ARGS NTUPLE_INSPECT NTUPLE_DESCRIPTION
   # shellcheck disable=SC1090
   source "${def}"
   NTUPLE_NAME="${name}"
@@ -154,26 +156,33 @@ sw_make_ntuple_cfg() {
   esac
 }
 
-# sw_compose_steps OUT SAMPLE_STEPS NTUPLE_CFG [-- key=value ...]
-#   writes OUT = SAMPLE_STEPS (cfg paths made absolute) + the ntuple cfg; the
-#   optional key=value list is stored as "args" of every step, because bdriver
+# sw_compose_steps OUT SAMPLE_STEPS NTUPLE_CFG [NTUPLE_ARGS] [-- key=value ...]
+#   writes OUT = SAMPLE_STEPS (cfg paths made absolute, may be an empty list) +
+#   the ntuple cfg. NTUPLE_ARGS (default: $NTUPLE_ARGS, a whitespace separated
+#   key=value string) become the "args" of the ntuple step only; the optional
+#   -- key=value list is appended to the "args" of every step, because bdriver
 #   passes its own trailing arguments to step 1 only (chained steps get just the
 #   manifest's "args" + inputFiles/maxEvents/skipEvents/output).
 sw_compose_steps() {
   local out="$1" sample="$2" ntuple_cfg="$3"
   shift 3
+  local ntuple_args="${NTUPLE_ARGS:-}"
+  if [ $# -gt 0 ] && [ "$1" != "--" ]; then ntuple_args="$1"; shift; fi
   [ "${1:-}" = "--" ] && shift
-  SW_PREFIX="${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET}" python3 - "${out}" "${sample}" "${ntuple_cfg}" "$@" <<'PYEOF'
-import json, os, sys
-out, sample, ntuple = sys.argv[1:4]
-args = sys.argv[4:]
+  SW_PREFIX="${SW_C_CYAN}[${SW_LOG:-samples_workflows}]${SW_C_RESET}" python3 - "${out}" "${sample}" "${ntuple_cfg}" "${ntuple_args}" "$@" <<'PYEOF'
+import json, os, shlex, sys
+out, sample, ntuple, ntuple_args = sys.argv[1:5]
+args = sys.argv[5:]
 base = os.path.dirname(os.path.abspath(sample))
 steps = json.load(open(sample))
-if not isinstance(steps, list) or not steps:
-    sys.exit('sw_compose_steps: %s must be a non-empty JSON list' % sample)
+if not isinstance(steps, list):
+    sys.exit('sw_compose_steps: %s must be a JSON list (it may be empty)' % sample)
 for s in steps:
     s['cfg'] = os.path.normpath(os.path.join(base, s['cfg']))
-steps.append({'cfg': os.path.abspath(ntuple)})
+last = {'cfg': os.path.abspath(ntuple)}
+if ntuple_args.strip():
+    last['args'] = shlex.split(ntuple_args)
+steps.append(last)
 for s in steps:
     if not os.path.isfile(s['cfg']):
         sys.exit('sw_compose_steps: missing cfg %s' % s['cfg'])

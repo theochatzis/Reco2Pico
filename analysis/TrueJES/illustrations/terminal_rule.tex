@@ -1,0 +1,32 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm]
+  % case A: muon with delta ray
+  \node[font=\small\bfseries] (ta) at (0,0) {A. continuing particle};
+  \node[gen, below=0.3cm of ta] (mu) {$\mu$};
+  \node[simp, below left=1.1cm and 0.3cm of mu] (mu2) {$\mu$};
+  \node[simp, below right=1.1cm and 0.3cm of mu, minimum size=3.5mm, font=\tiny] (de) {$\delta e^-$};
+  \draw[thick, csim] (mu) -- (mu2);
+  \draw[thick, csim] (mu) -- (de);
+  \node[note, below=0.25cm of mu2, xshift=0.6cm, text width=4.4cm] {stored daughters carry $<50\%$ of the energy (here $0.01\%$: ionisation in the muon system)\\ $\Rightarrow$ the $\mu$ \textbf{is terminal}, clustered with its full momentum; the $\delta e^-$ is a constituent too};
+  % case B: decay
+  \node[font=\small\bfseries, right=6.4cm of ta] (tb) {B. decay / conversion};
+  \node[gen, below=0.3cm of tb] (pi) {$\pi^+$};
+  \node[simp, below left=1.1cm and 0.3cm of pi] (muB) {$\mu^+$};
+  \node[lost, below right=1.1cm and 0.3cm of pi] (nu) {$\nu$};
+  \draw[thick, csim] (pi) -- (muB);
+  \draw[thick, cpu, dashed] (pi) -- (nu);
+  \node[note, below=0.25cm of muB, xshift=0.6cm, text width=4.4cm] {daughters carry $100\%$ of the energy\\ $\Rightarrow$ the $\pi^+$ is \textbf{replaced} by the $\mu^+$; the $\nu$ is dropped (as in GenJetNoNu)\\ this is where the decay-in-flight response comes from};
+  % case C: born inside the calorimeter
+  \node[font=\small\bfseries, right=6.4cm of tb] (tc) {C. born inside the calorimeter};
+  \node[gen, below=0.3cm of tc] (k0) {$K^0_S$};
+  \node[simp, below left=1.1cm and 0.3cm of k0] (pa) {$\pi^+$};
+  \node[simp, below right=1.1cm and 0.3cm of k0] (pb) {$\pi^-$};
+  \draw[thick, csim] (k0) -- (pa);
+  \draw[thick, csim] (k0) -- (pb);
+  \draw[dashed, ccalo, thick] ($(k0.south)+(-1.6,-0.35)$) -- ($(k0.south)+(1.6,-0.35)$) node[note, right=1pt, text=ccalo] {ECAL};
+  \node[note, below=0.25cm of pa, xshift=0.6cm, text width=4.4cm] {the pions never cross the tracker/calo boundary, so Geant4's \texttt{crossedBoundary} flag is not set, but the sim hits reference them\\ $\Rightarrow$ the terminal rule, not the flag, defines the particle lists (jets, ideal PF)};
+  % rule box
+  \node[tbl, font=\small, below=5.6cm of tb, text width=15.5cm, align=center, fill=csim!6, draw=csim] {terminal $\;\Leftrightarrow\;$ no stored daughter, or $\sum_{\text{daughters}} E_d < 0.5\,E$ \qquad (\texttt{SimTrack\_dauEnergyFrac} $< 0.5$)};
+\end{tikzpicture}
+\end{document}

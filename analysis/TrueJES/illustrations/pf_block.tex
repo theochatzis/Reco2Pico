@@ -1,0 +1,28 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm]
+  % elements of one block
+  \node[font=\small\bfseries] (t) at (0,0) {one PF block: elements and stored links};
+  \node[part, draw=ctrack, fill=ctrack!20, below=0.4cm of t, xshift=-3.2cm] (e0) {T$_0$};
+  \node[part, draw=ctrack, fill=ctrack!20, right=1.6cm of e0] (e1) {T$_1$};
+  \node[part, draw=ccalo, fill=ccalo!15, below=1.3cm of e0, xshift=-0.9cm] (e2) {E$_2$};
+  \node[part, draw=ccalo, fill=ccalo!15, right=1.3cm of e2] (e3) {E$_3$};
+  \node[part, draw=ccalo, fill=ccalo!40, right=1.3cm of e3] (e4) {H$_4$};
+  \node[part, draw=ccalo, fill=ccalo!40, right=1.3cm of e4] (e5) {H$_5$};
+  \draw[thick] (e0) -- node[note, left=1pt] {0.02} (e2);
+  \draw[thick] (e0) -- node[note, right=1pt, pos=0.4] {0.04} (e3);
+  \draw[thick] (e0) -- node[note, right=1pt, pos=0.6] {0.15} (e4);
+  \draw[thick] (e1) -- node[note, left=1pt, pos=0.6] {0.18} (e4);
+  \draw[thick] (e1) -- node[note, right=1pt] {0.30} (e5);
+  \draw[thick] (e3) -- node[note, below=1pt] {0.12} (e4);
+  % candidates built
+  \node[jet, draw=cpf, fit=(e0)(e2)(e3), inner sep=7pt, label={[font=\scriptsize, text=cpf]left:candidate A ($h^\pm$)}] (cA) {};
+  \node[jet, draw=cpf, fit=(e1)(e5), inner sep=7pt, label={[font=\scriptsize, text=cpf]right:candidate B ($h^\pm$)}] (cB) {};
+  \node[jet, draw=cpf, fit=(e4), inner sep=5pt, label={[font=\scriptsize, text=cpf]below:candidate C ($h^0$, excess)}] (cC) {};
+  % the three tables
+  \node[tbl, anchor=north west, text width=5.6cm] (b1) at (5.0,0.3) {\textbf{PFBlockElem} -- the inventory\\ one row per element: type, block, pointers to Track / PFCluster rows, \texttt{candIdx}};
+  \node[tbl, text width=5.6cm, below=0.25cm of b1.south west, anchor=north west] (b2) {\textbf{PFBlockLink} -- what PF found connected\\ one row per stored link: the two elements and the linking distance ($\Delta\eta$--$\Delta\phi$ at the calo entrance, placeholders for same-object links)\\ \textit{input of the algorithm, not its decision}};
+  \node[tbl, text width=5.6cm, below=0.25cm of b2.south west, anchor=north west] (b3) {\textbf{PFCandElem} -- what PF decided\\ one row per (candidate, element) used\\ A: T$_0$, E$_2$, E$_3$ \quad B: T$_1$, H$_5$ \quad C: H$_4$};
+  \node[note, text width=5.6cm, below=0.2cm of b3.south west, anchor=north west] {the physics is in the difference: H$_4$ was linked to both tracks but used by neither; T$_0$ was linked to E$_3$ and kept it};
+\end{tikzpicture}
+\end{document}

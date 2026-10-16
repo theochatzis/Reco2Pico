@@ -8,14 +8,17 @@
 #     --dataset DATASET.json --step1 STEP1_CFG --steps STEPS.json \
 #     --jobarea DIR --final-output DIR --name NAME --events-per-job N \
 #     [--parents 0] [--runtime 20:00:00] [--os el9] [--memory 4G] [--cpus 1] \
-#     [--disk-mb 8000] [--job-flavour tomorrow] [--dry-run] \
+#     [--disk-mb 8000] [--job-flavour tomorrow] [--max-files N] [--dry-run] \
 #     [-- key=value ...]            extra cmsRun arguments passed to every step
 #
+# DATASET is a bdriver dataset JSON or a DAS dataset name (/PRIMARY/PROCESSING/TIER,
+# queried with dasgoclient; --max-files limits the files taken from it).
 # STEPS.json is the full manifest (sample steps + ntuple step), e.g. the output
 # of sw_compose_steps. STEP1_CFG must carry the VarParsing tail (see
 # common/varparsing.py); bdriver appends inputFiles=/output=/... itself.
-# --parents 0 (default) is for datasets without parent files (e.g. particle
-# guns); bdriver's own default -p 2 refuses an empty secondary-file list.
+# --parents 0 (default) is for datasets without parent files (particle guns,
+# or a DAS dataset processed without its parents); bdriver's own default -p 2
+# refuses an empty secondary-file list.
 # Never pass --customize-cfg to bdriver: it sets process.source.fileNames on the
 # EmptySource of a GEN step; the tail handles all driver arguments.
 # ---------------------------------------------------------------------------
@@ -26,7 +29,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/chain_lib.sh"
 
 SUBMIT="" DRYRUN=""
 DATASET="" STEP1="" STEPS="" JOBAREA="" FINAL_OUTPUT="" NAME="" EVENTS_PER_JOB=""
-PARENTS=0 RUNTIME="20:00:00" OS="el9" MEMORY="4G" CPUS=1 DISK_MB=8000 JOB_FLAVOUR="tomorrow"
+PARENTS=0 RUNTIME="20:00:00" OS="el9" MEMORY="4G" CPUS=1 DISK_MB=8000 JOB_FLAVOUR="tomorrow" MAX_FILES=""
 EXTRA_ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -46,6 +49,7 @@ while [ $# -gt 0 ]; do
     --cpus) CPUS="$2"; shift 2 ;;
     --disk-mb) DISK_MB="$2"; shift 2 ;;
     --job-flavour) JOB_FLAVOUR="$2"; shift 2 ;;
+    --max-files) MAX_FILES="$2"; shift 2 ;;
     --) shift; EXTRA_ARGS=("$@"); break ;;
     -h|--help) sed -n '3,/^# ----/p' "${BASH_SOURCE[0]}" | sed '$d'; exit 0 ;;
     *) sw_die "unknown argument: $1" ;;
@@ -57,9 +61,15 @@ for v in DATASET STEP1 STEPS JOBAREA FINAL_OUTPUT NAME EVENTS_PER_JOB; do
   [ -n "${!v}" ] || sw_die "--$(tr 'A-Z_' 'a-z-' <<<"${v}") is required"
 done
 BDRIVER="${CMSSW_BASE}/src/Reco2Pico/PicoProducer/scripts/bdriver"
-for f in "${BDRIVER}" "${DATASET}" "${STEP1}" "${STEPS}"; do
+for f in "${BDRIVER}" "${STEP1}" "${STEPS}"; do
   [ -f "${f}" ] || sw_die "missing ${f}"
 done
+if [[ "${DATASET}" == /*/*/* ]] && [ ! -f "${DATASET}" ]; then
+  command -v dasgoclient >/dev/null 2>&1 || sw_die "dasgoclient is needed for the DAS dataset ${DATASET}"
+  sw_log "dataset ${DATASET} will be queried from DAS by bdriver"
+else
+  [ -f "${DATASET}" ] || sw_die "missing dataset ${DATASET}"
+fi
 grep -q "${SW_TAIL_MARKER}" "${STEP1}" || sw_die "${STEP1} has no VarParsing tail; regenerate the cfgs"
 python3 - "${STEPS}" <<'PYEOF'
 import json, os, sys
@@ -85,6 +95,7 @@ cmd=(python3 "${BDRIVER}"
      --cpus "${CPUS}"
      --disk-mb "${DISK_MB}"
      --os "${OS}")
+[ -n "${MAX_FILES}" ] && cmd+=(-f "${MAX_FILES}")
 [ -n "${SUBMIT}" ] && cmd+=("${SUBMIT}")
 [ ${#EXTRA_ARGS[@]} -gt 0 ] && cmd+=("${EXTRA_ARGS[@]}")
 

@@ -1,0 +1,47 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm]
+  % ---- generator level ----
+  \node[font=\small\bfseries, text=cgen] (tgen) at (0,0) {generator};
+  \node[gen, below=0.25cm of tgen] (p1) {$\pi^+$};
+  \node[gen, right=1.3cm of p1] (p2) {$K^+$};
+  \node[gen, right=1.3cm of p2] (p3) {$\gamma$};
+  \node[gen, right=1.3cm of p3] (p4) {$K^0_S$};
+  \node[gen, right=2.4cm of p4] (q1) {$\pi^-$};
+  \node[jet, draw=cgen, fit=(p1)(p2)(p3)(p4), label={[font=\scriptsize, text=cgen]above right:GenJet $g$}] (gjet) {};
+  \node[jet, draw=cgen, fit=(q1), label={[font=\scriptsize, text=cgen]above right:GenJet $g'$}] (gjet2) {};
+  % ---- Geant4 decay tree ----
+  \node[font=\small\bfseries, text=csim, below=2.6cm of tgen] (tsim) {Geant4 (terminal particles)};
+  \node[simp, below=0.25cm of tsim] (s1) {$\pi^+$};
+  \node[simp, below=2.95cm of p2, xshift=-0.45cm] (s2) {$\mu^+$};
+  \node[lost, below=2.95cm of p2, xshift=0.45cm] (s2n) {$\nu$};
+  \node[simp, below=2.95cm of p3, xshift=-0.45cm] (s3a) {$e^+$};
+  \node[simp, below=2.95cm of p3, xshift=0.45cm] (s3b) {$e^-$};
+  \node[simp, below=2.95cm of p4, xshift=-0.45cm] (s4a) {$\pi^+$};
+  \node[simp, below=2.95cm of p4, xshift=1.1cm] (s4b) {$\pi^-$};
+  \node[simp, below=2.95cm of q1, xshift=0.6cm] (t1) {$\pi^-$};
+  % parent links (SimVertex parentIdx)
+  \draw[thick, csim] (p1) -- (s1);
+  \draw[thick, csim] (p2) -- node[note, left=1pt, pos=0.45] {decay} (s2);
+  \draw[thick, cpu, dashed] (p2) -- (s2n);
+  \draw[thick, csim] (p3) -- (s3a);
+  \draw[thick, csim] (p3) -- node[note, right=1pt, pos=0.45] {conversion} (s3b);
+  \draw[thick, csim] (p4) -- (s4a);
+  \draw[thick, csim] (p4) -- node[note, right=1pt, pos=0.35] {decay} (s4b);
+  \draw[thick, csim] (q1) -- (t1);
+  % sim jets
+  \node[jet, draw=csim, fit=(s1)(s2)(s3a)(s3b)(s4a), label={[font=\scriptsize, text=csim]below left:SimJet $s$}] (sjet) {};
+  \node[jet, draw=csim, fit=(s4b)(t1), label={[font=\scriptsize, text=csim]below right:SimJet $s'$ (the $\pi^-$ of the $K^0_S$ left the cone of $s$)}] (sjet2) {};
+  % ---- below: the bookkeeping ----
+  \node[tbl, font=\footnotesize, text width=13.5cm, anchor=north west, fill=white] at ($(s1.south west)+(-0.4,-1.5)$) {%
+    \textbf{every SimTrack has one generator ancestor} (walk \texttt{SimTrack\_parentIdx} up to the primary) \quad
+    \textbf{every generator particle sits in at most one GenJet} (gen jets re-clustered in the job)\\[5pt]
+    for a pair $(s,g)$:\quad
+    $E_{\text{shared}} = \sum_{c\in s,\ \mathrm{anc}(c)\in g} E_c = E_{\pi^+}+E_{\mu^+}+E_{e^+}+E_{e^-}+E_{\pi^+}$\\[4pt]
+    $\texttt{simFraction} = E_{\text{shared}}/E(s)$: purity of $s$ \qquad
+    $\texttt{genFraction} = \dfrac{1}{E(g)}\displaystyle\sum_{p\in g} E_p\, f_s(p)$: efficiency of $g$ into $s$, with
+    $f_s(K^0_S) = \dfrac{E_{\pi^+}}{E_{\pi^+}+E_{\pi^-}}$, $f_s(K^+) = 1$ (the $\nu$ is not clustered)\\[5pt]
+    matched: the best pair for $g$ with both fractions $> 0.5$; $\texttt{ptRatio} = p_T(s)/p_T(g)$ is the response of the pair\\[3pt]
+    \textbf{no $\Delta R$ anywhere}: immune to the bending in the field and to the decay kinematics at low $p_T$};
+\end{tikzpicture}
+\end{document}

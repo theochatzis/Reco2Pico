@@ -93,7 +93,7 @@ for the log prefix. Functions:
 | `sw_load_ntuple NAME` | source `ntuples/NAME.sh`, validate it (NANO flavour exists in `autoNANO`, cfg exists) |
 | `sw_ntuple_cfg_name` | `ntuple_<NAME>_cfg.py` |
 | `sw_make_ntuple_cfg OUTDIR FILEIN -- CMSDRIVER_ARGS` | write the ntuple cfg: `cmsDriver.py ntuple -s $NTUPLE_STEP ...` or copy `$NTUPLE_CFG` |
-| `sw_compose_steps OUT SAMPLE_STEPS NTUPLE_CFG` | bdriver manifest = sample steps (made absolute) + ntuple step |
+| `sw_compose_steps OUT SAMPLE_STEPS NTUPLE_CFG [NTUPLE_ARGS] [-- key=value ...]` | bdriver manifest = sample steps (made absolute; the list may be empty when step 1 is the only sample step) + ntuple step, with `NTUPLE_ARGS` as its `args` |
 | `sw_prepare_testdir DIR CLEAN` | `CLEAN=ask|yes|no`; wipes a leftover test directory (stale outputs make cmsRun fail with `TStorageFactorySystem::Unlink Unsupported`) |
 | `sw_run_step N CFG ARGS` | `cmsRun -j stepN.xml`, log `stepN.log`, exit on failure (PIPESTATUS handled correctly under `pipefail`) |
 | `sw_inspect_nano FILE PREFIX...` | per table prefix: `OK` (with entry count), `EMPTY` (branches but 0 entries in every event) or `MISSING`; non-zero exit on EMPTY/MISSING |
@@ -114,6 +114,7 @@ A definition is a small shell file setting
 | `NTUPLE_STEP` | cmsDriver `-s`, e.g. `NANO:@HGCALVal` or `PAT,NANO:@PHYS` |
 | `NTUPLE_EVENTCONTENT`, `NTUPLE_DATATIER` | cmsDriver `--eventcontent` / `--datatier` |
 | `NTUPLE_CUSTOMISE` | cmsDriver `--customise` (optional) |
+| `NTUPLE_ARGS` | extra `key=value` arguments appended to every cmsRun of the step (`cfg` kind: e.g. `isMC=true tables=...`); they become the manifest entry's `args` |
 | `NTUPLE_INSPECT` | branch prefixes the local test checks |
 | `NTUPLE_DESCRIPTION` | one line for the logs |
 
@@ -124,6 +125,7 @@ Available:
 | `hgcalval-nano` (default) | `NANO:@HGCALVal` | HGCAL reco + sim tracksters, reco<->sim associations, layer clusters, gen particles. Needs `hgcalNanoPrevalidation.customise` (see below). |
 | `hgcal-nano` | `NANO:@HGCAL` | HGCAL reco tables only (tracksters, TICL candidates, tracks). |
 | `phys-nano` | `PAT,NANO:@PHYS` | standard NanoAOD; PAT runs in the same step because central NANO reads MiniAOD. Runs on Phase-2 gun events; content not reviewed for that use. |
+| `reco-pico` | `cfg`: `workflows/RECO_to_pico_cfg.py` | Reco2Pico low-level Pico from RECO: PF candidates, tracks, vertices, PF clusters, PF blocks/elements/links, gen particles and jets, Geant4 SimTracks/SimJets, TrackingParticles and track<->TP links. `ERA`, `GT` and `PICO_TABLES` in the environment set its `NTUPLE_ARGS`. Used by `../run3_rawsim/`. |
 
 A `cfg`-kind definition (e.g. a Reco2Pico `RECO_to_pico` cfg) must honour the
 bdriver arguments above, i.e. call `apply_varparsing` or register the same options.
@@ -169,14 +171,23 @@ submit_bdriver_chain.sh [--submit] [--dry-run] \
   --dataset DATASET.json --step1 STEP1_CFG --steps STEPS.json \
   --jobarea DIR --final-output DIR --name NAME --events-per-job N \
   [--parents 0] [--runtime 20:00:00] [--os el9] [--memory 4G] [--cpus 1] \
-  [--disk-mb 8000] [--job-flavour tomorrow] [-- key=value ...]
+  [--disk-mb 8000] [--job-flavour tomorrow] [--max-files N] [-- key=value ...]
 ```
 
-Checks bdriver, the dataset, the step-1 tail marker and every cfg of the
-manifest, prints the bdriver command and runs it (`--dry-run`: print only).
-`--parents 0` is for datasets without parent files (bdriver's own default `-p 2`
-refuses an empty secondary-file list). Never pass `--customize-cfg` to bdriver:
-it sets `process.source.fileNames` on the EmptySource of a GEN step.
+`--dataset` is a bdriver dataset JSON or a DAS dataset name
+(`/PRIMARY/PROCESSING/TIER`, resolved by bdriver with dasgoclient; `--max-files`
+limits the files taken from it). Checks bdriver, the dataset, the step-1 tail
+marker and every cfg of the manifest, prints the bdriver command and runs it
+(`--dry-run`: print only). `--parents 0` is for datasets without parent files
+(bdriver's own default `-p 2` refuses an empty secondary-file list). Never pass
+`--customize-cfg` to bdriver: it sets `process.source.fileNames` on the
+EmptySource of a GEN step.
+
+Two kinds of chains exist: a *generated* sample (`../phase2_gun/`: step 1 is a
+GEN step on an EmptySource, the dataset JSON lists virtual `gun://jobNNN` files)
+and a *processed* dataset (`../run3_rawsim/`: step 1 is a RECO step on the files
+of a DAS dataset, the sample steps manifest is empty and the Pico ntuple is the
+second and last step).
 
 ## Adding a workflow
 

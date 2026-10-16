@@ -41,7 +41,7 @@ options.register(
     "event,muons,electrons,jets,pfcands,tracks,vertices,pfclusters",
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
-    "Comma-separated table groups",
+    "Comma-separated table groups (RECO MC also: pfblocks, genparts, sim)",
 )
 options.register(
     "isMC",
@@ -84,6 +84,62 @@ options.register(
     VarParsing.multiplicity.singleton,
     VarParsing.varType.float,
     "Minimum absolute RecHit energy",
+)
+options.register(
+    "tpPileupMinPt",
+    1.0,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "Minimum pT for pile-up TrackingParticles in the TP table (signal ones are all kept)",
+)
+options.register(
+    "simJetSelection",
+    "leaves",
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "SimTracks clustered into SimJet: leaves, boundary or primaries",
+)
+options.register(
+    "simJetMinPt",
+    5.0,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "Minimum pT for the SimJet and GenJet tables",
+)
+options.register(
+    "tpAssociation",
+    "chi2",
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "Track <-> TrackingParticle association for TrackTPLink: chi2 (default), hits (pruned DigiSimLinks) or none",
+)
+options.register(
+    "ecalCellThreshold",
+    0.0,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "simcalo: per-cell threshold on the summed ECAL/ES sim deposit [GeV] (0: none)",
+)
+options.register(
+    "hcalCellThreshold",
+    0.0,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "simcalo: per-cell threshold on the summed HCAL/HO/HF sim deposit [GeV-equivalent] (0: none)",
+)
+options.register(
+    "simPFChargedMaxAbsEta",
+    2.5,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "simcalo: tracker acceptance for the ideal PF charged candidates",
+)
+options.register(
+    "simPFChargedMinPt",
+    0.5,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "simcalo: minimum pT for a charged particle to be taken from its momentum in the ideal PF",
 )
 options.register(
     "dumpPython",
@@ -142,7 +198,7 @@ process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEven
 process.source = cms.Source(
     "PoolSource",
     fileNames=cms.untracked.vstring(options.inputFiles),
-    secondaryFileNames=cms.untracked.vstring(options.secondaryInputFiles),
+    secondaryFileNames=cms.untracked.vstring([f for f in options.secondaryInputFiles if f]),
     skipEvents=cms.untracked.uint32(options.skipEvents),
 )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -163,6 +219,15 @@ process.picoSequence = buildRecoPicoSequence(
     trackMinPt=options.trackMinPt,
     pfClusterMinEnergy=options.pfClusterMinEnergy,
     recHitMinAbsEnergy=options.recHitMinAbsEnergy,
+    tpPileupMinPt=options.tpPileupMinPt,
+    simJetSelection=options.simJetSelection,
+    simJetMinPt=options.simJetMinPt,
+    genJetMinPt=options.simJetMinPt,
+    tpAssociation=options.tpAssociation,
+    ecalCellThreshold=options.ecalCellThreshold,
+    hcalCellThreshold=options.hcalCellThreshold,
+    simPFChargedMaxAbsEta=options.simPFChargedMaxAbsEta,
+    simPFChargedMinPt=options.simPFChargedMinPt,
 )
 
 process.p = cms.Path(process.picoSequence)
