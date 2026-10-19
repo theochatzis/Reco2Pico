@@ -16,8 +16,10 @@
 #   SPECIES        ["111 211 -211 321 -321 2212 -2212"]  labels: pi0 pip pim Kp Km p pbar
 #   NTUPLE         [hgcalval-nano]  ntuple definition (../common/ntuples/); the
 #                               cfgs must have been built with the same NTUPLE
-#   FINAL_OUTPUT   [/eos/user/t/tchatzis/phase2_gun]  EOS destination of the ntuples
+#   FINAL_OUTPUT   [/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/phase2_gun]  EOS destination of the ntuples
 #   JOBAREA        [<this dir>/jobs]  bdriver -o (bdriver mirrors it under AFS when it is on /eos)
+#   CONDOR_WORKDIR [bdriver default: ~/condor_jobs_files on AFS]  non-EOS area for the Condor
+#                  bookkeeping (~1 GB per job area); e.g. /afs/cern.ch/work/<x>/<user>/condor_jobs_files
 #   OS             [el9]        bdriver --os
 #   RUNTIME        [20:00:00]   bdriver -t (+MaxRuntime); bdriver's default is 01:00:00
 #   CFGDIR         [<this dir>/cfgs]                 cfg location (make_gun_cfgs.sh output)
@@ -59,7 +61,7 @@ ETAMAX="${ETAMAX:-2.9}"
 ETASIDE="${ETASIDE:-both}"
 SPECIES="${SPECIES:-111 211 -211 321 -321 2212 -2212}"
 NTUPLE="${NTUPLE:-hgcalval-nano}"
-FINAL_OUTPUT="${FINAL_OUTPUT:-/eos/user/t/tchatzis/phase2_gun}"
+FINAL_OUTPUT="${FINAL_OUTPUT:-/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/phase2_gun}"
 JOBAREA="${JOBAREA:-${SCRIPT_DIR}/jobs}"
 OS="${OS:-el9}"
 RUNTIME="${RUNTIME:-20:00:00}"

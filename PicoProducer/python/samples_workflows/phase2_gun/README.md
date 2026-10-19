@@ -281,7 +281,7 @@ run if `cfgs/ntuple_<NTUPLE>_cfg.py` is missing).
 Defaults (all overridable through the environment): `JOBS=200`,
 `EVENTS_PER_JOB=500`, `PMIN=0.2 PMAX=200`, `ETAMIN=1.6 ETAMAX=2.9 ETASIDE=both`, `CPMINE=0.1 GENPTMIN=0`,
 `SPECIES="111 211 -211 321 -321 2212 -2212"`, `NTUPLE=hgcalval-nano`,
-`FINAL_OUTPUT=/eos/user/t/tchatzis/phase2_gun`,
+`FINAL_OUTPUT=/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/phase2_gun`,
 `JOBAREA=jobs`, `OS=el9`, `RUNTIME=20:00:00`, `SEED=` (when set, passed as
 `seed=<n>` to all steps; job offsets are added on top).
 
@@ -295,7 +295,7 @@ each with the gun arguments as `args`) and, through
 ```bash
 python3 $CMSSW_BASE/src/Reco2Pico/PicoProducer/scripts/bdriver \
   -c cfgs/step1_GENSIM_cfg.py --steps datasets/steps_<tag>_hgcalval-nano.json -d datasets/gun_<label>_p0p2to200.json \
-  -o jobs/<tag> -fo /eos/user/t/tchatzis/phase2_gun/<tag> -n 500 -p 0 --name gun_<tag> \
+  -o jobs/<tag> -fo /eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/phase2_gun/<tag> -n 500 -p 0 --name gun_<tag> \
   --JobFlavour tomorrow -t 20:00:00 --memory 4G --cpus 1 --disk-mb 8000 --os el9 [--submit] \
   pdgId=<pdg> pMin=0.2 pMax=200 etaMin=1.6 etaMax=2.9 etaSide=both cpMinE=0.1 genPtMin=0
 ```
@@ -304,7 +304,7 @@ with `<tag> = <label>_p0p2to200`. The first production (October 2026, tags
 `<label>_p1to200`) was made with `pMin=1` and the release thresholds, i.e. with
 `HGCalGenPart` missing in the ~1% of events below |p| = 0.5 cosh(eta), and only
 in the positive endcap. Outputs land in
-`/eos/user/t/tchatzis/phase2_gun/<tag>/out_NNN.root`. Because `-o` resolves
+`/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/phase2_gun/<tag>/out_NNN.root`. Because `-o` resolves
 under `/eos`, bdriver mirrors the Condor bookkeeping area under
 `/afs/cern.ch/user/t/tchatzis/condor_jobs_files/...` (see its `paths.json`);
 a job area that already exists makes bdriver stop, so remove it (or change

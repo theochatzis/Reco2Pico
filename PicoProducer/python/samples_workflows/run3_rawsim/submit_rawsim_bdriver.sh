@@ -12,8 +12,10 @@
 #   MAX_FILES      [10]         files taken from the dataset (-1: all)
 #   EVENTS_PER_JOB [200]        events per job (one file of this sample holds ~1900)
 #   NTUPLE         [reco-pico]  ntuple definition (../common/ntuples/)
-#   FINAL_OUTPUT   [/eos/user/t/tchatzis/run3_rawsim]  destination of the Picos
+#   FINAL_OUTPUT   [/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/run3_rawsim]  destination of the Picos
 #   JOBAREA        [<this dir>/jobs]  bdriver -o
+#   CONDOR_WORKDIR [bdriver default: ~/condor_jobs_files on AFS]  non-EOS area for the Condor
+#                  bookkeeping (~1 GB per job area); e.g. /afs/cern.ch/work/<x>/<user>/condor_jobs_files
 #   TAG            [<dataset primary name>]   job tag (subdirectory of JOBAREA/FINAL_OUTPUT)
 #   OS             [el9]        bdriver --os
 #   RUNTIME        [10:00:00]   bdriver -t
@@ -43,7 +45,7 @@ DATASET="${DATASET:-/DYto2Mu-4Jets_Bin-MLL-50_TuneCP5_13p6TeV_madgraphMLM-pythia
 MAX_FILES="${MAX_FILES:-10}"
 EVENTS_PER_JOB="${EVENTS_PER_JOB:-200}"
 export NTUPLE="${NTUPLE:-reco-pico}"
-FINAL_OUTPUT="${FINAL_OUTPUT:-/eos/user/t/tchatzis/run3_rawsim}"
+FINAL_OUTPUT="${FINAL_OUTPUT:-/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/run3_rawsim}"
 JOBAREA="${JOBAREA:-${SCRIPT_DIR}/jobs}"
 OS="${OS:-el9}"
 RUNTIME="${RUNTIME:-10:00:00}"
