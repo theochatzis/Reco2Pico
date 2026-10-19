@@ -10,6 +10,17 @@ Functionalities include:
 - Provide Condor submission utilities for large-scale PicoAOD production.
 - Provide RDataFrame-based analysis examples over PicoAOD files.
 
+## Branches and releases
+
+| use case | branch | CMSSW release | latest tag |
+|---|---|---|---|
+| Phase 2 | `main` | CMSSW_20_1_0_pre3 | `v1.0.0_CMSSW_20_1_X` |
+| Run 3 | `CMSSW_15_0_X` | CMSSW_15_0_4 | `v1.0.0_CMSSW_15_0_X` |
+
+Supported features, compatibility with central CMSSW and release notes:
+[docs/releases/](docs/releases/README.md). How branches, tags and porting work:
+[docs/releases/branching.md](docs/releases/branching.md).
+
 ## Setup
 
 ```bash
@@ -19,8 +30,8 @@ cd CMSSW_15_0_4/src
 cmsenv
 # Optional : if you want to connect to your cmssw fork
 git cms-init
-# Get Reco2Pico 
-git clone git@github.com:theochatzis/Reco2Pico.git
+# Get Reco2Pico: the branch matching the release (table above; main for Phase 2)
+git clone -b CMSSW_15_0_X git@github.com:theochatzis/Reco2Pico.git
 # Compile
 scram b -j 8
 ```
