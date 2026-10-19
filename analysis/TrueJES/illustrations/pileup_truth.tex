@@ -1,0 +1,51 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.45cm and 0.8cm]
+  % ---- left: the chain
+  \node[font=\small\bfseries] (tl) at (0,0) {classical mixing: the pile-up truth};
+  \node[ladderbox, draw=cgen, fill=cgen!8, text width=3.8cm, below=0.3cm of tl] (gs) {\textbf{signal GEN-SIM}\\[-1pt]{\scriptsize Geant4 particles and hits}};
+  \node[ladderbox, draw=cpu, fill=cpu!8, text width=3.8cm, below=0.45cm of gs] (mb) {\textbf{minimum-bias GEN-SIM}\\[-1pt]{\scriptsize the pile-up library of the campaign}};
+  \node[ladderbox, draw=creco, fill=creco!8, text width=3.8cm, below=0.45cm of mb] (digi) {\textbf{DIGI with the MixingModule}\\[-1pt]{\scriptsize the campaign's pile-up profile,\\ in-time and out-of-time crossings}};
+  \draw[arrow] (gs) -- (mb);
+  \draw[arrow] (mb) -- (digi);
+  \node[tbl, draw=cpu, text width=4.2cm, font=\scriptsize, below=0.45cm of digi] (truth) {%
+    \textbf{picoMixedTruth}, kept from the transient CrossingFrames:\\[2pt]
+    in-time interactions: SimTracks, SimVertices, calorimeter sim hits, each tagged (interaction, Geant4 id)\\[2pt]
+    out-of-time: deposits per (cell, crossing)\\[2pt]
+    TrackingParticles of the pile-up too};
+  \draw[arrow] (digi) -- (truth);
+  \node[ladderbox, draw=creco, fill=creco!8, text width=3.8cm, below=0.45cm of truth] (reco) {\textbf{RECO $\to$ Pico}\\[-1pt]{\scriptsize \texttt{pileupTruth=picoMixedTruth}}};
+  \draw[arrow] (truth) -- (reco);
+  % ---- middle: a cell
+  \node[font=\small\bfseries] (tm) at (7.6,0) {every calorimeter cell};
+  \begin{scope}[shift={(6.0,-4.4)}]
+    \draw[->, thick] (-0.2,0) -- (2.6,0);
+    \draw[->, thick] (-0.2,0) -- (-0.2,3.7) node[above, font=\scriptsize] {energy};
+    \fill[csim!60] (0.5,0) rectangle (1.7,1.0);
+    \fill[cpu!80] (0.5,1.0) rectangle (1.7,2.4);
+    \fill[cpu!40] (0.5,2.4) rectangle (1.7,3.0);
+    \draw (0.5,0) rectangle (1.7,3.0);
+    \draw[creco, very thick] (0.2,3.0) -- (2.0,3.0);
+    \node[font=\scriptsize, text=creco, right] at (2.0,3.2) {rechit energy};
+    \node[font=\scriptsize, right] at (1.8,0.5) {signal deposit};
+    \node[font=\scriptsize, right] at (1.8,1.7) {in-time pile-up (per interaction)};
+    \node[font=\scriptsize, right, text=cpu] at (1.8,2.65) {rest: noise, out-of-time, scale};
+  \end{scope}
+  \node[note, text width=5.4cm, align=center, anchor=north] at (7.6,-5.2) {the sim deposits are put on the rechit scale with factors measured here, cell by cell and per subdetector (the HF gain among them)\\[3pt] \texttt{SimCaloCell}: \texttt{energy}, \texttt{puEnergy}, \texttt{ootEnergy}, \texttt{nPU}};
+  % ---- middle bottom: the jets with the pile-up
+  \node[tbl, draw=cpu, text width=5.6cm, font=\scriptsize, anchor=north] (jets) at (7.6,-7.4) {%
+    \textbf{the jets with the pile-up in them} (anti-$k_T$ 0.4, matched to the gen jet through their signal constituents)\\[3pt]
+    \textbf{SimCaloCellPUJet}: the cells with their signal + in-time pile-up deposits, the calorimeter truth with pile-up, no noise, no thresholds\\[3pt]
+    \textbf{SimPFPUJet}: the ideal PF of the signal and the pile-up entrance particles (charged trackable from momentum, the rest from deposits), the counterpart of the raw PF jet\\[3pt]
+    \textbf{SimPFPUCHSJet}: the same without the trackable charged pile-up, a perfect charged-hadron subtraction, the counterpart of the CHS jet: what remains is the neutral and untrackable pile-up};
+  % ---- right: the three measurements of the pile-up of a jet
+  \node[font=\small\bfseries] (tr) at (15.8,0) {the pile-up of one jet, three ways};
+  \node[tbl, draw=creco, text width=5.6cm, font=\scriptsize, below=0.3cm of tr] (m1) {%
+    \textbf{1. attribution} (any sample)\\ \texttt{ptRatio} $-$ \texttt{signalPtRatio}: the raw jet minus its signal part, candidate by candidate};
+  \node[tbl, draw=cpu, text width=5.6cm, font=\scriptsize, below=0.35cm of m1] (m2) {%
+    \textbf{2. truth, no reconstruction} (mixed sample)\\ $R_{\text{SimPFPU}} - R_{\text{SimPF}}$: the ideal PF with and without the pile-up particles; $R_{\text{SimPFPUCHS}}$: after a perfect charged-hadron subtraction};
+  \node[tbl, draw=cpu, text width=5.6cm, font=\scriptsize, below=0.35cm of m2] (m3) {%
+    \textbf{3. truth through the reconstruction} (mixed sample)\\ \texttt{puFraction} of the constituents: the offset split into true in-time pile-up by candidate type and a residual (noise, out-of-time, scale)};
+  \node[note, text width=5.6cm, below=0.35cm of m3] {2 $-$ 1: what the reconstruction adds to the pile-up (thresholds, clustering, calibration)\\ 1 $-$ 3: the attribution convention\\ SimPFPU vs PF and SimPFPUCHS vs CHS: the reconstruction and the vertex assignment at work; Puppi has no ideal of its own and is read against SimPF};
+\end{tikzpicture}
+\end{document}

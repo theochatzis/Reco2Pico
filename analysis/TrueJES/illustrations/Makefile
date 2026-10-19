@@ -1,7 +1,7 @@
 # TikZ illustrations of the TrueJES study. `make` builds every figure (cropped
 # PDFs via the preview package) and the summary document; `make clean` removes
 # the LaTeX by-products.
-FIGS = ladder ancestry_matching terminal_rule calo_deposits reco_attribution pileup_attribution pf_block
+FIGS = ladder ancestry_matching entrance_rule calo_deposits reco_attribution attribution_chain pileup_attribution attribution_samples pileup_truth pf_block
 PDFS = $(addsuffix .pdf,$(FIGS))
 all: $(PDFS) TrueJES_illustrations.pdf
 %.pdf: %.tex preamble.tex

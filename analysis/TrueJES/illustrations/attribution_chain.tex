@@ -1,0 +1,92 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm,
+  lvl/.style={font=\small\bfseries, text=cnote, anchor=east, align=right},
+  obj/.style={draw, thick, rounded corners=3pt, fill=white, font=\scriptsize, align=center, inner sep=3pt, minimum height=0.6cm},
+  cell/.style={draw, thick, minimum width=0.55cm, minimum height=0.55cm, inner sep=0pt, font=\tiny}]
+  % ---------------------------------------------------------------- level 1: the jet
+  \node[lvl] (l1) at (-0.3,0) {jet};
+  \node[obj, draw=creco, minimum width=9.6cm, anchor=west] (jet) at (0,0) {reconstructed jet (PF, CHS or Puppi): anti-$k_T$ 0.4 of the candidates, each with its clustering weight $w_c$ (Puppi weight, 1 otherwise)};
+  % ---------------------------------------------------------------- level 2: candidates
+  \node[lvl] (l2) at (-0.3,-1.5) {candidates};
+  \node[part, draw=creco, fill=creco!15] (c1) at (1.0,-1.5) {$h^\pm$};
+  \node[part, draw=creco, fill=creco!15] (c2) at (3.6,-1.5) {$\gamma$};
+  \node[part, draw=creco, fill=creco!15] (c3) at (6.4,-1.5) {$h^0$};
+  \node[part, draw=cpu, fill=cpu!15] (c4) at (9.0,-1.5) {$h^\pm$};
+  \foreach \c in {c1,c2,c3,c4} \draw[arrow, creco!70] (jet.south -| \c) -- (\c);
+  % ---------------------------------------------------------------- level 3: block elements
+  \node[lvl] (l3) at (-0.3,-3.2) {PF block\\ elements};
+  \node[obj, draw=ctrack] (t1) at (1.0,-3.2) {track};
+  \node[obj, draw=ccalo, dashed] (k1) at (2.3,-3.2) {HCAL\\ cluster};
+  \node[obj, draw=ccalo] (k2) at (3.6,-3.2) {ECAL\\ cluster};
+  \node[obj, draw=ccalo] (k3) at (5.4,-3.2) {ECAL\\ cluster};
+  \node[obj, draw=ccalo] (k4) at (7.0,-3.2) {HCAL\\ cluster};
+  \node[obj, draw=ctrack] (t4) at (9.0,-3.2) {track};
+  \draw[arrow, ctrack] (c1) -- (t1);
+  \draw[ccalo, dashed] (c1) -- (k1);
+  \draw[arrow, ccalo] (c2) -- (k2);
+  \draw[arrow, ccalo] (c3) -- (k3);
+  \draw[arrow, ccalo] (c3) -- (k4);
+  \draw[arrow, ctrack] (c4) -- (t4);
+  \node[note, text width=2.3cm, align=center] at (2.3,-4.15) {linked, not used: the momentum is the track's};
+  % ---------------------------------------------------------------- level 4: rechits
+  \node[lvl] (l4) at (-0.3,-5.3) {rechits};
+  \foreach \x/\n in {2.9/r1, 3.6/r2, 4.3/r3} \node[cell, draw=ccalo, fill=ccalo!12] (\n) at (\x,-5.3) {};
+  \foreach \x/\n in {5.0/r4, 5.7/r5} \node[cell, draw=ccalo, fill=ccalo!12] (\n) at (\x,-5.3) {};
+  \foreach \x/\n in {6.6/r6, 7.3/r7, 8.0/r8} \node[cell, draw=ccalo, fill=ccalo!12] (\n) at (\x,-5.3) {};
+  \foreach \r in {r1,r2,r3} \draw[arrow, ccalo!70] (k2) -- (\r);
+  \foreach \r in {r3,r4,r5} \draw[arrow, ccalo!70] (k3) -- (\r);
+  \foreach \r in {r6,r7,r8} \draw[arrow, ccalo!70] (k4) -- (\r);
+  \node[note, anchor=west, text width=3.3cm] at (8.6,-5.3) {cluster $=\sum$ rechits $\times$ fractions; a rechit shared by two clusters is split by its fractions};
+  \node[font=\tiny, text=ccalo] at (4.3,-5.75) {shared};
+  % ---------------------------------------------------------------- level 5: the cell and its simulated deposits
+  \node[lvl] (l5) at (-0.3,-7.6) {the cell};
+  \begin{scope}[shift={(2.6,-8.9)}]
+    \draw[->, thick] (-0.2,0) -- (0,0) -- (0,2.6) node[above, font=\scriptsize] {energy};
+    % rechit bar
+    \fill[ccalo!25] (0.4,0) rectangle (1.2,2.1);
+    \draw[thick, ccalo] (0.4,2.1) -- (1.2,2.1);
+    \draw (0.4,0) rectangle (1.2,2.1);
+    \node[font=\tiny, align=center] at (0.8,-0.3) {rechit\\ $E_{\mathrm{rec}}$};
+    % sim deposits bar, per particle
+    \fill[csim!60] (1.9,0) rectangle (2.7,0.9);
+    \fill[csim!30] (1.9,0.9) rectangle (2.7,1.4);
+    \fill[cpu!70] (1.9,1.4) rectangle (2.7,1.8);
+    \draw (1.9,0) rectangle (2.7,1.8);
+    \node[font=\tiny, align=center] at (2.3,-0.3) {sim deposits\\ $\times$ scale $s$};
+    \node[font=\tiny, text=csim] at (3.2,0.45) {$p_1$};
+    \node[font=\tiny, text=csim] at (3.2,1.15) {$p_2$};
+    \node[font=\tiny, text=cpu] at (3.2,1.6) {pile-up};
+    % attributed rechit
+    \fill[csim!60] (4.2,0) rectangle (5.0,1.05);
+    \fill[csim!30] (4.2,1.05) rectangle (5.0,1.63);
+    \fill[cpu!70] (4.2,1.63) rectangle (5.0,1.8);
+    \fill[pattern=north east lines, pattern color=cnote] (4.2,1.8) rectangle (5.0,2.1);
+    \draw (4.2,0) rectangle (5.0,2.1);
+    \node[font=\tiny, align=center] at (4.6,-0.3) {attributed};
+    \node[font=\tiny, text=cnote, anchor=west] at (5.1,2.05) {residual};
+    \node[font=\tiny, text=csim, anchor=west] at (5.1,0.5) {signal};
+    \node[font=\tiny, text=cpu, anchor=west] at (5.1,1.55) {pile-up};
+  \end{scope}
+  \draw[arrow, ccalo!70] (r4) -- (3.4,-6.8);
+  \node[tbl, anchor=north west, text width=5.2cm, font=\scriptsize] (formula) at (10.6,-6.6) {%
+    per cell, per particle $p$:\\[2pt]
+    $E_p^{\text{att}} = \min(E_{\mathrm{rec}},\, s\,E_{\mathrm{sim}}) \cdot \dfrac{E_p^{\mathrm{sim}}}{E_{\mathrm{sim}}}$\\[6pt]
+    residual $= E_{\mathrm{rec}} - \min(E_{\mathrm{rec}},\, s\,E_{\mathrm{sim}})$\\[2pt]
+    (noise, out-of-time pile-up, calibration)\\[4pt]
+    $E_{\mathrm{sim}}$: signal + in-time pile-up deposits of the cell\\
+    $s$: rechit scale of the sim deposits per subdetector};
+  \node[note, below=0.15cm of formula, text width=5.2cm] {the sim deposits: the Geant4 hits of the cell per calorimeter-entrance particle (signal) and per pile-up particle; the rechit: the pulse fit of the digitised samples};
+  % ---------------------------------------------------------------- track side
+  \node[tbl, draw=ctrack, anchor=north, text width=2.4cm, font=\scriptsize, align=center] (tp1) at (1.0,-6.6) {track\\ $\downarrow$ $\chi^2$ association\\ TrackingParticle\\ $\downarrow$\\ SimTrack};
+  \draw[arrow, ctrack] (t1) -- (tp1);
+  \node[note, anchor=north east, text width=2.3cm, align=right] at (-0.3,-8.4) {the whole candidate to that particle: signal or pile-up by its event id, unattributed if no match};
+  % ---------------------------------------------------------------- back up
+  \node[obj, draw=csim, fill=csim!6, minimum width=16.2cm, anchor=west, text width=15.6cm] (up) at (0,-13.4) {\textbf{back up the chain}: cell shares $\times$ rechit fraction $\to$ cluster $\to$ candidate (\texttt{signalFraction}, \texttt{puFraction}) $\to$ jet: $\;\vec p_T^{\,\text{sig}} = \sum_c w_c f_c^{\text{sig}} \vec p_{T,c}$ (signal part), the rest pile-up and residual.\\ The particles' Geant4 ancestry gives the GenJet the jet is matched to, with the shares of its constituents as the shared energy.};
+  \draw[arrow, csim] (tp1.south) -- (up.north -| tp1.south);
+  \node[tbl, draw=cpu, anchor=north, text width=2.0cm, font=\scriptsize, align=center, text=cpu] (tp4) at (9.0,-6.6) {track\\ $\downarrow$\\ TrackingParticle of a pile-up interaction $\Rightarrow$ pile-up;\\ none $\Rightarrow$ unattributed};
+  \draw[arrow, ctrack] (t4) -- (tp4);
+  \draw[arrow, csim] (tp4.south) ++(0,-0.3) -- (up.north -| tp4.south);
+  \draw[arrow, csim] (5.2,-11.6) -- (up.north -| 5.2,0);
+\end{tikzpicture}
+\end{document}

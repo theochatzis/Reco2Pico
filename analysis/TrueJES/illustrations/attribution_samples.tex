@@ -1,0 +1,57 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm,
+  col/.style={font=\small\bfseries, align=center},
+  box/.style={draw, rounded corners=3pt, thick, fill=white, font=\scriptsize, align=left, inner sep=5pt, text width=6.6cm}]
+  % ---------------------------------------------------------------- headers
+  \node[col, text=csim] (h1) at (0,0) {premixed sample (\texttt{run3\_rawsim})\\[-2pt] {\normalfont\footnotesize the simulation knows the hard-scatter particles only}};
+  \node[col, text=cpu!50!black] (h2) at (9.8,0) {classically mixed sample (\texttt{run3\_mix})\\[-2pt] {\normalfont\footnotesize the pile-up particles and their deposits are known too}};
+  % ---------------------------------------------------------------- the cell, premixed
+  \begin{scope}[shift={(-2.6,-3.4)}]
+    \draw[->, thick] (-0.2,0) -- (0,0) -- (0,2.5) node[above, font=\scriptsize] {energy};
+    \fill[ccalo!25] (0.4,0) rectangle (1.2,2.1); \draw (0.4,0) rectangle (1.2,2.1);
+    \node[font=\tiny, align=center] at (0.8,-0.3) {rechit};
+    \fill[csim!60] (1.9,0) rectangle (2.7,0.9); \draw (1.9,0) rectangle (2.7,0.9);
+    \draw[cpu, dashed] (1.9,0.9) rectangle (2.7,1.8);
+    \node[font=\tiny, text=cpu, align=center] at (2.3,1.35) {unknown};
+    \node[font=\tiny, align=center] at (2.3,-0.3) {sim deposits};
+    \node[font=\tiny, text=csim] at (3.15,0.45) {signal};
+    \fill[csim!60] (4.2,0) rectangle (5.0,0.9);
+    \fill[pattern=north east lines, pattern color=cnote] (4.2,0.9) rectangle (5.0,2.1); \draw (4.2,0) rectangle (5.0,2.1);
+    \node[font=\tiny, align=center] at (4.6,-0.3) {attributed};
+    \node[font=\tiny, text=csim, anchor=west] at (5.1,0.45) {signal};
+    \node[font=\tiny, text=cnote, anchor=west, align=left, text width=2.1cm] at (5.1,1.5) {``pile-up'': in-time and out-of-time pile-up, noise, fakes, calibration};
+  \end{scope}
+  % ---------------------------------------------------------------- the cell, mixed
+  \begin{scope}[shift={(7.2,-3.4)}]
+    \draw[->, thick] (-0.2,0) -- (0,0) -- (0,2.5) node[above, font=\scriptsize] {energy};
+    \fill[ccalo!25] (0.4,0) rectangle (1.2,2.1); \draw (0.4,0) rectangle (1.2,2.1);
+    \node[font=\tiny, align=center] at (0.8,-0.3) {rechit};
+    \fill[csim!60] (1.9,0) rectangle (2.7,0.9); \fill[cpu!70] (1.9,0.9) rectangle (2.7,1.7); \draw (1.9,0) rectangle (2.7,1.7);
+    \node[font=\tiny, align=center] at (2.3,-0.3) {sim deposits};
+    \node[font=\tiny, text=csim] at (3.15,0.45) {signal};
+    \node[font=\tiny, text=cpu!50!black] at (3.2,1.3) {pile-up};
+    \fill[csim!60] (4.2,0) rectangle (5.0,0.9); \fill[cpu!70] (4.2,0.9) rectangle (5.0,1.7);
+    \fill[pattern=north east lines, pattern color=cnote] (4.2,1.7) rectangle (5.0,2.1); \draw (4.2,0) rectangle (5.0,2.1);
+    \node[font=\tiny, align=center] at (4.6,-0.3) {attributed};
+    \node[font=\tiny, text=csim, anchor=west] at (5.1,0.45) {signal};
+    \node[font=\tiny, text=cpu!50!black, anchor=west] at (5.1,1.3) {in-time pile-up (\texttt{puFraction})};
+    \node[font=\tiny, text=cnote, anchor=west, align=left] at (5.1,1.95) {residual: noise, out-of-time, calibration};
+  \end{scope}
+  % ---------------------------------------------------------------- rules
+  \node[box, anchor=north] (r1) at (0,-4.4) {%
+    \textbf{cell}: cap $=\min(E_{\mathrm{rec}},\, s\,E_{\mathrm{sim}}^{\mathrm{signal}})$, shared among the signal particles $\propto$ deposits; the rest is unattributed\\[3pt]
+    \textbf{track}: TrackingParticle of the hard-scatter event $\Rightarrow$ signal; none $\Rightarrow$ nothing (every pile-up track lands here)\\[3pt]
+    \textbf{candidate}: \texttt{signalFraction}; $1-\texttt{signalFraction}$ = pile-up + noise + fakes + calibration, in one number\\[3pt]
+    \textbf{jet}: \texttt{signalPtRatio}; $\texttt{ptRatio}-\texttt{signalPtRatio}$ = the unattributed part, split by candidate type only (section 4.6)};
+  \node[box, anchor=north] (r2) at (9.8,-4.4) {%
+    \textbf{cell}: cap $=\min(E_{\mathrm{rec}},\, s\,(E_{\mathrm{sim}}^{\mathrm{signal}}+E_{\mathrm{sim}}^{\mathrm{pile\text{-}up}}))$, shared among signal and pile-up particles $\propto$ deposits; the rest is the residual\\[3pt]
+    \textbf{track}: TrackingParticle of the hard-scatter event $\Rightarrow$ signal; of a pile-up interaction $\Rightarrow$ pile-up; none $\Rightarrow$ residual\\[3pt]
+    \textbf{candidate}: \texttt{signalFraction}, \texttt{puFraction}, residual $=1-$ both\\[3pt]
+    \textbf{jet}: the same \texttt{signalPtRatio}; the unattributed part split into true in-time pile-up by origin and residual; the pile-up rungs \texttt{SimPFPUJet}, \texttt{SimPFPUCHSJet}, \texttt{SimCaloCellPUJet}};
+  % ---------------------------------------------------------------- bottom line
+  \node[draw, rounded corners=3pt, thick, draw=csim, fill=csim!6, font=\scriptsize, align=center, text width=16cm, anchor=north] at (4.9,-10.0) {%
+    \textbf{the signal part is defined identically on both samples}: same cap for the signal, same shares, same \texttt{signalPtRatio} and shared-energy response.\\
+    The ladders agree within a few percent; the mixed sample adds what the unattributed part is made of.};
+\end{tikzpicture}
+\end{document}

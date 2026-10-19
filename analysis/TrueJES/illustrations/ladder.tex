@@ -3,13 +3,16 @@
 \begin{tikzpicture}[node distance=0.55cm and 0.9cm]
   % the ladder, top to bottom
   \node[ladderbox, draw=cgen, fill=cgen!8] (gen) {\textbf{GenJet}\\[-1pt]{\scriptsize generator particles, no $\nu$}};
-  \node[ladderbox, draw=csim, fill=csim!8, below=1.15cm of gen] (sim) {\textbf{SimJet}\\[-1pt]{\scriptsize terminal Geant4 particles}};
-  \node[ladderbox, draw=csim, fill=csim!8, below=1.15cm of sim] (bnd) {\textbf{SimJet (boundary)}\\[-1pt]{\scriptsize momentum at the calorimeter surface}};
-  \node[ladderbox, draw=ccalo, fill=ccalo!8, below=1.15cm of bnd] (calo) {\textbf{SimCaloJet}\\[-1pt]{\scriptsize per-particle sim-hit deposits}};
+  \node[ladderbox, draw=csim, fill=csim!8, below=1.15cm of gen] (sim) {\textbf{SimJet}\\[-1pt]{\scriptsize calo-entrance particles, production momenta}};
+  \node[ladderbox, draw=csim, fill=csim!8, below=1.15cm of sim] (bnd) {\textbf{SimBoundaryJet}\\[-1pt]{\scriptsize the same particles at the calorimeter face}};
+  \node[ladderbox, draw=ccalo, fill=ccalo!8, below=1.15cm of bnd] (calo) {\textbf{SimCaloJet / SimCaloCellJet}\\[-1pt]{\scriptsize sim-hit deposits per particle / per cell}};
   \node[ladderbox, draw=cpf, fill=cpf!8, below=1.15cm of calo] (spf) {\textbf{SimPFJet}\\[-1pt]{\scriptsize ideal particle flow}};
   \node[ladderbox, draw=creco, fill=creco!8, below=1.15cm of spf, minimum width=4.2cm] (reco) {\textbf{PFJet / PFJetCHS / PFJetPuppi}\\[-1pt]{\scriptsize reconstructed, raw (no JEC)}};
+  \node[ladderbox, draw=creco, fill=creco!8, below=1.15cm of reco, minimum width=4.2cm] (jec) {\textbf{PFJetPuppi $\times$ jecL1L2L3}\\[-1pt]{\scriptsize GlobalTag corrections (Puppi only)}};
+  \draw[arrow] (reco) -- node[effect, right=2pt] {the jet energy corrections: full L1FastL2L3 on the jet,\\ L2L3 only on its signal part} (jec);
+  \node[note, left=0.6cm of jec, anchor=east] {\textcolor{creco}{\textbf{calibrated}}\\ corrected PF candidates};
   % arrows with the effect each step adds
-  \draw[arrow] (gen) -- node[effect, right=2pt] {decays in flight ($\nu$ lost, daughters out of cone),\\ conversions} (sim);
+  \draw[arrow] (gen) -- node[effect, right=2pt] {decays in flight ($\nu$ lost, daughters out of cone),\\ conversions, nuclear interactions} (sim);
   \draw[arrow] (sim) -- node[effect, right=2pt] {energy loss in the tracker material,\\ bending of charged particles} (bnd);
   \draw[arrow] (bnd) -- node[effect, right=2pt] {calorimeter response: non-compensation,\\ invisible energy, leakage, dead material} (calo);
   \draw[arrow] (calo) -- node[effect, right=2pt] {perfect tracking for charged particles\\ inside the tracker acceptance} (spf);
@@ -17,13 +20,13 @@
   % left: what the constituents are
   \node[note, left=0.6cm of gen, anchor=east] {\textcolor{cgen}{\textbf{truth}}\\ HepMC particles};
   \node[note, left=0.6cm of sim, anchor=east] {SimTrack\\ (production momentum)};
-  \node[note, left=0.6cm of bnd, anchor=east] {SimTrack\\ (boundary momentum)};
+  \node[note, left=0.6cm of bnd, anchor=east] {SimTrack\\ (momentum at the face)};
   \node[note, left=0.6cm of calo, anchor=east] {SimCalo deposit\\ ECAL+HCAL+HO+HF};
   \node[note, left=0.6cm of spf, anchor=east] {SimPFCand\\ momentum or deposit};
   \node[note, left=0.6cm of reco, anchor=east] {\textcolor{creco}{\textbf{detector}}\\ PF candidates};
   % right-hand brace: the response at each step
-  \node[note, right=5.2cm of gen, anchor=west, text width=3.6cm] {\textbf{response at each step}\\ $R=p_T/p_T^{\mathrm{GEN}}$ of the jet matched to the same GenJet\\[2pt] $R_{\text{Sim}}$: decays only\\ $R_{\text{SimCalo}}$: $+$ calorimeter\\ $R_{\text{SimPF}}$: $+$ ideal tracking\\ $R_{\text{PF}}$: everything, with pile-up\\ $R_{\text{PF}}^{\text{sig}}$: signal part only};
+  \node[note, right=5.2cm of gen, anchor=west, text width=3.6cm] {\textbf{response at each step}\\ $R=p_T/p_T^{\mathrm{GEN}}$ of the jet matched to the same GenJet\\[2pt] $R_{\text{Sim}}$: decays, interactions\\ $R_{\text{SimBoundary}}$: $+$ material, bending\\ $R_{\text{SimCalo}}$: $+$ calorimeter\\ $R_{\text{SimPF}}$: $+$ ideal tracking\\ $R_{\text{PF}}$: everything, with pile-up\\ $R_{\text{PF}}^{\text{sig}}$: signal part only\\ $R_{\text{Puppi}}^{\text{JEC}}$: what an analysis sees};
   % the differences isolate one effect
-  \node[note, right=5.2cm of reco, anchor=west, text width=3.6cm] {\textbf{differences}\\ step $n$ vs step $n{-}1$ isolates one effect on the same jets, with no geometric matching anywhere};
+  \node[note, right=5.2cm of jec, anchor=west, text width=3.6cm] {\textbf{differences}\\ step $n$ vs step $n{-}1$ isolates one effect on the same jets, with no geometric matching anywhere};
 \end{tikzpicture}
 \end{document}
