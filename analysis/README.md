@@ -4,8 +4,12 @@ Clone the SkimRDFAnalysisBase repo to have the basic scripts that are used for t
 
 ```bash
 cd Reco2Pico/analysis
-git clone git@github.com:theochatzis/SkimRDFAnalysisBase.git
+git clone --branch v1.0.0 git@github.com:theochatzis/SkimRDFAnalysisBase.git
 ```
+
+`v1.0.0` is the SkimRDFAnalysisBase release that goes with Reco2Pico v1.0.0
+(`v1.0.0_CMSSW_15_0_X` and `v1.0.0_CMSSW_20_1_X`). Cloning a tag leaves a
+detached HEAD; to develop, run `git switch dev` (or `main`) inside the clone.
 
 It is its own repository with its own history: Reco2Pico does not track it
 (it is in `.gitignore`), so commit changes to it there. The analyses expect it
