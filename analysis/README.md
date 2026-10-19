@@ -3,8 +3,13 @@
 Clone the SkimRDFAnalysisBase repo to have the basic scripts that are used for the baseline histograms making structure. Then code is built on top of this.
 
 ```bash
+cd Reco2Pico/analysis
 git clone git@github.com:theochatzis/SkimRDFAnalysisBase.git
 ```
+
+It is its own repository with its own history: Reco2Pico does not track it
+(it is in `.gitignore`), so commit changes to it there. The analyses expect it
+at `analysis/SkimRDFAnalysisBase`.
 
 # RDF definition interface
 
