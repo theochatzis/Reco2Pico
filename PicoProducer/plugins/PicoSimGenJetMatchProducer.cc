@@ -12,6 +12,9 @@
 //   genFraction  = sum over constituents p of g of E(p) * f_s(p) / E(g)
 //                  with f_s(p) the fraction of the clustered descendant energy of p
 //                  that ended up in s                   "how much of the gen jet is found in s"
+// A constituent is normally one SimTrack (simCandidateIndex). With
+// constituentShares set (the cells of PicoSimCaloCandidateProducer), a
+// constituent is split between several SimTracks with the given energies.
 // Tables:
 //   SimGenJetMatch (instance "matches")          one row per pair with sharedEnergy > 0
 //   GenJetConst    (instance "genConstituents")  one row per gen-jet constituent (GenPart row)
@@ -29,6 +32,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -54,6 +58,14 @@ public:
         matchName_(cfg.getParameter<std::string>("matchName")),
         constName_(cfg.getParameter<std::string>("genConstituentsName")),
         writeConst_(cfg.getParameter<bool>("writeGenConstituents")) {
+    const edm::InputTag shares = cfg.getParameter<edm::InputTag>("constituentShares");
+    useShares_ = !shares.label().empty();
+    if (useShares_) {
+      const std::string prefix = cfg.getParameter<std::string>("constituentSharesPrefix");
+      shareBeginToken_ = consumes<std::vector<int>>(edm::InputTag(shares.label(), prefix + "Begin"));
+      shareTrackToken_ = consumes<std::vector<int>>(edm::InputTag(shares.label(), prefix + "Track"));
+      shareEnergyToken_ = consumes<std::vector<float>>(edm::InputTag(shares.label(), prefix + "Energy"));
+    }
     produces<nanoaod::FlatTable>("matches");
     if (writeConst_)
       produces<nanoaod::FlatTable>("genConstituents");
@@ -64,6 +76,8 @@ public:
     desc.add<edm::InputTag>("simJets", edm::InputTag("picoAk4SimJets"));
     desc.add<edm::InputTag>("simCandidates", edm::InputTag("picoSimTrackCandidates"));
     desc.add<edm::InputTag>("simCandidateIndex", edm::InputTag("picoSimTrackCandidates", "simTrackIndex"));
+    desc.add<edm::InputTag>("constituentShares", edm::InputTag(""));
+    desc.add<std::string>("constituentSharesPrefix", "cellShare");
     desc.add<edm::InputTag>("simTracks", edm::InputTag("g4SimHits"));
     desc.add<edm::InputTag>("simVertices", edm::InputTag("g4SimHits"));
     desc.add<edm::InputTag>("genJets", edm::InputTag("picoAk4GenJetsNoNu"));
@@ -82,6 +96,25 @@ public:
     const auto& tracks = event.get(simTracksToken_);
     const auto& vertices = event.get(simVerticesToken_);
     const auto& genJets = event.get(genJetsToken_);
+    const std::vector<int>* shareBegin = nullptr;
+    const std::vector<int>* shareTrack = nullptr;
+    const std::vector<float>* shareEnergy = nullptr;
+    if (useShares_) {
+      shareBegin = &event.get(shareBeginToken_);
+      shareTrack = &event.get(shareTrackToken_);
+      shareEnergy = &event.get(shareEnergyToken_);
+      if (shareBegin->size() != simCands.size() + 1)
+        throw cms::Exception("LogicError") << "constituentShares do not match the candidate collection";
+    }
+    // the (SimTrack row, energy) pieces of candidate c
+    auto forEachPiece = [&](size_t c, auto&& f) {
+      if (useShares_) {
+        for (int k = (*shareBegin)[c]; k < (*shareBegin)[c + 1]; ++k)
+          f((*shareTrack)[k], static_cast<double>((*shareEnergy)[k]));
+      } else {
+        f(c < simIndex.size() ? simIndex[c] : -1, static_cast<double>(simCands[c].energy()));
+      }
+    };
     edm::Handle<reco::GenParticleCollection> gensHandle;
     event.getByToken(genToken_, gensHandle);
     const auto& gens = *gensHandle;
@@ -159,17 +192,17 @@ public:
           simJetOfCand[ptr.key()] = s;
       }
     }
-    for (size_t c = 0; c < simCands.size(); ++c) {
-      const int t = c < simIndex.size() ? simIndex[c] : -1;
-      if (t < 0 || size_t(t) >= tracks.size())
-        continue;
-      const int k = ancestorGen[t];
-      if (k < 0)
-        continue;
-      descTotal[k] += simCands[c].energy();
-      if (simJetOfCand[c] >= 0)
-        descInSim[{k, simJetOfCand[c]}] += simCands[c].energy();
-    }
+    for (size_t c = 0; c < simCands.size(); ++c)
+      forEachPiece(c, [&](int t, double e) {
+        if (t < 0 || size_t(t) >= tracks.size())
+          return;
+        const int k = ancestorGen[t];
+        if (k < 0)
+          return;
+        descTotal[k] += e;
+        if (simJetOfCand[c] >= 0)
+          descInSim[{k, simJetOfCand[c]}] += e;
+      });
 
     // ---- pair scores ------------------------------------------------------------
     struct Pair {
@@ -180,15 +213,18 @@ public:
     std::map<std::pair<int, int>, Pair> pairs;  // (s, g)
     for (size_t c = 0; c < simCands.size(); ++c) {
       const int s = simJetOfCand[c];
-      const int t = c < simIndex.size() ? simIndex[c] : -1;
-      if (s < 0 || t < 0 || size_t(t) >= tracks.size())
+      if (s < 0)
         continue;
-      const int k = ancestorGen[t];
-      if (k < 0 || genJetOf[k] < 0)
-        continue;
-      auto& p = pairs[{s, genJetOf[k]}];
-      p.shared += simCands[c].energy();
-      p.n += 1;
+      forEachPiece(c, [&](int t, double e) {
+        if (t < 0 || size_t(t) >= tracks.size())
+          return;
+        const int k = ancestorGen[t];
+        if (k < 0 || genJetOf[k] < 0)
+          return;
+        auto& p = pairs[{s, genJetOf[k]}];
+        p.shared += e;
+        p.n += 1;
+      });
     }
     for (const auto& kv : descInSim) {
       const int k = kv.first.first, s = kv.first.second;
@@ -235,7 +271,7 @@ public:
     mTable->addColumn<float>("sharedEnergy", mShared, "energy of the SimJet constituents whose generator ancestor is in this GenJet [GeV]", 10);
     mTable->addColumn<float>("simFraction", mSimFrac, "sharedEnergy / SimJet energy: fraction of the SimJet originating from this GenJet", 10);
     mTable->addColumn<float>("genFraction", mGenFrac, "fraction of the GenJet energy whose Geant4 descendants were clustered into this SimJet", 10);
-    mTable->addColumn<int32_t>("nShared", mN, "number of SimJet constituents descending from this GenJet");
+    mTable->addColumn<int32_t>("nShared", mN, useShares_ ? "number of (cell, particle) shares descending from this GenJet" : "number of SimJet constituents descending from this GenJet");
     mTable->addColumn<float>("dR", mDR, "deltaR between the two jet axes (for reference only)", 10);
     mTable->addColumn<float>("ptRatio", mPtRatio, "SimJet pt / GenJet pt", 10);
     mTable->addColumn<uint8_t>("bestForSim", mBestForSim, "1 if this GenJet has the largest sharedEnergy among the pairs of this SimJet");
@@ -256,6 +292,9 @@ private:
   edm::EDGetTokenT<edm::View<reco::Jet>> simJetsToken_;
   edm::EDGetTokenT<reco::GenParticleCollection> simCandsToken_;
   edm::EDGetTokenT<std::vector<int>> simIndexToken_;
+  edm::EDGetTokenT<std::vector<int>> shareBeginToken_, shareTrackToken_;
+  edm::EDGetTokenT<std::vector<float>> shareEnergyToken_;
+  bool useShares_ = false;
   edm::EDGetTokenT<edm::SimTrackContainer> simTracksToken_;
   edm::EDGetTokenT<edm::SimVertexContainer> simVerticesToken_;
   edm::EDGetTokenT<edm::View<reco::Jet>> genJetsToken_;

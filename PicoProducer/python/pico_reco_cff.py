@@ -16,6 +16,7 @@ SUPPORTED_TABLES = {
     "sim",
     "simcalo",
     "recojets",
+    "calodigis",
 }
 
 
@@ -36,8 +37,10 @@ def buildRecoPicoSequence(
     trackMinPt=0.0,
     pfClusterMinEnergy=0.0,
     recHitMinAbsEnergy=0.0,
+    fullEcalRecHits=False,
+    digiMinAmplitude=0.1,
     tpPileupMinPt=1.0,
-    simJetSelection="leaves",
+    simJetSelection="entrance",
     simJetMinPt=5.0,
     genJetMinPt=5.0,
     tpAssociation="chi2",
@@ -45,6 +48,7 @@ def buildRecoPicoSequence(
     hcalCellThreshold=0.0,
     simPFChargedMaxAbsEta=2.5,
     simPFChargedMinPt=0.5,
+    pileupTruth="",
 ):
     """Build Pico tables from AOD or RECO.
 
@@ -146,8 +150,14 @@ def buildRecoPicoSequence(
             trackMinPt=trackMinPt,
             pfClusterMinEnergy=pfClusterMinEnergy,
             recHitMinAbsEnergy=recHitMinAbsEnergy,
+            fullEcalRecHits=fullEcalRecHits,
         )
         process.picoRecoTask.add(process.picoRecoLowLevelTask)
+
+    if "calodigis" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.calodigis_cff import caloDigiTables
+
+        process.picoRecoTask.add(caloDigiTables(process, minAmplitude=digiMinAmplitude))
 
     if "pfblocks" in enabled_tables:
         from Reco2Pico.PicoProducer.tables.pfblocks_cff import pfBlockTables
@@ -191,13 +201,14 @@ def buildRecoPicoSequence(
                 hcalCellThreshold=hcalCellThreshold,
                 chargedMaxAbsEta=simPFChargedMaxAbsEta,
                 chargedMinPt=simPFChargedMinPt,
+                pileupTruth=pileupTruth,
             )
         )
 
     if "recojets" in enabled_tables:
         from Reco2Pico.PicoProducer.tables.recojets_cff import recoJetTables
 
-        process.picoRecoTask.add(recoJetTables(process, pfCandMinPt=pfCandMinPt, jetMinPt=simJetMinPt))
+        process.picoRecoTask.add(recoJetTables(process, pfCandMinPt=pfCandMinPt, jetMinPt=simJetMinPt, pileupTruth=pileupTruth))
 
     process.picoSequence = cms.Sequence(process.picoRecoTask)
     return process.picoSequence

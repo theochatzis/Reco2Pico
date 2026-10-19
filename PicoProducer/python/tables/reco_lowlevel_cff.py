@@ -15,6 +15,7 @@ def recoLowLevelTables(
     trackMinPt=0.0,
     pfClusterMinEnergy=0.0,
     recHitMinAbsEnergy=0.0,
+    fullEcalRecHits=False,
 ):
     """Assemble optional AOD/RECO low-level Pico tables into one Task."""
     requested = set(tables)
@@ -49,6 +50,7 @@ def recoLowLevelTables(
                 process,
                 inputTier=inputTier,
                 minAbsEnergy=recHitMinAbsEnergy,
+                fullEcalRecHits=fullEcalRecHits,
             )
         )
 
