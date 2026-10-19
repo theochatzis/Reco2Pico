@@ -102,8 +102,14 @@ voms-proxy-init --voms cms
 MAX_FILES=10 EVENTS_PER_JOB=200 ./submit_rawsim_bdriver.sh --submit
 ```
 
+The Condor bookkeeping (submit files, logs and the shipped CMSSW tarball,
+about 1 GB per job area) cannot live on EOS, so bdriver puts it under
+`~/condor_jobs_files` on the AFS home by default (10 GB quota); set
+`CONDOR_WORKDIR=/afs/cern.ch/work/<x>/<user>/condor_jobs_files` (or any
+non-EOS directory) to use another area, and delete finished job areas.
+
 Defaults (environment overrides): `MAX_FILES=10`, `EVENTS_PER_JOB=200`,
-`NTUPLE=reco-pico`, `FINAL_OUTPUT=/eos/user/t/tchatzis/run3_rawsim`,
+`NTUPLE=reco-pico`, `FINAL_OUTPUT=/eos/cms/store/group/phys_jetmet/tchatzis/reco2pico/run3_rawsim`,
 `JOBAREA=jobs`, `TAG=<primary dataset name, first two fields>`, `OS=el9`,
 `RUNTIME=10:00:00`, `MEMORY=6G`, `DISK_MB=20000`. The full sample is ~24M
 events; with ~10 s per event for RECO (so ~35 min per 200-event job) plan the
@@ -137,7 +143,9 @@ Groups `event,muons,electrons,jets,pfcands,tracks,vertices,pfclusters,pfblocks,g
 | `GenPart` | `genPartIdxMother` -> `GenPart` |
 
 `SimJet` = anti-kt 0.4 of the SimTracks selected by `simJetSelection`
-(`leaves`: terminal particles of the stored Geant4 decay tree, no neutrinos),
-i.e. generator jets after the decays and conversions Geant4 simulated; `GenJet`
+(`entrance`: the calorimeter-entrance particles with their production
+momenta, no neutrinos; `SimBoundaryJet` the same with the momentum at the
+calorimeter face), i.e. generator jets after the decays, conversions and
+interactions Geant4 simulated in the tracker; `GenJet`
 is the `ak4GenJetsNoNu` definition re-clustered in the job for comparison, and
 `SimGenJetMatch` pairs the two by ancestry rather than by deltaR.

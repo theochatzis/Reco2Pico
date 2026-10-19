@@ -10,6 +10,10 @@
 #     [--parents 0] [--runtime 20:00:00] [--os el9] [--memory 4G] [--cpus 1] \
 #     [--disk-mb 8000] [--job-flavour tomorrow] [--max-files N] [--dry-run] \
 #     [-- key=value ...]            extra cmsRun arguments passed to every step
+# Environment: CONDOR_WORKDIR  non-EOS base directory for the Condor bookkeeping
+#   (submit files, logs, the shipped CMSSW tarball: ~1 GB per job area) when the
+#   job area is on EOS; bdriver's default is /afs/cern.ch/user/<x>/<user>/condor_jobs_files
+#   (the 10 GB AFS home). E.g. CONDOR_WORKDIR=/afs/cern.ch/work/<x>/<user>/condor_jobs_files.
 #
 # DATASET is a bdriver dataset JSON or a DAS dataset name (/PRIMARY/PROCESSING/TIER,
 # queried with dasgoclient; --max-files limits the files taken from it).
@@ -96,6 +100,7 @@ cmd=(python3 "${BDRIVER}"
      --disk-mb "${DISK_MB}"
      --os "${OS}")
 [ -n "${MAX_FILES}" ] && cmd+=(-f "${MAX_FILES}")
+[ -n "${CONDOR_WORKDIR:-}" ] && cmd+=(--condor-workdir "${CONDOR_WORKDIR}")
 [ -n "${SUBMIT}" ] && cmd+=("${SUBMIT}")
 [ ${#EXTRA_ARGS[@]} -gt 0 ] && cmd+=("${EXTRA_ARGS[@]}")
 
