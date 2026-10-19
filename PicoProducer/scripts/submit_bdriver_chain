@@ -1,0 +1,5 @@
+#!/bin/bash
+# One bdriver job area for one dataset of a chained sample workflow; see
+# samples_workflows/common/submit_bdriver_chain.sh. Installed in $CMSSW_BASE/bin by scram.
+common="$("$(dirname "${BASH_SOURCE[0]}")/samples_workflows_common")" || exit 1
+exec bash "${common}/submit_bdriver_chain.sh" "$@"

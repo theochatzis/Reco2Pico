@@ -1,0 +1,72 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper, margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\title{TrueJES: the jet energy scale along the truth ladder\\[4pt]\large illustrations}
+\author{Reco2Pico / analysis/TrueJES}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section*{1. The ladder}
+One jet collection per step, all built on the same simulated events and all
+matched to the same generator jet. The difference of the response between two
+consecutive steps isolates one effect.
+\begin{center}\includegraphics[width=\textwidth]{ladder.pdf}\end{center}
+
+\section*{2. Matching by ancestry, not by $\Delta R$}
+Every Geant4 particle descends from one generator primary, and every generator
+particle sits in at most one gen jet. The energy a jet shares with a gen jet is
+therefore exact, whatever the magnetic field and the decays did to the
+directions. The same scores are used at every step.
+\begin{center}\includegraphics[width=\textwidth]{ancestry_matching.pdf}\end{center}
+
+\section*{3. Which Geant4 particles are clustered}
+The terminal particles of the stored decay tree, with an energy clause so that
+a continuing particle that radiated a soft secondary is not removed. The same
+rule defines the ideal particle-flow list; Geant4's boundary-crossing flag is
+not used because particles born inside the calorimeter never carry it.
+\begin{center}\includegraphics[width=\textwidth]{terminal_rule.pdf}\end{center}
+
+\section*{4. The calorimeter response from the sim hits}
+The calorimeter sim hits carry the id of the particle that entered the
+calorimeter, so the deposits are summed per particle without clustering;
+jets of the deposits give the calorimeter-only response, and an ideal particle
+flow built from momenta and deposits shows what tracking recovers.
+\begin{center}\includegraphics[width=\textwidth]{calo_deposits.pdf}\end{center}
+
+\section*{5. The reconstructed jets on the same ladder}
+PF candidates are attributed to simulated particles (track association for
+charged ones, sim-hit shares of the cluster cells for the others); what is not
+attributed is pile-up, noise or fakes. The reconstructed jets are then matched
+by the same ancestry scores, and the signal-only response separates the
+pile-up from the reconstruction effects without matching pile-up conditions.
+\begin{center}\includegraphics[width=\textwidth]{reco_attribution.pdf}\end{center}
+
+\section*{6. How the pile-up is removed: attribution, not subtraction}
+Every PF candidate is split into the part that can be traced to a simulated
+particle of the hard-scatter event and a remainder. Charged candidates are
+traced through their track; neutral ones cell by cell through the simulated
+deposits, capped by the simulated energy of the cell. The remainder is
+pile-up, noise or a fake. The signal part of a jet is the sum of the traced
+parts of its constituents, so no pile-up matching between samples is needed.
+\begin{center}\includegraphics[width=\textwidth]{pileup_attribution.pdf}\end{center}
+
+\section*{7. The particle-flow block tables}
+For the reconstruction studies the Pico also keeps the full PF block
+structure: the elements, the geometric links PF found between them, and the
+elements each candidate finally used.
+\begin{center}\includegraphics[width=\textwidth]{pf_block.pdf}\end{center}
+
+\section*{Where to read more}
+\begin{itemize}
+  \item \texttt{Reco2Pico/docs/TrueJES.md}: the physics note
+  \item \texttt{Reco2Pico/PicoProducer/README.md}: the table definitions
+  \item \texttt{Reco2Pico/analysis/TrueJES/README.md}: the analysis
+\end{itemize}
+\end{document}

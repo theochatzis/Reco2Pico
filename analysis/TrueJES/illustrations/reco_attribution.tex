@@ -1,0 +1,37 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm]
+  % reconstructed jet with constituents
+  \node[font=\small\bfseries, text=creco] (tr) at (0,0) {reconstructed PF jet $j$ (raw)};
+  \node[part, draw=creco, fill=creco!15, below=0.3cm of tr, xshift=-2.4cm] (c1) {$h^\pm$};
+  \node[part, draw=creco, fill=creco!15, right=0.8cm of c1] (c2) {$\gamma$};
+  \node[part, draw=creco, fill=creco!15, right=0.8cm of c2] (c3) {$h^0$};
+  \node[part, draw=creco, fill=creco!15, right=0.8cm of c3] (c4) {$h^\pm$};
+  \node[part, draw=cpu, fill=cpu!15, right=0.8cm of c4] (c5) {$h^\pm$};
+  \node[jet, draw=creco, fit=(c1)(c2)(c3)(c4)(c5)] (rjet) {};
+  % attribution paths
+  \node[tbl, draw=ctrack, text width=2.9cm, anchor=north] (trk) at ($(c1.south)+(-0.6,-1.3)$) {track\\ $\downarrow$ $\chi^2$ association\\ TrackingParticle\\ $\downarrow$\\ SimTrack};
+  \node[tbl, draw=ccalo, text width=3.4cm, anchor=north] (cl) at ($(c3.south)+(0.0,-1.3)$) {PF clusters\\ $\downarrow$ hits \& fractions\\ cells: rechit energy\\ $\downarrow$ sim-hit shares, capped\\ SimTracks (shares)};
+  \node[tbl, draw=cpu, text width=2.6cm, text=cpu, anchor=north] (pu) at ($(c5.south)+(0.9,-1.3)$) {no TP match,\\ no sim energy\\ in the cells\\ $\Rightarrow$ unattributed\\ (pile-up / fake)};
+  \draw[arrow, ctrack] (c1) -- (trk);
+  \draw[arrow, ctrack] (c4) -- (trk);
+  \draw[arrow, ccalo] (c2) -- (cl);
+  \draw[arrow, ccalo] (c3) -- (cl);
+  \draw[arrow, cpu] (c5) -- (pu);
+  \node[note, below=0.15cm of trk, text width=2.9cm] {method 1: the whole candidate energy to that particle};
+  \node[note, below=0.15cm of cl, text width=3.4cm] {method 2: per cell $\min(E_{\text{rec}}, E_{\text{sim}})$, shared $\propto$ deposits};
+  % down to ancestry
+  \node[ladderbox, draw=csim, fill=csim!8, below=6.4cm of c3, minimum width=7cm] (anc) {SimTracks $\xrightarrow{\ \text{Geant4 ancestry}\ }$ generator particles $\xrightarrow{\ \text{constituent of}\ }$ GenJet $g$};
+  \draw[arrow, csim] (trk.south) ++(0,-1.4) -- (anc.north -| trk.south);
+  \draw[arrow, csim] (cl.south) ++(0,-1.4) -- (anc.north -| cl.south);
+  % scores
+  \node[tbl, anchor=north west, text width=6.2cm, font=\scriptsize] at ($(rjet.east)+(1.6,0.3)$) {%
+    \textbf{PFCandTruth} (per candidate): \texttt{signalFraction}, dominant \texttt{simTrackIdx}, \texttt{method}\\[3pt]
+    \textbf{\textit{Jet}GenMatch} (per pair $j,g$): same scores as SimGenJetMatch\\
+    \texttt{recoFraction} $=E_{\text{shared}}/E(j)$, \texttt{genFraction}, \texttt{ptRatio}\\[3pt]
+    \texttt{signalPtRatio} $= p_T(\text{attributed part of } j)/p_T(g)$\\
+    \hspace*{1em}the response \textbf{with the pile-up removed by attribution}\\[3pt]
+    \texttt{ptRatio} $-$ \texttt{signalPtRatio}: what pile-up adds (PF / CHS / Puppi)\\
+    \texttt{signalPtRatio} $-$ $R_{\text{SimPF}}$: what the reconstruction did to the signal};
+\end{tikzpicture}
+\end{document}

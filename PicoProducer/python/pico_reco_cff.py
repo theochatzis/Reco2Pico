@@ -11,6 +11,11 @@ SUPPORTED_TABLES = {
     "vertices",
     "pfclusters",
     "rechits",
+    "pfblocks",
+    "genparts",
+    "sim",
+    "simcalo",
+    "recojets",
 }
 
 
@@ -31,6 +36,15 @@ def buildRecoPicoSequence(
     trackMinPt=0.0,
     pfClusterMinEnergy=0.0,
     recHitMinAbsEnergy=0.0,
+    tpPileupMinPt=1.0,
+    simJetSelection="leaves",
+    simJetMinPt=5.0,
+    genJetMinPt=5.0,
+    tpAssociation="chi2",
+    ecalCellThreshold=0.0,
+    hcalCellThreshold=0.0,
+    simPFChargedMaxAbsEta=2.5,
+    simPFChargedMinPt=0.5,
 ):
     """Build Pico tables from AOD or RECO.
 
@@ -53,6 +67,17 @@ def buildRecoPicoSequence(
 
     if "pfclusters" in enabled_tables and tier != "RECO":
         raise ValueError("'pfclusters' is RECO-only for standard event content")
+    if "pfblocks" in enabled_tables and tier != "RECO":
+        raise ValueError("'pfblocks' is RECO-only: standard AOD does not keep reco::PFBlock")
+    for group in ("genparts", "sim"):
+        if group in enabled_tables and not isMC:
+            raise ValueError("'%s' requires MC input" % group)
+    if "sim" in enabled_tables and "genparts" not in enabled_tables:
+        raise ValueError("'sim' requires the 'genparts' group (GenPart indices)")
+    if "simcalo" in enabled_tables and "sim" not in enabled_tables:
+        raise ValueError("'simcalo' requires the 'sim' group")
+    if "recojets" in enabled_tables and not {"sim", "pfcands"} <= set(enabled_tables):
+        raise ValueError("'recojets' requires the 'sim' and 'pfcands' groups")
 
     process.picoRecoTask = cms.Task()
 
@@ -123,6 +148,56 @@ def buildRecoPicoSequence(
             recHitMinAbsEnergy=recHitMinAbsEnergy,
         )
         process.picoRecoTask.add(process.picoRecoLowLevelTask)
+
+    if "pfblocks" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.pfblocks_cff import pfBlockTables
+
+        process.picoRecoTask.add(
+            pfBlockTables(
+                process,
+                candMinPt=pfCandMinPt,
+                trackTableMinPt=trackMinPt,
+                pfClusterMinEnergy=pfClusterMinEnergy,
+            )
+        )
+
+    if "genparts" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.sim_cff import genParticleTables
+
+        process.picoRecoTask.add(genParticleTables(process, genJetMinPt=genJetMinPt))
+
+    if "sim" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.sim_cff import simTables
+
+        process.picoRecoTask.add(
+            simTables(
+                process,
+                trackTableMinPt=trackMinPt,
+                tpPileupMinPt=tpPileupMinPt,
+                simJetSelection=simJetSelection,
+                simJetMinPt=simJetMinPt,
+                tpAssociation=tpAssociation,
+            )
+        )
+
+    if "simcalo" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.sim_cff import simCaloTables
+
+        process.picoRecoTask.add(
+            simCaloTables(
+                process,
+                simJetMinPt=simJetMinPt,
+                ecalCellThreshold=ecalCellThreshold,
+                hcalCellThreshold=hcalCellThreshold,
+                chargedMaxAbsEta=simPFChargedMaxAbsEta,
+                chargedMinPt=simPFChargedMinPt,
+            )
+        )
+
+    if "recojets" in enabled_tables:
+        from Reco2Pico.PicoProducer.tables.recojets_cff import recoJetTables
+
+        process.picoRecoTask.add(recoJetTables(process, pfCandMinPt=pfCandMinPt, jetMinPt=simJetMinPt))
 
     process.picoSequence = cms.Sequence(process.picoRecoTask)
     return process.picoSequence

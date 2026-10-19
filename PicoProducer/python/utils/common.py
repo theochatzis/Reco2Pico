@@ -3,10 +3,25 @@
 
 import os
 import subprocess
+import sys
+
+
+def _use_color():
+    """ANSI colors on a terminal; NO_COLOR=1 / SW_COLOR=0 disable, SW_COLOR=1 forces."""
+    if os.environ.get('SW_COLOR') == '1':
+        return True
+    if os.environ.get('SW_COLOR') == '0' or os.environ.get('NO_COLOR'):
+        return False
+    try:
+        return sys.stdout.isatty()
+    except Exception:
+        return False
 
 
 def colored_text(txt, keys=None):
     keys = keys or []
+    if not _use_color():
+        return str(txt)
     out = ''.join('\033[' + str(key) + 'm' for key in keys)
     out += str(txt)
     if keys:
@@ -24,7 +39,7 @@ def WARNING(log):
 
 def MKDIRP(dirpath, verbose=False, dry_run=False):
     if verbose:
-        print('\033[1m>\033[0m os.makedirs("' + str(dirpath) + '", exist_ok=True)')
+        print(colored_text('>', ['1']) + ' os.makedirs("' + str(dirpath) + '", exist_ok=True)')
     if dry_run:
         return
     os.makedirs(dirpath, exist_ok=True)
@@ -32,7 +47,7 @@ def MKDIRP(dirpath, verbose=False, dry_run=False):
 
 def EXE(cmd, suspend=True, verbose=False, dry_run=False):
     if verbose:
-        print('\033[1m>\033[0m ' + str(cmd))
+        print(colored_text('>', ['1']) + ' ' + str(cmd))
     if dry_run:
         return 0
 

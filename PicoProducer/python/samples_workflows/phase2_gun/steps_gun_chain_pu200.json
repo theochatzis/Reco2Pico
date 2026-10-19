@@ -1,0 +1,4 @@
+[
+  {"cfg": "cfgs_pu200/step2_DIGIRAW_cfg.py"},
+  {"cfg": "cfgs_pu200/step3_RECO_cfg.py"}
+]

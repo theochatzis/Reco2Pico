@@ -1,0 +1,37 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}[node distance=0.5cm and 0.8cm]
+  % tracker / calo layout, schematic
+  \fill[ctrack!25] (0,0) rectangle (3.2,3.4);
+  \node[font=\scriptsize, text=cnote] at (1.6,3.15) {tracker};
+  \fill[ccalo!18] (3.2,0) rectangle (5.0,3.4);
+  \node[font=\scriptsize, text=cnote] at (4.1,3.15) {ECAL};
+  \fill[ccalo!35] (5.0,0) rectangle (8.2,3.4);
+  \node[font=\scriptsize, text=cnote] at (6.6,3.15) {HCAL};
+  \draw[thick, ccalo, dashed] (3.2,0) -- (3.2,3.4) node[above, font=\scriptsize, text=ccalo] {boundary};
+  % particles
+  \draw[arrow, csim] (0.2,2.4) -- (3.2,2.4) node[pos=0.5, above, font=\scriptsize, text=csim] {$\pi^+$ (SimTrack, id 17)};
+  \draw[csim, thick] (3.2,2.4) -- (5.0,2.3);
+  \foreach \x/\y in {5.3/2.5, 5.9/2.2, 6.5/2.6, 6.2/1.9, 7.1/2.3, 6.8/2.8} { \fill[ccalo] (\x,\y) circle (1.4pt); }
+  \fill[ccalo] (4.2,2.35) circle (1.4pt);
+  \node[note, text=ccalo] at (6.4,1.45) {hits: $(E_{\text{dep}}, \text{cell}, \text{id}=17)$};
+  \draw[arrow, csim] (0.2,0.9) -- (3.2,0.8) node[pos=0.5, above, font=\scriptsize, text=csim] {$\gamma$ (id 42)};
+  \foreach \x/\y in {3.6/0.8, 4.0/0.7, 4.4/0.85, 4.1/1.0} { \fill[ccalo] (\x,\y) circle (1.4pt); }
+  \node[note, text=ccalo] at (4.1,0.35) {id $=42$};
+  % right side: the bookkeeping
+  \node[tbl, anchor=north west, text width=6.6cm, font=\scriptsize] (b1) at (8.8,3.4) {%
+    \textbf{SimCalo}: one row per particle that entered\\[2pt]
+    \texttt{geantTrackId} of every PCaloHit $=$ the particle at the calo surface (CaloSD)\\
+    $\Rightarrow$ \textbf{no clustering}: sum the hits per id\\[3pt]
+    ECAL hits in GeV; HCAL hits relabelled and $\times$ digitiser sampling factors (GeV-equivalent); HF photoelectrons $\times$ HF factor (unvalidated)\\[3pt]
+    cells summed over all particles first $\to$ optional per-cell threshold (rechit-like) $\to$ shared in proportion to the deposits\\[3pt]
+    \texttt{response} $= E_{\text{deposit}} / E_{\text{at boundary}}$ (single particle)\\
+    \texttt{SimCaloJet} $=$ anti-$k_T$ 0.4 of the deposits (direction $=$ energy-weighted cell direction)};
+  \node[tbl, anchor=north west, text width=6.6cm, font=\scriptsize, draw=cpf, below=0.3cm of b1.south west, anchor=north west] {%
+    \textbf{SimPFCand}: ideal particle flow\\[2pt]
+    terminal particle, charged, produced inside the tracker volume, $|\eta|<2.5$, $p_T>0.5$ GeV\\
+    \hspace*{1em}$\to$ its \textbf{momentum} (perfect tracking), kind 1\\
+    otherwise $\to$ its \textbf{deposit} (neutral: kind 2, charged not trackable: kind 3), or nothing if it left none\\[3pt]
+    \texttt{SimPFJet} $=$ anti-$k_T$ 0.4 of these; SimPF $-$ SimCalo $=$ what tracking recovers};
+\end{tikzpicture}
+\end{document}

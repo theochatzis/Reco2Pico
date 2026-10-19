@@ -16,6 +16,12 @@ The two workflows intentionally have the same command-line interface.
 - `trackMinPt`
 - `pfClusterMinEnergy`
 - `recHitMinAbsEnergy`
+- `tpPileupMinPt`: pile-up `TrackingParticle`s below this pT are left out of the `TP` table (signal ones are all kept; default 1 GeV)
+- `simJetSelection`: SimTracks clustered into `SimJet`: `leaves` (default), `boundary` or `primaries`
+- `simJetMinPt`: pT threshold of the `SimJet` and `GenJet` tables (default 5 GeV)
+- `tpAssociation`: track <-> TrackingParticle association written to `TrackTPLink`: `chi2` (default, `TrackAssociatorByChi2` on `mix:MergedTrackTruth`), `hits` (`quickTrackAssociatorByHits` on `prunedTrackingParticles`/`prunedDigiSimLinks`) or `none`
+- `ecalCellThreshold`, `hcalCellThreshold`: `simcalo` per-cell thresholds on the summed sim deposit (default 0, none)
+- `simPFChargedMaxAbsEta`, `simPFChargedMinPt`: tracker acceptance of the ideal PF charged candidates (2.5, 0.5 GeV)
 - `dumpPython`: optional process dump
 
 ## AOD
@@ -49,6 +55,16 @@ cmsRun Reco2Pico/PicoProducer/python/workflows/RECO_to_pico_cfg.py \
 
 Add `rechits` only when needed because it can substantially increase event
 size.
+
+RECO MC additionally supports `pfblocks` (PF block elements and links),
+`genparts` (`GenPart`, `GenJet`, `GenJetConst`), `sim` (`SimTrack`,
+`SimVertex`, `SimJet`, `SimGenJetMatch`, `TP`, `TrackTPLink`), `simcalo`
+(`SimCalo`, `SimPFCand`, `SimCaloJet`, `SimPFJet` and their GenJet matches) and
+`recojets` (`PFCandTruth`, re-clustered `PFJet`/`PFJetCHS`/`PFJetPuppi` with
+constituents and GenJet matches).
+`sim` needs the TrackingParticles and `simcalo` the calorimeter sim hits in the
+RECO file, which standard RECOSIM drops: produce the RECO with
+`samples_workflows/run3_rawsim/recoCustomise.keepSimTruth`.
 
 ## Local files
 

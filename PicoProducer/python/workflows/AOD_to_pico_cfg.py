@@ -142,7 +142,7 @@ process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(options.maxEven
 process.source = cms.Source(
     "PoolSource",
     fileNames=cms.untracked.vstring(options.inputFiles),
-    secondaryFileNames=cms.untracked.vstring(options.secondaryInputFiles),
+    secondaryFileNames=cms.untracked.vstring([f for f in options.secondaryInputFiles if f]),
     skipEvents=cms.untracked.uint32(options.skipEvents),
 )
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

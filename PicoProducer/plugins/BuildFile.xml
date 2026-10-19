@@ -19,11 +19,25 @@
 <use name="DataFormats/HcalRecHit"/>
 <use name="DataFormats/HcalDetId"/>
 <use name="DataFormats/Math"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/JetReco"/>
+<use name="DataFormats/MuonReco"/>
+<use name="DataFormats/GsfTrackReco"/>
+<use name="DataFormats/EgammaReco"/>
 
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="SimDataFormats/PileupSummaryInfo"/>
+<use name="SimDataFormats/Track"/>
+<use name="SimDataFormats/Vertex"/>
+<use name="SimDataFormats/EncodedEventId"/>
+<use name="SimDataFormats/TrackingAnalysis"/>
+<use name="SimDataFormats/Associations"/>
 
+<use name="JetMETCorrections/JetCorrector"/>
 <use name="Geometry/HcalCommonData"/>
+<use name="Geometry/CaloGeometry"/>
+<use name="SimDataFormats/CaloHit"/>
+<use name="DataFormats/JetReco"/>
 <use name="Geometry/Records"/>
 
 <flags EDM_PLUGIN="1"/>

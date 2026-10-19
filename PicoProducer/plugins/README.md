@@ -102,6 +102,127 @@ Columns:
 Standard RECO keeps these PFCluster collections. Standard AOD does not, so the
 normal AOD workflow rejects the `pfclusters` group.
 
+## `PicoPFBlockTableProducer`
+
+Writes the particle-flow block structure (RECO only, `reco::PFBlock` is not in AOD).
+The three tables answer different questions: `PFBlockElem` is the inventory of
+elements, `PFBlockLink` the geometric connectivity PF found between them (the
+algorithm's input), `PFCandElem` the elements each candidate finally used (the
+algorithm's decision). See "PF block tables" in `../README.md` for the meaning
+of the link distances and a usage example.
+
+- `PFBlockElem` (instance `elements`): one row per `reco::PFBlockElement` of every
+  block: `blockIdx`, `elemIdx`, `type` (TRACK, PS1, PS2, ECAL, HCAL, GSF, BREM,
+  HFEM, HFHAD, SC, HO, HGCAL), the kinematics of the linked object, links to the
+  Pico tables (`trackIdx` -> `Track`, `clusterTable`/`clusterIdx` ->
+  `PFCluster<ECAL|HCAL|HO|HF|PS>`) and raw keys (`trackKey`, `clusterKey`,
+  `gsfTrackKey`, `muonKey`, `superClusterKey`), track-type bits (displaced,
+  conversion, V0, muon), the extrapolated ECAL-entrance position of tracks, the
+  element time, and `candIdx`/`nCands` (which `PFCand` rows use the element).
+- `PFBlockLink` (instance `links`): one row per stored element-element link of
+  `PFBlock::linkData()`: `blockIdx`, `elem1`, `elem2`, `elemRow1`, `elemRow2`
+  (rows of `PFBlockElem`), `distance`, `test`.
+- `PFCandElem` (instance `candElements`): one row per
+  `reco::PFCandidate::elementsInBlocks()` entry: `candIdx` (row of `PFCand`),
+  `blockIdx`, `elemIdx`, `elemRow`, `type`.
+
+Row indices follow the thresholds of the other tables (`candMinPt`,
+`trackTableMinPt`, `clusterMinEnergy`); filtered objects give `-1` while the raw
+keys are always filled.
+
+## `PicoSimTrackCandidateProducer`
+
+Converts the Geant4 `SimTrack`s of the signal event into `reco::GenParticle`
+candidates (plus `std::vector<int>` `simTrackIndex`) so that
+`FastjetJetProducer` can cluster "sim jets". `selection`: `leaves` (the terminal
+particles of the stored decay tree: no stored daughters, or daughters carrying
+less than `maxDaughterEnergyFraction` = 0.5 of the energy, so that delta rays
+and bremsstrahlung do not remove a continuing track; default), `boundary`
+(tracks flagged as crossing the tracker/calo boundary, with the momentum there)
+or `primaries` (generator particles only). Neutrinos are dropped.
+
+## `PicoSimGenJetMatchProducer`
+
+Tables `SimGenJetMatch` (instance `matches`) and, with `writeGenConstituents`,
+`GenJetConst` (instance `genConstituents`). Any jet collection whose
+constituents carry a SimTrack index can be matched (the `simcalo` group clones
+it for `SimCaloJet` and `SimPFJet`). Matches sim jets to gen jets through the Geant4 ancestry
+of the sim-jet constituents (every SimTrack descends from one generator
+primary, every generator particle sits in at most one gen jet): per pair the
+shared energy, `simFraction` (share of the sim jet energy coming from the gen
+jet), `genFraction` (share of the gen jet energy whose descendants were
+clustered into the sim jet), `nShared`, `ptRatio`, `dR` and the best-pair
+flags. The gen jets must be clustered in the same job (the stored
+`ak4GenJetsNoNu` have no constituent references); `genParticleTables` does
+that. See "Sim jets and the SimJet to GenJet matching" in `../README.md`.
+
+## `PicoSimTrackTableProducer`
+
+Tables `SimTrack` (instance `tracks`) and `SimVertex` (instance `vertices`) from
+`g4SimHits`: kinematics at production, production vertex, `vertIdx`,
+`parentIdx`, `genPartIdx` (row of the pruned `GenPart` table, matched through
+the HepMC barcode), `isPrimary`, `nDaughters`, `isLeaf`, boundary-crossing and
+tracker-surface momenta, `simJetIdx` (row of the `SimJet` table the track was
+clustered into) and the Geant4 ids; vertices carry position, time, `parentIdx`,
+`nDaughters` and the Geant4 process type.
+
+## `PicoSimCaloCandidateProducer`
+
+Sums the calorimeter sim hits (`PCaloHit`, ECAL/ES/HCAL) per particle that
+entered the calorimeter (the Geant4 id stored in the hit) into massless
+`reco::GenParticle` candidates (`calo`: energy = deposit, direction =
+energy-weighted cell direction) with parallel vectors of the per-subdetector
+energies, and builds the ideal PF candidates (`pf`: production momentum for
+terminal charged particles produced inside the tracker volume, inside the
+acceptance and above `chargedMinPt`; deposit otherwise). `verbose` (untracked)
+prints the HCAL relabelling and conversion bookkeeping per event. HCAL hits are
+relabelled with `HcalHitRelabeller` and scaled with the digitiser sampling
+factors (`hbSamplingFactors`, `heSamplingFactors`, `hoSamplingFactors`,
+`hf1SamplingFactor`, `hf2SamplingFactor`); per-cell thresholds apply to the
+cell total over all particles. Needs `CaloGeometry` and `HcalDDDRecConstants`.
+
+## `PicoSimCaloTableProducer`
+
+Tables `SimCalo` (instance `calo`) and `SimPFCand` (instance `pf`) from the
+products above, with the per-subdetector energies, the single-particle
+`response` (deposit / energy at the calorimeter entrance) and the rows of the
+`SimCaloJet`/`SimPFJet` the candidates were clustered into. See "Per-particle
+calorimeter deposits" in `../README.md`.
+
+## `PicoPFCandTruthProducer`
+
+Tables `PFCandTruth` (instance `candidates`, one row per `PFCand` row:
+`signalFraction`, dominant `simTrackIdx` and `simTrackFraction`, `method`) and
+`PFCandSim` (instance `shares`), plus the flat share vectors read by the jet
+matching. Charged candidates are attributed through the track association,
+the others through their cluster cells and the sim-hit shares of
+`PicoCaloSimHits.h` (shared with the sim-calo producer), capped by the sim
+energy of the cell. Needs the rechit collections of RECO.
+
+## `PicoRecoJetGenMatchProducer`
+
+Tables `<name>GenMatch` (instance `matches`) and `<name>Const` (instance
+`constituents`) for any `reco::Jet` collection whose constituents resolve to
+`particleFlow` (directly, by object address for FwdPtr inputs, or through
+`sourceCandidatePtr`); optional puppi `weights`. Same scores as
+`PicoSimGenJetMatchProducer` through the candidate attribution and the Geant4
+ancestry (`PicoSimAncestry.h`), plus `signalPtRatio`.
+
+## `PicoTrackingParticleTableProducer`
+
+Tables `TP` (instance `particles`) and `TrackTPLink` (instance `links`).
+`TP` rows are the `TrackingParticle`s of `mix:MergedTrackTruth` (signal and
+pile-up, charged, pT > 0.1 GeV at mixing; `pileupMinPt` thins the pile-up ones):
+kinematics, vertex, `bx`/`event`/`isSignal`, tracker hits and layers,
+`genPartIdx`, `simTrackIdx`, `parentIdx` and the first decay vertex.
+`TrackTPLink` holds the `reco::RecoToSimCollection`/`SimToRecoCollection`
+entries of `association` as (`trackIdx`, `tpIdx`, `recoToSimQuality`,
+`simToRecoQuality`, `hasRecoToSim`, `hasSimToReco`); `qualityDoc` describes the
+quality (shared-hit fraction for the hit associator, -chi2 for
+`TrackAssociatorByChi2`). The association may have been computed on another
+`TrackingParticle` collection (the pruned one of premixed samples); its entries
+are matched to `TP` rows through (event id, Geant4 track id).
+
 ## Calorimeter RecHit producers
 
 `PicoCaloRecHitTableProducers.cc` registers:

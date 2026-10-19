@@ -1,0 +1,32 @@
+% common preamble of the standalone TikZ figures (cropped with the preview package)
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc,fit}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{6pt}
+% palette
+\definecolor{cgen}{RGB}{60,60,60}
+\definecolor{csim}{RGB}{0,114,178}
+\definecolor{ccalo}{RGB}{213,94,0}
+\definecolor{cpf}{RGB}{0,158,115}
+\definecolor{creco}{RGB}{204,121,167}
+\definecolor{cpu}{RGB}{150,150,150}
+\definecolor{ctrack}{RGB}{86,180,233}
+\definecolor{cnote}{RGB}{90,90,90}
+\tikzset{
+  ladderbox/.style={draw, rounded corners=3pt, thick, align=center, minimum width=3.0cm, minimum height=1.15cm, font=\small, fill=white},
+  effect/.style={font=\footnotesize\itshape, text=cnote, align=center},
+  arrow/.style={-{Stealth[length=2.5mm]}, thick},
+  part/.style={circle, draw, thick, inner sep=1.2pt, minimum size=5mm, font=\scriptsize, fill=white},
+  gen/.style={part, draw=cgen, fill=cgen!15},
+  simp/.style={part, draw=csim, fill=csim!15},
+  lost/.style={part, draw=cpu, dashed, text=cpu},
+  jet/.style={draw, thick, rounded corners=6pt, dashed, inner sep=5pt},
+  tbl/.style={draw, rounded corners=2pt, fill=white, font=\scriptsize\ttfamily, align=left, inner sep=4pt},
+  note/.style={font=\scriptsize, text=cnote, align=left},
+}
