@@ -1,0 +1,41 @@
+\input{preamble}
+\begin{document}
+\begin{tikzpicture}
+  % the boundary line across all cases
+  \draw[dashed, ccalo, thick] (-2.6,-3.0) -- (16.0,-3.0);
+  \node[note, text=ccalo, anchor=south east] at (16.0,-2.95) {tracker};
+  \node[note, text=ccalo, anchor=north east] at (16.0,-3.05) {calorimeter};
+  % case A: conversion in the tracker
+  \node[font=\small\bfseries] at (0,0) {A. conversion in the tracker};
+  \node[gen] (ga) at (0,-0.8) {$\gamma$};
+  \node[simp] (ea) at (-0.7,-1.9) {$e^-$};
+  \node[simp] (pa) at (0.7,-1.9) {$e^+$};
+  \draw[thick, csim] (ga) -- (ea);
+  \draw[thick, csim] (ga) -- (pa);
+  \draw[thick, csim, -{Stealth}] (ea) -- (-0.9,-3.0);
+  \draw[thick, csim, -{Stealth}] (pa) -- (0.9,-3.0);
+  \node[note, anchor=north, text width=4.6cm] at (0,-3.3) {the $\gamma$ ends before the boundary\\ $\Rightarrow$ \textbf{replaced} by the two electrons: two entrance particles, each with its momentum at the face and its own deposit};
+  % case B: decay inside the calorimeter
+  \node[font=\small\bfseries] at (6.4,0) {B. decay inside the calorimeter};
+  \node[gen] (kb) at (6.4,-0.8) {$K^0_S$};
+  \draw[thick, csim] (kb) -- (6.4,-3.7);
+  \node[simp, minimum size=3.5mm, font=\tiny] (p1) at (5.8,-4.3) {$\pi^+$};
+  \node[simp, minimum size=3.5mm, font=\tiny] (p2) at (7.0,-4.3) {$\pi^-$};
+  \draw[thick, csim] (6.4,-3.7) -- (p1);
+  \draw[thick, csim] (6.4,-3.7) -- (p2);
+  \node[note, anchor=north, text width=4.6cm] at (6.4,-4.75) {the $K^0_S$ crossed the boundary (flag, momentum at the face)\\ $\Rightarrow$ it \textbf{is} the entrance particle; the pions are stored, born inside and own the sim hits: \textbf{merged} into it};
+  % case C: stored secondary without the flag
+  \node[font=\small\bfseries] at (12.8,0) {C. stored secondary, no flag};
+  \node[gen] (kc) at (12.8,-0.8) {$K^0_S$};
+  \node[simp, minimum size=3.5mm, font=\tiny] (q1) at (12.1,-1.9) {$\pi^+$};
+  \node[simp, minimum size=3.5mm, font=\tiny] (q2) at (13.5,-1.9) {$\pi^-$};
+  \draw[thick, csim] (kc) -- (q1);
+  \draw[thick, csim] (kc) -- (q2);
+  \draw[thick, csim, -{Stealth}] (q1) -- (11.9,-3.0);
+  \draw[thick, csim, -{Stealth}] (q2) -- (13.7,-3.0);
+  \node[note, anchor=north, text width=4.6cm] at (12.8,-3.3) {stored daughters get their own calo-surface id at birth, so Geant4 never sets their crossing flag\\ $\Rightarrow$ each pion \textbf{owns sim hits}: an entrance particle (production momentum)};
+  % rule box
+  \node[tbl, font=\small, anchor=north, text width=17.0cm, align=center, fill=csim!6, draw=csim] at (6.4,-6.9) {entrance particle $\;\Leftrightarrow\;$ no entrance ancestor, and: crossed the boundary, \;or\; born in the tracker and reaching the calorimeter (owns sim hits, or daughters born outside the tracker do)\\[2pt]
+    every sim hit is bookkept to exactly one entrance particle (\texttt{SimTrack\_isEntrance}, \texttt{SimTrack\_entranceIdx}, \texttt{SimTrack\_ownsCaloHits})};
+\end{tikzpicture}
+\end{document}
