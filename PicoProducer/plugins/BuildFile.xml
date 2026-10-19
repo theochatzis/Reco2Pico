@@ -37,7 +37,15 @@
 <use name="Geometry/HcalCommonData"/>
 <use name="Geometry/CaloGeometry"/>
 <use name="SimDataFormats/CaloHit"/>
+<use name="SimDataFormats/CrossingFrame"/>
 <use name="DataFormats/JetReco"/>
 <use name="Geometry/Records"/>
+<use name="DataFormats/EcalDigi"/>
+<use name="DataFormats/HcalDigi"/>
+<use name="CondFormats/EcalObjects"/>
+<use name="CondFormats/HcalObjects"/>
+<use name="CondFormats/DataRecord"/>
+<use name="CalibFormats/HcalObjects"/>
+<use name="CalibCalorimetry/EcalLaserCorrection"/>
 
 <flags EDM_PLUGIN="1"/>

@@ -130,15 +130,47 @@ Row indices follow the thresholds of the other tables (`candMinPt`,
 `trackTableMinPt`, `clusterMinEnergy`); filtered objects give `-1` while the raw
 keys are always filled.
 
+## `PicoMixedTruthProducer`
+
+Runs in the DIGI step of a classically mixed sample (`samples_workflows/run3_mix`),
+after the mixing module, and turns its transient `CrossingFrame`s into
+persistent collections: the SimTracks and SimVertices of the in-time pile-up
+interactions (instance `pileup`, with their `EncodedEventId`, vertex indices
+renumbered into the merged collection), their calorimeter sim hits
+(`EcalHitsEB`, `EcalHitsEE`, `EcalHitsES`, `HcalHits`, hit by hit) and the
+out-of-time deposits summed per cell and bunch crossing (`Oot...`, event id =
+(bx, 0)) for the crossings in [`minBunch`, `maxBunch`], plus `nInTime`.
+
+## `PicoCaloEntranceProducer`
+
+Flags the calorimeter-entrance particles among the Geant4 `SimTrack`s of the
+signal event (`PicoCaloEntrance.h`): the cut through the stored decay tree at
+the tracker/calorimeter boundary, read off the boundary-crossing flag, the
+production vertex (inside the tracker volume: `trackerMaxRadius` 123 cm,
+`trackerMaxAbsZ` 293 cm) and the ownership of calorimeter sim hits, top-down
+with an entrance ancestor always winning. Products parallel to the SimTracks:
+`isEntrance`, `entranceOf` (the entrance particle every track belongs to,
+itself or an ancestor, -1 before the boundary or lost in the tracker),
+`ownsHits`, `reachesCalo`, and the two momenta of every track as an entrance
+particle: `prodPx/prodPy/prodPz/prodE` (production, with the energy of its
+entrance daughters taken out; knocked-out nucleons by kinetic energy) and
+`px/py/pz/e` (at the calorimeter face: recorded at the crossing, else the
+production one). Needs the `PCaloHit` collections (`PicoCaloSimHits.h`
+parameters). Tracks are keyed by (event id, Geant4 id), so with `pileup=True`
+it runs on the merged pile-up SimTracks of `PicoMixedTruthProducer` with the
+pile-up hits (`pileupHits`). See "The calorimeter-entrance particles" in `../README.md`.
+
 ## `PicoSimTrackCandidateProducer`
 
 Converts the Geant4 `SimTrack`s of the signal event into `reco::GenParticle`
 candidates (plus `std::vector<int>` `simTrackIndex`) so that
-`FastjetJetProducer` can cluster "sim jets". `selection`: `leaves` (the terminal
-particles of the stored decay tree: no stored daughters, or daughters carrying
-less than `maxDaughterEnergyFraction` = 0.5 of the energy, so that delta rays
-and bremsstrahlung do not remove a continuing track; default), `boundary`
-(tracks flagged as crossing the tracker/calo boundary, with the momentum there)
+`FastjetJetProducer` can cluster "sim jets". `selection`: `entrance` (the
+calorimeter-entrance particles from `caloEntrance`, with `momentum` =
+`production` (default, `SimJet`) or `boundary` (`SimBoundaryJet`); default),
+`leaves` (the
+terminal particles of the stored decay tree: no stored daughters, or
+daughters carrying less than `maxDaughterEnergyFraction` = 0.5 of the energy,
+production momentum), `boundary` (the same with the momentum at the crossing)
 or `primaries` (generator particles only). Neutrinos are dropped.
 
 ## `PicoSimGenJetMatchProducer`
@@ -146,7 +178,9 @@ or `primaries` (generator particles only). Neutrinos are dropped.
 Tables `SimGenJetMatch` (instance `matches`) and, with `writeGenConstituents`,
 `GenJetConst` (instance `genConstituents`). Any jet collection whose
 constituents carry a SimTrack index can be matched (the `simcalo` group clones
-it for `SimCaloJet` and `SimPFJet`). Matches sim jets to gen jets through the Geant4 ancestry
+it for `SimCaloJet` and `SimPFJet`); with `constituentShares` set to the
+`PicoSimCaloCandidateProducer` label, a constituent is instead split between
+several SimTracks with the per-cell shares (`SimCaloCellJet`; `constituentSharesPrefix` selects the share products, e.g. `cellPUShare` for the cells with pile-up). Matches sim jets to gen jets through the Geant4 ancestry
 of the sim-jet constituents (every SimTrack descends from one generator
 primary, every generator particle sits in at most one gen jet): per pair the
 shared energy, `simFraction` (share of the sim jet energy coming from the gen
@@ -163,18 +197,30 @@ Tables `SimTrack` (instance `tracks`) and `SimVertex` (instance `vertices`) from
 `parentIdx`, `genPartIdx` (row of the pruned `GenPart` table, matched through
 the HepMC barcode), `isPrimary`, `nDaughters`, `isLeaf`, boundary-crossing and
 tracker-surface momenta, `simJetIdx` (row of the `SimJet` table the track was
-clustered into) and the Geant4 ids; vertices carry position, time, `parentIdx`,
+clustered into), the calorimeter-entrance flags `isEntrance`, `entranceIdx`,
+`ownsCaloHits` with `entrancePt/E` and `facePt/E` (from `caloEntrance`) and
+the Geant4 ids; vertices carry position, time, `parentIdx`,
 `nDaughters` and the Geant4 process type.
 
 ## `PicoSimCaloCandidateProducer`
 
-Sums the calorimeter sim hits (`PCaloHit`, ECAL/ES/HCAL) per particle that
-entered the calorimeter (the Geant4 id stored in the hit) into massless
+Sums the calorimeter sim hits (`PCaloHit`, ECAL/ES/HCAL) per
+calorimeter-entrance particle (the Geant4 id stored in the hit, mapped to its
+entrance particle with `entranceOf` from `caloEntrance`) into massless
 `reco::GenParticle` candidates (`calo`: energy = deposit, direction =
 energy-weighted cell direction) with parallel vectors of the per-subdetector
-energies, and builds the ideal PF candidates (`pf`: production momentum for
-terminal charged particles produced inside the tracker volume, inside the
-acceptance and above `chargedMinPt`; deposit otherwise). `verbose` (untracked)
+energies and `caloNOwners`; writes the cells themselves (`cells`: energy = cell
+total, direction = cell centre, with `cellSub`, `cellDetId` and the per-cell
+shares `cellShareBegin`/`cellShareTrack`/`cellShareEnergy` for the matching);
+and builds the ideal PF candidates (`pf`: production momentum for charged
+entrance particles born inside the tracker volume, inside the acceptance and
+above `chargedMinPt`; deposit otherwise). With `pileupSimTracks` /
+`pileupSimVertices` / `pileupCaloEntrance` / `pileupHits` set (pile-up truth)
+it adds the pile-up deposit of every cell (`cellPUEnergy`, `cellOotEnergy`,
+`cellNPU`), the cells with signal + in-time pile-up (`cellsPU`, with the
+signal shares `cellPUShare*`), the deposits of the pile-up entrance particles
+(`caloPU`) and the ideal PF with pile-up (`pfPU`, kinds 11/12/13 for the
+pile-up entries) and after a perfect charged-hadron subtraction (`pfPUCHS`). `verbose` (untracked)
 prints the HCAL relabelling and conversion bookkeeping per event. HCAL hits are
 relabelled with `HcalHitRelabeller` and scaled with the digitiser sampling
 factors (`hbSamplingFactors`, `heSamplingFactors`, `hoSamplingFactors`,
@@ -183,10 +229,12 @@ cell total over all particles. Needs `CaloGeometry` and `HcalDDDRecConstants`.
 
 ## `PicoSimCaloTableProducer`
 
-Tables `SimCalo` (instance `calo`) and `SimPFCand` (instance `pf`) from the
-products above, with the per-subdetector energies, the single-particle
-`response` (deposit / energy at the calorimeter entrance) and the rows of the
-`SimCaloJet`/`SimPFJet` the candidates were clustered into. See "Per-particle
+Tables `SimCalo` (instance `calo`), `SimCaloCell` (instance `cells`, with
+`writeCells`) and `SimPFCand` (instance `pf`) from the products above, with
+the per-subdetector energies, the single-particle `response` (deposit / energy
+at the calorimeter entrance) and the rows of the
+`SimCaloJet`/`SimCaloCellJet`/`SimPFJet` the candidates were clustered into;
+`pileup` adds the `puEnergy`/`ootEnergy`/`nPU` columns of the cells. See "Per-particle
 calorimeter deposits" in `../README.md`.
 
 ## `PicoPFCandTruthProducer`
@@ -198,6 +246,11 @@ matching. Charged candidates are attributed through the track association,
 the others through their cluster cells and the sim-hit shares of
 `PicoCaloSimHits.h` (shared with the sim-calo producer), capped by the sim
 energy of the cell. Needs the rechit collections of RECO.
+
+With `pileupHits` set (pile-up truth of a classically mixed sample) the cap of
+the cell attribution is the in-time sim energy of the cell, signal plus
+pile-up, the pile-up share goes to `puFraction`, and a track whose
+TrackingParticle belongs to another interaction is pile-up entirely.
 
 ## `PicoRecoJetGenMatchProducer`
 

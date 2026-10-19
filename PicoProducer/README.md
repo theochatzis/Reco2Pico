@@ -97,11 +97,12 @@ matching, mini-isolation, or electron VID.
 | `tracks` | yes | yes | native `generalTracks` |
 | `vertices` | yes | yes | native `offlinePrimaryVertices` |
 | `pfclusters` | no* | yes | native PFCluster collections; standard AOD does not keep them |
-| `rechits` | yes | yes | reduced AOD RecHits, fuller RECO RecHits |
+| `rechits` | yes | yes | reduced AOD RecHits, fuller RECO RecHits; `fullEcalRecHits=True` (RECO) takes every ECAL rechit instead of the reduced collections |
 | `pfblocks` | no | yes | native `particleFlowBlock`: `PFBlockElem`, `PFBlockLink`, `PFCandElem` (candidate -> element links); see "PF block tables" below |
 | `genparts` | MC | MC | `GenPart` (pruned `genParticles` + all status 1), `GenJet` (anti-kt 0.4, no neutrinos, re-clustered in the job), `GenJetConst` |
-| `simcalo` | no | MC | `SimCalo` (per-particle calorimeter deposits from the sim hits), `SimPFCand` (ideal PF), `SimCaloJet`, `SimPFJet` and their GenJet matches; needs the calorimeter sim hits kept in RECO and the `sim` group |
-| `recojets` | no | MC | `PFCandTruth`/`PFCandSim` (PF candidates attributed to simulated particles), `PFJet`/`PFJetCHS`/`PFJetPuppi` re-clustered raw jets with constituents and ancestry GenJet matches; needs `pfcands`, `sim` and the calorimeter sim hits |
+| `simcalo` | no | MC | `SimCalo` (calorimeter deposits from the sim hits per calorimeter-entrance particle), `SimCaloCell` (the cells), `SimPFCand` (ideal PF), `SimCaloJet`, `SimCaloCellJet`, `SimPFJet` and their GenJet matches; needs the calorimeter sim hits kept in RECO and the `sim` group |
+| `recojets` | no | MC | `PFCandTruth`/`PFCandSim` (PF candidates attributed to simulated particles), `PFJet`/`PFJetCHS`/`PFJetPuppi` re-clustered raw jets with constituents and ancestry GenJet matches; needs `pfcands`, `sim` and the calorimeter sim hits. With `pileupTruth=<label>` (classically mixed samples, see "Pile-up truth" below) `simcalo` and `recojets` add the pile-up deposits, `PFCandTruth_puFraction` and the jets with pile-up |
+| `calodigis` | no | RECO + RAW | `EBDigi`, `EEDigi`, `HBHEDigi`: the ADC samples of every calorimeter cell above `digiMinAmplitude` [GeV], each sample also on the rechit energy scale; unpacked from the RAW data, so the RAW file must be the secondary input of the job (see "Calorimeter digis" below) |
 | `sim` | MC* | MC | `SimTrack`/`SimVertex` (`g4SimHits`), `SimJet` (anti-kt 0.4 of the SimTracks), `SimGenJetMatch` (ancestry-based SimJet to GenJet scores, see below), `TP` (`mix:MergedTrackTruth`), `TrackTPLink` (track <-> TP association, `tpAssociation=chi2|hits|none`); needs `genparts` and a RECO that kept the sim truth (see `samples_workflows/run3_rawsim/`) |
 
 `*` A custom AOD that explicitly keeps PFCluster collections can be supported
@@ -185,26 +186,110 @@ Which SimTracks are clustered is set by `simJetSelection`:
 
 | selection | constituents | momentum used |
 |---|---|---|
-| `leaves` (default) | the terminal particles of the stored Geant4 tree: SimTracks without stored daughters, plus SimTracks whose stored daughters carry less than half of their energy (`SimTrack_dauEnergyFrac < 0.5`: delta rays, bremsstrahlung; the track itself continues). Decays and conversions replace the parent by its daughters. | at production |
-| `boundary` | the same terminal particles | at the tracker/calorimeter boundary where Geant4 recorded the crossing (after the energy loss and bending in the tracker); particles born inside the calorimeter keep their production momentum |
+| `entrance` (default) | the **calorimeter-entrance particles**: the cut through the stored Geant4 tree at the tracker/calorimeter boundary (next paragraph). Everything that decayed, converted or was absorbed in the tracker is replaced by its daughters or lost; everything born inside the calorimeter belongs to the particle that entered. | `momentum=production` (`SimJet`): the production momentum, with the energy of entrance daughters taken out; `momentum=boundary` (`SimBoundaryJet`): the momentum at the crossing where Geant4 recorded it (after the energy loss and the bending in the tracker), the production one otherwise |
+| `leaves` | the terminal particles of the stored Geant4 tree: SimTracks without stored daughters, plus SimTracks whose stored daughters carry less than half of their energy (`SimTrack_dauEnergyFrac < 0.5`: delta rays, bremsstrahlung; the track itself continues) | at production |
+| `boundary` | the same terminal particles | at the boundary crossing where recorded |
 | `primaries` | generator particles only; reproduces `GenJet` up to the neutrino treatment | at production |
 
 Neutrinos are always dropped. `SimTrack_simJetIdx` gives the jet of every
 constituent; `SimJet_nConstituents` counts them.
 
-Why the "less than half of the energy" clause: Geant4 stores a daughter
-SimTrack not only for decays and conversions but also for the occasional
-secondary a continuing particle produces. In the local test, 6 of the 10 Z
-muons had knocked out one to three delta-ray electrons of 10 to 400 MeV in the
-muon system (vertices at a radius of 4 to 6 m, Geant4 process type 2,
-ionisation). With a strict "no stored daughters" rule those muons were not
-clustered at all, their 45 GeV gen jets had no sim partner, and the only
-"match" of such a gen jet was a 5 GeV jet sharing a converted photon. With the
-energy clause the muon (daughters carry 0.0 to 0.01 of its energy) is a
-terminal particle again, the delta electrons are kept as constituents too, and
-all ten muon jets match with fractions of 1. A pion decaying in flight, by
-contrast, has daughters carrying its full energy (`dauEnergyFrac` ~ 1) and is
-correctly replaced by its muon, the neutrino being dropped.
+### The calorimeter-entrance particles
+
+The physical picture is one truth stage after the generator: the generator
+particles are propagated by Geant4 through the tracker, where they decay,
+convert, interact, lose energy and bend, and the particles that arrive at the
+calorimeter face are the ones every later step sees. `SimJet` clusters their
+production four-momenta (the particle list), `SimBoundaryJet` their momenta
+at the face (the material and the bending on top), `SimCaloJet` the energy
+they deposited, `SimPFJet` their momenta (charged, trackable) or deposits (the
+rest).
+
+Who they are is read off three facts of the Geant4 bookkeeping
+(`SimG4Core/Notification/MCTruthUtil`, `SimG4CMS/Calo/CaloTrkProcessing`,
+`CaloSD`):
+
+* every stored secondary (a decay or conversion product of a primary, the
+  only secondaries Geant4 keeps as SimTracks) gets its own "id on the
+  calorimeter surface" at creation, wherever it is born; the unstored
+  secondaries inherit the id of their mother;
+* the boundary-crossing flag (`SimTrack_crossedBoundary`, with the position
+  and momentum at the crossing) is set only for a track whose id on the
+  surface is still zero when it steps into a calorimeter volume: primaries
+  and unstored chains get it, a stored secondary born in the tracker never
+  does, although it enters the calorimeter like any other particle;
+* every calorimeter sim hit carries the id on the surface of the particle
+  that deposited it, so the hits of a stored daughter born inside the
+  calorimeter reference the daughter, not the particle that entered;
+* at the end of the event the hits of a particle that was not saved as a
+  SimTrack are re-keyed to its nearest saved ancestor, so a saved photon that
+  converted in the tracker, or a saved pi0, can own the hits of unsaved
+  descendants, while a saved secondary that inherited its mother's id (a
+  bremsstrahlung photon, a delta ray, a continuation entry of the same
+  particle) owns nothing: its hits are the mother's.
+
+`PicoCaloEntranceProducer` therefore flags, top-down through the tree with an
+entrance ancestor always winning, a SimTrack as an entrance particle when it
+crossed the boundary, or when it was born inside the tracker volume
+(r < 123 cm, |z| < 293 cm, where Geant4 records the crossings) and reaches
+the calorimeter: it owns sim hits itself, or a chain of daughters born
+outside the tracker does. A track born inside the calorimeter belongs to the
+entrance particle of its parent; a track born inside the tracker is judged on
+its own, so a bremsstrahlung photon or a delta ray that an entrance particle
+emitted before the face is a separate entrance particle if it reaches the
+calorimeter. Two momenta go with every entrance particle: the production
+momentum, with the entrance energy of its tracker-born subtree taken out (its
+tracker-born daughters that are entrance particles themselves, and the
+entrance particles below a tracker-born daughter that is not one: a product
+that decayed before the face, or the continuation entries Geant4 writes for
+an electron after each bremsstrahlung), as an energy balance along the
+production direction, so that a radiated photon counted on its own is not
+counted twice (`SimTrack_entrancePt`, `SimTrack_entranceE`); and the momentum
+at the face,
+the one Geant4 recorded at the crossing, or the production one when the
+crossing was not recorded (`SimTrack_facePt`, `SimTrack_faceE`). Nucleons and
+nuclei born at a hadronic interaction vertex were knocked out of the tracker
+material and carry a rest mass that never entered, so they count with their
+kinetic energy (a 7.5 GeV pion interacting in the tracker otherwise comes out
+as 10.9 GeV of products). With this bookkeeping the entrance energy of the
+descendants of a generator particle sums to 0.99 of its energy in the local
+test (1.02 before the subtree rule, with 142 of 3151 particles over-counted
+by more than 5%). The examples:
+
+* a photon converting in the tracker: the photon is before the cut, the two
+  electrons are entrance particles with their own momenta at the face and
+  their own deposits; converting in the last centimetres before the crystals
+  or inside them, the photon is the entrance particle and the electrons'
+  hits are merged into it;
+* a pi+ decaying in flight in the tracker: the muon is the entrance
+  particle, the neutrino is dropped; decaying inside HCAL: the pion is, and
+  the muon's hits count with it;
+* a K0S decaying inside ECAL: the K0S crossed the boundary and is the
+  entrance particle, the two pions (stored, born in the crystals, owning the
+  hits) are merged into it;
+* a muon knocking out delta rays in the muon system: the muon crossed, the
+  delta electrons are born outside the tracker and belong to it;
+* a stored pion from a K0S decay in the tracker that reaches HCAL: no
+  crossing flag (second bullet above), but it owns hits, so it is an entrance
+  particle; its momentum at the face is not recorded, so the production one
+  is used for both jets;
+* a pion interacting in the tracker material: the stored products that own
+  their hits (a leading pion, a pi0 through its photons) are entrance
+  particles; the pion itself is one too if hits of unsaved products were
+  re-keyed to it, with the energy its entrance daughters took removed.
+
+In the 600-event check on the Run-3 DY sample, 5% of the deposited energy
+sat on such flagless stored secondaries, 7% on daughters born inside the
+calorimeter and 4% on particles that the earlier "terminal" rule (daughters
+carrying less than half of the energy) excluded from the ideal PF list; all
+three are now bookkept to the particle that entered.
+
+`SimTrack_isEntrance`, `SimTrack_entranceIdx` (the entrance particle every
+track belongs to) and `SimTrack_ownsCaloHits` expose the flags. The `leaves`
+and `boundary` selections are kept for reference: `leaves` needed the
+energy clause because 6 of the 10 Z muons of the first test events had
+stored delta-ray daughters and would otherwise not have been clustered; the
+entrance rule has no such clause.
 
 ### Matching SimJet to GenJet without geometry
 
@@ -253,8 +338,9 @@ matched pair is therefore the response due to:
   charged daughters can leave the cone;
 * photon conversions and the other stored secondaries (the energy stays, only
   its carriers change);
-* with `simJetSelection=boundary`, in addition the energy lost in the tracker
-  material and the bending of the charged constituents in the field.
+* the energy lost in the tracker material and the bending of the charged
+  constituents in the field, since the momenta are taken at the boundary
+  crossing (`leaves` uses the production momenta instead).
 
 It does **not** contain the calorimeter response of Geant4: the hadron
 response below one from non-compensation and invisible energy, shower leakage,
@@ -268,27 +354,31 @@ The full ladder, from the generator to the reconstruction, is then
 | step | object | adds |
 |---|---|---|
 | 1 | `GenJet` | generator particles (no neutrinos) |
-| 2 | `SimJet`, `leaves` | decays in flight, conversions |
-| 3 | `SimJet`, `boundary` | tracker material and bending (momentum at the calorimeter surface) |
-| 4 | `SimCaloJet` (`simcalo`) | the Geant4 calorimeter response: jets of the per-particle deposits `SimCalo`, everything (charged particles too) taken from the calorimeter |
-| 5 | `SimPFJet` (`simcalo`) | an ideal particle flow: charged particles inside the tracker acceptance from their momentum, the rest from their deposit (`SimPFCand`) |
+| 2 | `SimJet` | the calorimeter-entrance particles with their production momenta: decays in flight, conversions, interactions in the tracker |
+| 3 | `SimBoundaryJet` | the same particles with their momentum at the calorimeter face: energy loss in the tracker material and bending (soft charged particles leave the cone) |
+| 4 | `SimCaloJet` (`simcalo`) | the Geant4 calorimeter response: jets of the deposits per entrance particle (`SimCalo`), everything (charged particles too) taken from the calorimeter; `SimCaloCellJet` clusters the same deposits as cells (`SimCaloCell`), i.e. with the calorimeter geometry instead of one direction per particle |
+| 5 | `SimPFJet` (`simcalo`) | an ideal particle flow: charged entrance particles inside the tracker acceptance from their momentum, the rest from their deposit (`SimPFCand`) |
 | 6 | `PFJet`, `PFJetCHS`, `PFJetPuppi` (`recojets`) | the reconstruction: clustering, thresholds, calibration, the PF algorithm, and the pile-up with its mitigation (none, CHS, Puppi) |
 
 Every jet collection, sim-level and reconstructed, is matched to `GenJet` by
-the same ancestry scores (`SimGenJetMatch`, `SimCaloGenJetMatch`,
-`SimPFGenJetMatch`, `PFJetGenMatch`, `PFJetCHSGenMatch`, `PFJetPuppiGenMatch`),
-so the response can be followed step by step for the same gen jet, and the
-difference between two steps isolates one effect: 2 vs 1 the decays, 4 vs 3
-the calorimeter, 5 vs 4 what perfect tracking recovers, 6 vs 5 the
-reconstruction and the pile-up.
+the same ancestry scores (`SimGenJetMatch`, `SimBoundaryGenJetMatch`,
+`SimCaloGenJetMatch`, `SimCaloCellGenJetMatch`, `SimPFGenJetMatch`,
+`PFJetGenMatch`, `PFJetCHSGenMatch`, `PFJetPuppiGenMatch`), so the response
+can be followed step by step for the same gen jet, and the difference between
+two steps isolates one effect: 2 vs 1 the particle list after the tracker,
+3 vs 2 the material and the bending, 4 vs 3 the calorimeter, 5 vs 4 what
+perfect tracking recovers, 6 vs 5 the reconstruction and the pile-up.
 
 ### Per-particle calorimeter deposits (`simcalo`)
 
 The calorimeter sim hits of the GEN-SIM-RAW (`EcalHitsEB/EE/ES`, `HcalHits`)
-carry the deposited energy and the Geant4 id of the particle that *entered*
-the calorimeter (CaloSD stores the id on the calorimeter surface), i.e. exactly
-the `boundary` SimTracks. No clustering is needed: the deposits are summed per
-particle into `SimCalo`, one row per particle with a deposit:
+carry the deposited energy and the Geant4 "id on the calorimeter surface"
+(CaloSD): the particle that entered the calorimeter, or a stored daughter born
+inside it. Every hit is assigned to the calorimeter-entrance particle of that
+id (the id itself or its entrance ancestor, `SimTrack_entranceIdx`), so each
+deposit is counted exactly once with the particle that entered. No clustering
+is needed: the deposits are summed per entrance particle into `SimCalo`, one
+row per particle with a deposit:
 
 * `ecalEnergy` (EB+EE), `esEnergy`, `hcalEnergy` (HB+HE), `hoEnergy`,
   `hfEnergy` and their sum `energy`, all GeV-equivalent: the HCAL hits are
@@ -299,6 +389,8 @@ particle into `SimCalo`, one row per particle with a deposit:
 * `eta`/`phi`: the energy-weighted direction of the cells, `pt` along it;
 * `boundaryE`: the particle's energy when it entered, and
   `response = energy / boundaryE`, the single-particle calorimeter response;
+* `nOwners`: how many SimTracks' hits were merged into the row (itself and
+  its stored daughters born in the calorimeter);
 * `simTrackIdx` and `simCaloJetIdx`.
 
 Cells are summed over all particles first; an optional per-cell threshold
@@ -309,44 +401,63 @@ threshold effect can thus be switched on separately from the response itself.
 The sim hits exist for the signal event only, so these deposits are pile-up
 free.
 
-`SimPFCand` is the ideal particle-flow list, built from the same terminal
-particles as `SimJet` (no neutrinos): a particle that is charged, produced
-inside the tracker volume (r < 110 cm, |z| < 280 cm), inside the acceptance
-(`simPFChargedMaxAbsEta`, 2.5) and above `simPFChargedMinPt` (0.5 GeV) enters
-with its production momentum (`kind` 1, "perfect tracking"); every other
-particle enters with its deposit (`kind` 2 neutral, 3 charged but not
-trackable) or not at all if it left none. `SimCaloJet` and `SimPFJet` are
-anti-kt 0.4 of `SimCalo` and `SimPFCand`.
+`SimCaloCell` is the same energy seen as cells: one row per cell above
+threshold with its total deposit over all particles, its DetId, subdetector
+and centre, and the number of entrance particles sharing it. It is the
+signal-only, noiseless, cell-level truth of what the calorimeter saw, before
+any tower or cluster building: finer than a CaloTower (every crystal and every
+HCAL depth is its own row), without the pile-up, noise, calibration and
+zero-suppression of the reconstruction, and with the truth decomposition
+attached. `SimCaloCellJet`
+is anti-kt 0.4 of the cells; its gen-jet match (`SimCaloCellGenJetMatch`)
+splits every cell between the entrance particles in proportion to their
+deposits, so the ancestry scores are as exact as for the per-particle jets.
+`SimCaloJet` and `SimCaloCellJet` carry the same energy and differ only in
+the geometry: one direction per particle (the energy-weighted direction of
+its cells) against the cells themselves, so the pair separates the energy
+response of the calorimeter from the treatment of the shower geometry
+(splash-out of wide showers, cells shared between jets).
 
-Why the terminal-particle rule and not Geant4's boundary flag: the flag
-(`SimTrack_crossedBoundary`) is set when a track steps from the tracker volume
-into the calorimeter volume, so particles born inside the calorimeter (pions
-of a K0S decaying in ECAL, electrons of a conversion in the crystals) never
-carry it although the sim hits reference them, and a hadron that interacts in
-the tracker material carries it only if it survives; in the 5-event test 363
-particles with deposits had no flag. The terminal rule covers both cases:
-the daughters are terminal, the parent is not.
+`SimPFCand` is the ideal particle-flow list, built from the same
+calorimeter-entrance particles as `SimJet` (no neutrinos): a particle that is
+charged, produced inside the tracker volume (r < 123 cm, |z| < 293 cm), inside
+the acceptance (`simPFChargedMaxAbsEta`, 2.5) and above `simPFChargedMinPt`
+(0.5 GeV) enters with its production momentum as an entrance particle, i.e.
+the `SimJet` one (`kind` 1, "perfect tracking");
+every other particle enters with its deposit (`kind` 2 neutral, 3 charged but
+not trackable) or not at all if it left none. `SimCaloJet` and `SimPFJet` are
+anti-kt 0.4 of `SimCalo` and `SimPFCand`.
 
 Limits of the ideal PF: a pion decaying inside the tracker contributes its
 muon's momentum rather than its own track, and nothing is subtracted for
 charged particles, since their deposit is not used.
 
-Energy scale: the HB/HE/HO factors reproduce the digitiser's GeV scale; the
-HF conversion (photoelectrons of the shower library times the HF factor) has
-not been validated against reconstructed energies and comes out low (around
-0.2 for hadrons in the test). `hfEnergy` is stored separately so that the HF
-scale can be calibrated offline from `SimCalo` itself; for the tracker
-acceptance this does not matter.
+Energy scale: on the classically mixed sample (`run3_mix`), where every
+cell's deposit is known, the reconstructed cell energy over the in-time sim
+deposit is 1.00 in EB, 1.05 in EE and HO, and 0.74 / 0.75 in HB / HE (the PF
+cluster calibration brings the hadrons back up), so the digitiser
+GeV-equivalent is the rechit scale for the ECAL and 1.35 times it for the
+HCAL. The HF conversion from shower-library photoelectrons misses the gain:
+rechits are 14.2 (depth 1) and 12.8 (depth 2) times the digitiser number,
+with a broad spread (16 to 84%: 10.6 to 18.1). `caloSimHitParameters` applies
+these as `rechitScale` (`SIM_SCALE`: the digitiser scale with the HF gain, for
+the sim-level objects; `RECHIT_SCALE`: the rechit scale, for the attribution
+of reconstructed candidates, whose cap has to be on that scale). The HF
+numbers are therefore GeV-equivalent since this calibration, but with the
+resolution of the shower library.
 
-What the 5-event test shows (barrel, particles that crossed the boundary with
-more than 5 GeV): the median single-particle calorimeter `response` is 0.96
-for the photon and the kaons, 0.73 for charged pions and 0.15 for muons (the
-MIP deposit). On the jet ladder, the 17 GeV gen jet of event 3 gives 0.89
-(`SimJet`), 0.63 (`SimCaloJet`) and 0.85 (`SimPFJet`): the decays cost 11%,
-the calorimeter another 26%, and perfect tracking brings 22% back. The 56 GeV
-muon jet of event 2 reads 1.00, 0.11 and 1.00. These are the numbers the
-reconstructed PF jets have to be compared against, at the same gen jet through
-the match tables.
+What the Run-3 DY production shows (barrel, hadronic gen jets of 30 to
+40 GeV, shared-energy response, `docs/TrueJES.md` section 4): `SimJet` 0.92,
+`SimBoundaryJet` 0.73, `SimCaloJet` 0.74, `SimCaloCellJet` 0.73, `SimPFJet`
+0.88, the signal part of the reconstructed PF jet 0.80. The particle list
+after the tracker costs 8%, the bending and the material at the face another
+19%, the calorimeter response relative to the face is close to one at this
+pT, perfect tracking brings most of it back, and the reconstruction takes
+8% more. The single-particle `response` (deposit over energy at the face)
+is close to 1 for photons and kaons, about 0.75 for charged pions and 0.15
+for muons in the first test events. These are the numbers the reconstructed
+PF jets have to be compared against, at the same gen jet through the match
+tables.
 
 ### Reconstruction-level truth (`recojets`)
 
@@ -387,6 +498,69 @@ On the 5-event test (2026 pile-up conditions) the central gen jets above
 does not need to be matched between samples for the signal response: the
 attribution takes it out jet by jet, and the raw ratios quantify what each
 mitigation leaves in.
+
+### Pile-up truth of classically mixed samples (`pileupTruth`)
+
+The premixed Run-3 samples carry the signal truth only: the pile-up is a
+pre-digitised library whose particles and sim hits are gone. The
+`samples_workflows/run3_mix` chain mixes the signal GEN-SIM with minimum-bias
+GEN-SIM events the classical way in the DIGI step, where
+`PicoMixedTruthProducer` (label `picoMixedTruth`) reads the transient
+CrossingFrames of the mixing module and writes, as ordinary collections, the
+SimTracks, SimVertices and calorimeter sim hits of the in-time pile-up
+interactions (each with its `EncodedEventId`) and the out-of-time deposits
+summed per cell and bunch crossing. With `pileupTruth=picoMixedTruth` the
+`simcalo` and `recojets` groups use them:
+
+* `SimCaloCell` gains `puEnergy` (in-time pile-up deposit of the cell),
+  `ootEnergy` (out-of-time, all crossings) and `nPU` (interactions with a
+  deposit in the cell): every cell is signal + known pile-up + the rest;
+* the pile-up particles get their own calorimeter-entrance list
+  (`picoCaloEntrancePU`, the same rule keyed by interaction and track id) and
+  three jets with pile-up are clustered and matched to the gen jets through
+  the signal ancestry: `SimCaloCellPUJet` (cells with signal + in-time
+  pile-up, the calorimeter truth with pile-up and no noise or thresholds),
+  `SimPFPUJet` (the ideal PF of signal + pile-up particles: charged trackable
+  from momentum, the rest from deposits, `kind` 11/12/13 for the pile-up
+  entries) and `SimPFPUCHSJet` (the same without the trackable charged
+  pile-up: a perfect charged-hadron subtraction, leaving the neutral and
+  untrackable pile-up);
+* `PFCandTruth_puFraction`: the share of every PF candidate attributed to
+  in-time pile-up particles, through the track of a pile-up TrackingParticle
+  or the pile-up share of the cluster cells (the cap of the attribution is
+  then the full in-time sim energy of the cell, signal plus pile-up), so that
+  `1 - signalFraction - puFraction` is what neither is: noise, out-of-time
+  pile-up and the calibration residual.
+
+The offsets of the TrueJES analysis are thereby split into the true in-time
+pile-up by candidate type and the residual, and the raw reconstructed jets can
+be compared with their ideal counterparts with pile-up.
+
+## Calorimeter digis (`calodigis`)
+
+The RECO files carry the rechits, not the samples the pulse fits were made
+from (RECO keeps only the ECAL digis around selected objects and no HBHE
+digis). The `calodigis` group unpacks the ECAL and HCAL digis from the RAW
+data in the Pico job (`picoEcalDigis`, `picoHcalDigis` on `rawDataCollector`)
+and writes one row per cell whose largest pedestal-subtracted sample exceeds
+`digiMinAmplitude` (0.1 GeV by default):
+
+| table | columns |
+|---|---|
+| `EBDigi`, `EEDigi` | `rawId`, `ieta`/`iphi` or `ix`/`iy`/`zside`, `adc0..9` (ADC code), `gain0..9` (MGPA gain id: 1 x12, 2 x6, 3 x1, 0 saturated), `e0..9` = (adc - pedestal of the gain) x gain ratio to gain 12 x ADCToGeV x intercalibration x laser correction, i.e. the sample on the rechit scale as multifit sees it; `pedestal` (gain 12), `gevPerAdc`, `laser`, `saturated` |
+| `HBHEDigi` | `rawId`, `subdet`, `ieta`, `iphi`, `depth`, `soi` (the sample of the in-time crossing), `nSamples` (8 or 10), `adc0..9`, `tdc0..9`, `capid0..9`, `fc0..9` (the charge of the ADC code from the QIE coder), `e0..9` = (fc - pedestal of the capacitor) x response-corrected gain, the sample on the rechit scale as MAHI sees it; `pedestal`, `gain` of capacitor 0 |
+
+The RAW file is given as the secondary input (the two-file solution), for
+instance the `step0.root` of the `run3_mix` chain next to its `step1.root`:
+
+```bash
+cmsRun python/workflows/RECO_to_pico_cfg.py inputFiles=file:step1.root secondaryInputFiles=file:step0.root \
+  tables=event,...,rechits,calodigis fullEcalRecHits=True digiMinAmplitude=0.1 ...
+```
+
+With ten samples of a few hundred ECAL and seven thousand HCAL cells per
+event the tables are the largest of the Pico, hence the threshold and the
+separate small samples (`analysis/CaloPulses/README.md`).
 
 ## PF block tables (`pfblocks`)
 

@@ -41,7 +41,7 @@ options.register(
     "event,muons,electrons,jets,pfcands,tracks,vertices,pfclusters",
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
-    "Comma-separated table groups (RECO MC also: pfblocks, genparts, sim)",
+    "Comma-separated table groups (RECO MC also: rechits, pfblocks, genparts, sim, simcalo, recojets; calodigis needs the RAW file as secondary input)",
 )
 options.register(
     "isMC",
@@ -86,6 +86,20 @@ options.register(
     "Minimum absolute RecHit energy",
 )
 options.register(
+    "digiMinAmplitude",
+    0.1,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.float,
+    "calodigis: keep the digis whose largest pedestal-subtracted sample exceeds this [GeV on the rechit scale]",
+)
+options.register(
+    "fullEcalRecHits",
+    False,
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.bool,
+    "rechits: every ECAL rechit (ecalRecHit, RECO only) instead of the reduced collections",
+)
+options.register(
     "tpPileupMinPt",
     1.0,
     VarParsing.multiplicity.singleton,
@@ -94,10 +108,10 @@ options.register(
 )
 options.register(
     "simJetSelection",
-    "leaves",
+    "entrance",
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
-    "SimTracks clustered into SimJet: leaves, boundary or primaries",
+    "SimTracks clustered into SimJet: entrance (calorimeter-entrance particles, needs the calorimeter sim hits), leaves, boundary or primaries",
 )
 options.register(
     "simJetMinPt",
@@ -140,6 +154,13 @@ options.register(
     VarParsing.multiplicity.singleton,
     VarParsing.varType.float,
     "simcalo: minimum pT for a charged particle to be taken from its momentum in the ideal PF",
+)
+options.register(
+    "pileupTruth",
+    "",
+    VarParsing.multiplicity.singleton,
+    VarParsing.varType.string,
+    "simcalo/recojets: label of the PicoMixedTruthProducer of a classically mixed event (pile-up truth tables and jets; empty: none)",
 )
 options.register(
     "dumpPython",
@@ -219,6 +240,8 @@ process.picoSequence = buildRecoPicoSequence(
     trackMinPt=options.trackMinPt,
     pfClusterMinEnergy=options.pfClusterMinEnergy,
     recHitMinAbsEnergy=options.recHitMinAbsEnergy,
+    fullEcalRecHits=options.fullEcalRecHits,
+    digiMinAmplitude=options.digiMinAmplitude,
     tpPileupMinPt=options.tpPileupMinPt,
     simJetSelection=options.simJetSelection,
     simJetMinPt=options.simJetMinPt,
@@ -228,6 +251,7 @@ process.picoSequence = buildRecoPicoSequence(
     hcalCellThreshold=options.hcalCellThreshold,
     simPFChargedMaxAbsEta=options.simPFChargedMaxAbsEta,
     simPFChargedMinPt=options.simPFChargedMinPt,
+    pileupTruth=options.pileupTruth,
 )
 
 process.p = cms.Path(process.picoSequence)

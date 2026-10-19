@@ -1,25 +1,32 @@
 import FWCore.ParameterSet.Config as cms
 
 
-def recHitTables(process, inputTier="RECO", minAbsEnergy=0.0):
+def recHitTables(process, inputTier="RECO", minAbsEnergy=0.0, fullEcalRecHits=False):
     """Create ECAL and HCAL RecHit tables.
 
     RECO uses the full HCAL RecHit collections. AOD uses reduced HCAL RecHits.
-    ECAL reduced RecHits are retained in both AOD and RECO event content.
+    ECAL reduced RecHits (the cells around the interesting objects) are retained in
+    both AOD and RECO event content; with fullEcalRecHits (RECO only) the tables take
+    every ECAL rechit instead (ecalRecHit), as a per-cell study against the sim
+    deposits needs.
     """
     tier = inputTier.upper()
     if tier not in ("AOD", "RECO"):
         raise ValueError("inputTier must be 'AOD' or 'RECO'")
+    if fullEcalRecHits and tier != "RECO":
+        raise ValueError("fullEcalRecHits needs the RECO tier")
+    eb = cms.InputTag("ecalRecHit", "EcalRecHitsEB") if fullEcalRecHits else cms.InputTag("reducedEcalRecHitsEB")
+    ee = cms.InputTag("ecalRecHit", "EcalRecHitsEE") if fullEcalRecHits else cms.InputTag("reducedEcalRecHitsEE")
 
     process.picoEBRecHitTable = cms.EDProducer(
         "PicoEcalRecHitTableProducer",
-        src=cms.InputTag("reducedEcalRecHitsEB"),
+        src=eb,
         name=cms.string("EBRecHit"),
         minAbsEnergy=cms.double(minAbsEnergy),
     )
     process.picoEERecHitTable = cms.EDProducer(
         "PicoEcalRecHitTableProducer",
-        src=cms.InputTag("reducedEcalRecHitsEE"),
+        src=ee,
         name=cms.string("EERecHit"),
         minAbsEnergy=cms.double(minAbsEnergy),
     )

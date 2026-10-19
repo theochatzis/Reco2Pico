@@ -11,6 +11,13 @@
 //     top of a small signal deposit stays unattributed (method 2);
 //   the rest of the candidate energy is unattributed (pile-up, noise, fakes).
 //
+// With the pile-up truth of a classically mixed event (pileupHits set): the
+// cap is the in-time sim energy of the cell, signal plus pile-up, and the
+// capped energy is shared between the signal particles and the pile-up in
+// proportion to their deposits (puFraction); a charged candidate whose
+// TrackingParticle belongs to a pile-up interaction is pile-up entirely. What
+// is left is then noise, out-of-time pile-up and the calibration residual.
+//
 // Products:
 //   PFCandTruth (instance "candidates")  one row per PFCand row: signalFraction,
 //                                         dominant SimTrack and its fraction, method
@@ -44,6 +51,7 @@
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "SimDataFormats/Associations/interface/TrackToTrackingParticleAssociator.h"
+#include "SimDataFormats/EncodedEventId/interface/EncodedEventId.h"
 #include "SimDataFormats/Track/interface/SimTrackContainer.h"
 #include "SimDataFormats/TrackingAnalysis/interface/TrackingParticle.h"
 
@@ -62,6 +70,7 @@ public:
         hbheToken_(consumes<HBHERecHitCollection>(cfg.getParameter<edm::InputTag>("hbheRecHits"))),
         hfToken_(consumes<HFRecHitCollection>(cfg.getParameter<edm::InputTag>("hfRecHits"))),
         hoToken_(consumes<HORecHitCollection>(cfg.getParameter<edm::InputTag>("hoRecHits"))),
+        pileup_(!cfg.getParameter<std::string>("pileupHits").empty()),
         simHits_(cfg, consumesCollector()),
         candMinPt_(cfg.getParameter<double>("candMinPt")),
         minShareFraction_(cfg.getParameter<double>("minShareFraction")) {
@@ -101,8 +110,10 @@ public:
     for (size_t i = 0; i < simTracks.size(); ++i)
       rowOfTrackId.emplace(simTracks[i].trackId(), static_cast<int>(i));
 
-    // track -> SimTrack through the association map (best quality first)
+    // track -> SimTrack through the association map (best quality first); a track whose
+    // TrackingParticle belongs to another interaction is pile-up
     std::vector<int> simOfTrack(tracks->size(), -1);
+    std::vector<uint8_t> puTrack(tracks->size(), 0);
     for (const auto& entry : recoToSim) {
       const auto& tr = entry.key;
       if (tr.isNull() || tr.id() != tracks.id() || tr.key() >= simOfTrack.size() || entry.val.empty())
@@ -110,6 +121,11 @@ public:
       const TrackingParticleRef& tp = entry.val.front().first;
       if (tp.isNull() || !tp.isAvailable() || tp->g4Tracks().empty())
         continue;
+      const EncodedEventId eid = tp->eventId();
+      if (eid.bunchCrossing() != 0 || eid.event() != 0) {
+        puTrack[tr.key()] = 1;
+        continue;
+      }
       auto it = rowOfTrackId.find(tp->g4Tracks().front().trackId());
       if (it != rowOfTrackId.end())
         simOfTrack[tr.key()] = it->second;
@@ -139,7 +155,7 @@ public:
     auto shareSim = std::make_unique<std::vector<int>>();
     auto shareE = std::make_unique<std::vector<float>>();
     std::vector<int32_t> cRow, cDominant, cMethod, sCand, sSim;
-    std::vector<float> cSignalFrac, cDominantFrac, sEnergy, sFraction;
+    std::vector<float> cSignalFrac, cDominantFrac, sEnergy, sFraction, cPUFrac;
 
     int32_t row = 0;
     for (size_t c = 0; c < cands.size(); ++c) {
@@ -147,15 +163,20 @@ public:
       if (cand.pt() < candMinPt_)
         continue;
       std::map<int, double> shares;
+      double pu = 0;  // energy attributed to in-time pile-up
       int method = 0;
       const auto tref = cand.trackRef();
       if (tref.isNonnull() && tref.isAvailable() && tref.id() == tracks.id() && tref.key() < simOfTrack.size() &&
           simOfTrack[tref.key()] >= 0) {
         shares[simOfTrack[tref.key()]] = cand.energy();
         method = 1;
+      } else if (pileup_ && tref.isNonnull() && tref.isAvailable() && tref.id() == tracks.id() &&
+                 tref.key() < puTrack.size() && puTrack[tref.key()]) {
+        pu = cand.energy();
+        method = 1;
       } else {
         // calorimeter attribution: reconstructed energy of the cluster cells
-        double recTotal = 0;
+        double recTotal = 0, recPU = 0;
         std::map<int, double> recShares;
         for (const auto& eib : cand.elementsInBlocks()) {
           const reco::PFBlockRef& bref = eib.first;
@@ -176,11 +197,16 @@ public:
               continue;
             recTotal += e;
             auto itC = cells.find(hf.first.rawId());
-            if (itC == cells.end() || itC->second->total <= 0)
+            if (itC == cells.end())
               continue;
-            const double signal = std::min(e, itC->second->total);  // cap by the sim energy
+            const double simAll = pileup_ ? itC->second->all() : itC->second->total;  // in-time sim energy of the cell
+            if (simAll <= 0)
+              continue;
+            const double attributed = std::min(e, simAll);  // cap by the sim energy
             for (const auto& tk : itC->second->perTrack)
-              recShares[tk.first] += signal * tk.second / itC->second->total;
+              recShares[tk.first] += attributed * tk.second / simAll;
+            if (pileup_)
+              recPU += attributed * itC->second->puTotal / simAll;
           }
         }
         if (recTotal > 0) {
@@ -188,6 +214,7 @@ public:
           const double scale = cand.energy() / recTotal;  // calibrated candidate energy vs raw cells
           for (const auto& kv : recShares)
             shares[kv.first] = kv.second * scale;
+          pu = recPU * scale;
         }
       }
       double signal = 0;
@@ -211,6 +238,7 @@ public:
       }
       cRow.push_back(row);
       cSignalFrac.push_back(cand.energy() > 0 ? std::min(1.0, signal / cand.energy()) : 0.f);
+      cPUFrac.push_back(cand.energy() > 0 ? std::min(1.0, pu / cand.energy()) : 0.f);
       cDominant.push_back(dominant);
       cDominantFrac.push_back(cand.energy() > 0 ? dominantE / cand.energy() : 0.f);
       cMethod.push_back(method);
@@ -223,6 +251,8 @@ public:
     cTable->addColumn<int32_t>("simTrackIdx", cDominant, "row in the SimTrack table of the particle with the largest share (-1: none)");
     cTable->addColumn<float>("simTrackFraction", cDominantFrac, "fraction of the candidate energy from that particle", 10);
     cTable->addColumn<int32_t>("method", cMethod, "0 none, 1 track association, 2 calorimeter cells");
+    if (pileup_)
+      cTable->addColumn<float>("puFraction", cPUFrac, "fraction of the candidate energy attributed to in-time pile-up particles (track of a pile-up TrackingParticle, or pile-up share of the cluster cells); 1 - signalFraction - puFraction is noise, out-of-time pile-up and calibration", 10);
 
     auto sTable = std::make_unique<nanoaod::FlatTable>(sCand.size(), "PFCandSim", false, false);
     sTable->setDoc("(PFCand, SimTrack) energy shares above minShareFraction");
@@ -247,6 +277,7 @@ private:
   edm::EDGetTokenT<HBHERecHitCollection> hbheToken_;
   edm::EDGetTokenT<HFRecHitCollection> hfToken_;
   edm::EDGetTokenT<HORecHitCollection> hoToken_;
+  bool pileup_;
   pico::CaloSimHits simHits_;
   double candMinPt_;
   double minShareFraction_;

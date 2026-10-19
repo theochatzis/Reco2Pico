@@ -36,8 +36,17 @@ public:
         jetsToken_(mayConsume<edm::View<reco::Jet>>(cfg.getParameter<edm::InputTag>("simJets"))),
         jetIndexToken_(mayConsume<std::vector<int>>(cfg.getParameter<edm::InputTag>("simJetConstituentIndex"))),
         useJets_(!cfg.getParameter<edm::InputTag>("simJets").label().empty()),
+        useEntrance_(!cfg.getParameter<edm::InputTag>("caloEntrance").label().empty()),
         trackName_(cfg.getParameter<std::string>("trackName")),
         vertexName_(cfg.getParameter<std::string>("vertexName")) {
+    if (useEntrance_) {
+      const std::string label = cfg.getParameter<edm::InputTag>("caloEntrance").label();
+      isEntranceToken_ = consumes<std::vector<int>>(edm::InputTag(label, "isEntrance"));
+      entranceOfToken_ = consumes<std::vector<int>>(edm::InputTag(label, "entranceOf"));
+      ownsHitsToken_ = consumes<std::vector<int>>(edm::InputTag(label, "ownsHits"));
+      for (const char* c : {"px", "py", "pz", "e", "prodPx", "prodPy", "prodPz", "prodE"})
+        entranceMomTokens_.push_back(consumes<std::vector<float>>(edm::InputTag(label, c)));
+    }
     produces<nanoaod::FlatTable>("tracks");
     produces<nanoaod::FlatTable>("vertices");
   }
@@ -50,6 +59,7 @@ public:
     desc.add<edm::InputTag>("genPartTableSrc", edm::InputTag("picoPrunedGenParticles"));
     desc.add<edm::InputTag>("simJets", edm::InputTag("picoAk4SimJets"));
     desc.add<edm::InputTag>("simJetConstituentIndex", edm::InputTag("picoSimTrackCandidates", "simTrackIndex"));
+    desc.add<edm::InputTag>("caloEntrance", edm::InputTag("picoCaloEntrance"));
     desc.add<std::string>("trackName", "SimTrack");
     desc.add<std::string>("vertexName", "SimVertex");
     descriptions.addWithDefaultLabel(desc);
@@ -107,6 +117,29 @@ public:
             }
           }
         }
+      }
+    }
+
+    // calorimeter-entrance flags
+    std::vector<int32_t> eIs(tracks.size(), -1), eOf(tracks.size(), -1), eOwns(tracks.size(), -1);
+    std::vector<float> ePt(tracks.size(), -1.f), eE(tracks.size(), -1.f), pPt(tracks.size(), -1.f), pE(tracks.size(), -1.f);
+    if (useEntrance_) {
+      std::vector<const std::vector<float>*> m;
+      for (const auto& tok : entranceMomTokens_)
+        m.push_back(&event.get(tok));
+      for (size_t i = 0; i < tracks.size() && i < m[0]->size(); ++i) {
+        ePt[i] = std::hypot((*m[0])[i], (*m[1])[i]);
+        eE[i] = (*m[3])[i];
+        pPt[i] = std::hypot((*m[4])[i], (*m[5])[i]);
+        pE[i] = (*m[7])[i];
+      }
+      const auto& isE = event.get(isEntranceToken_);
+      const auto& ofE = event.get(entranceOfToken_);
+      const auto& own = event.get(ownsHitsToken_);
+      for (size_t i = 0; i < tracks.size() && i < isE.size(); ++i) {
+        eIs[i] = isE[i];
+        eOf[i] = ofE[i];
+        eOwns[i] = own[i];
       }
     }
 
@@ -207,6 +240,15 @@ public:
     tTable->addColumn<float>("tkEta", tkEta, "eta at the tracker surface", 10);
     tTable->addColumn<float>("tkPhi", tkPhi, "phi at the tracker surface", 10);
     tTable->addColumn<int32_t>("simJetIdx", simJetIdx, "row in the SimJet table of the jet this track is clustered into (-1: none)");
+    if (useEntrance_) {
+      tTable->addColumn<int32_t>("isEntrance", eIs, "1 if the track is a calorimeter-entrance particle: the cut through the stored tree at the tracker/calo boundary (boundary crossing recorded, or born in the tracker and reaching the calorimeter with no entrance ancestor)");
+      tTable->addColumn<int32_t>("entranceIdx", eOf, "row of the calorimeter-entrance particle this track belongs to (itself or an ancestor; -1: before the boundary or lost in the tracker)");
+      tTable->addColumn<int32_t>("ownsCaloHits", eOwns, "1 if calorimeter sim hits are bookkept to this track (Geant4 id on the calo surface)");
+      tTable->addColumn<float>("entrancePt", pPt, "pt as an entrance particle, production momentum with the energy of its entrance daughters taken out (knocked-out nucleons by kinetic energy)", 10);
+      tTable->addColumn<float>("entranceE", pE, "energy as an entrance particle (same definition)", 10);
+      tTable->addColumn<float>("facePt", ePt, "pt at the calorimeter face: at the boundary crossing when recorded, else as entrancePt", 10);
+      tTable->addColumn<float>("faceE", eE, "energy at the calorimeter face (same definition)", 10);
+    }
     tTable->addColumn<uint32_t>("trackId", trackId, "Geant4 track id");
 
     const size_t nV = vertices.size();
@@ -244,6 +286,9 @@ private:
   edm::EDGetTokenT<edm::View<reco::Jet>> jetsToken_;
   edm::EDGetTokenT<std::vector<int>> jetIndexToken_;
   bool useJets_;
+  bool useEntrance_;
+  edm::EDGetTokenT<std::vector<int>> isEntranceToken_, entranceOfToken_, ownsHitsToken_;
+  std::vector<edm::EDGetTokenT<std::vector<float>>> entranceMomTokens_;
   std::string trackName_;
   std::string vertexName_;
 };

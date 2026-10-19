@@ -26,7 +26,7 @@ JET_COLLECTIONS = {
 }
 
 
-def recoJetTables(process, pfCandMinPt=0.0, jetMinPt=5.0, collections=None, puppiJEC=True):
+def recoJetTables(process, pfCandMinPt=0.0, jetMinPt=5.0, collections=None, puppiJEC=True, pileupTruth=""):
     """puppiJEC: evaluate the GlobalTag AK4PFPuppi corrections (L1FastJet and
     L1FastL2L3) on the raw Puppi jets and store the factors as
     PFJetPuppi_jecL1 / PFJetPuppi_jecL1L2L3 (the jets stay raw)."""
@@ -56,7 +56,7 @@ def recoJetTables(process, pfCandMinPt=0.0, jetMinPt=5.0, collections=None, pupp
         hoRecHits=cms.InputTag("horeco"),
         candMinPt=cms.double(pfCandMinPt),
         minShareFraction=cms.double(0.01),
-        **caloSimHitParameters()
+        **caloSimHitParameters(pileupTruth=pileupTruth, rechitScale=True)
     )
 
     jetVars = cms.PSet(
