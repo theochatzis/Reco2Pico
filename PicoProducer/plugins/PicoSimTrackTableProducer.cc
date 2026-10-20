@@ -147,11 +147,12 @@ public:
     std::vector<int32_t> pdgId, charge, vertIdx, parentIdx, genPartIdx, genBarcode, nDaughters, simJetIdx;
     std::vector<uint32_t> trackId;
     std::vector<float> pt, eta, phi, p, energy, mass, vx, vy, vz, vt, tkPt, tkEta, tkPhi, bPt, bEta, bPhi;
-    std::vector<uint8_t> isPrimary, isLeaf, crossedBoundary;
+    std::vector<uint8_t> isPrimary, isOrphan, isLeaf, crossedBoundary;
     std::vector<float> dauEnergyFrac;
     auto reserveAll = [nT](auto&... v) { (v.reserve(nT), ...); };
     reserveAll(pdgId, charge, vertIdx, parentIdx, genPartIdx, genBarcode, nDaughters, simJetIdx, trackId, pt, eta, phi,
-               p, energy, mass, vx, vy, vz, vt, tkPt, tkEta, tkPhi, bPt, bEta, bPhi, isPrimary, isLeaf, crossedBoundary);
+               p, energy, mass, vx, vy, vz, vt, tkPt, tkEta, tkPhi, bPt, bEta, bPhi, isPrimary, isOrphan, isLeaf,
+               crossedBoundary);
 
     for (size_t i = 0; i < nT; ++i) {
       const SimTrack& t = tracks[i];
@@ -195,6 +196,7 @@ public:
       genPartIdx.push_back(gIdx);
       genBarcode.push_back(barcode);
       isPrimary.push_back(t.noGenpart() ? 0 : 1);
+      isOrphan.push_back(t.noGenpart() && !(hasVertex && vParent[v] >= 0) ? 1 : 0);
       nDaughters.push_back(tNDaughters[i]);
       isLeaf.push_back(tNDaughters[i] == 0 ? 1 : 0);
       dauEnergyFrac.push_back(mom.E() > 0 ? tDauEnergy[i] / mom.E() : 0.f);
@@ -229,6 +231,7 @@ public:
     tTable->addColumn<int32_t>("genPartIdx", genPartIdx, "row in the GenPart table of the generator particle (-1: not a primary or pruned away)");
     tTable->addColumn<int32_t>("genBarcode", genBarcode, "HepMC barcode of the generator particle (-1: not a primary)");
     tTable->addColumn<uint8_t>("isPrimary", isPrimary, "1 if the track comes directly from the generator");
+    tTable->addColumn<uint8_t>("isOrphan", isOrphan, "1 if the track is not a generator primary and has no stored parent (its ancestor was dropped by Geant4): parentIdx is -1");
     tTable->addColumn<int32_t>("nDaughters", nDaughters, "number of SimTracks produced at the decay/interaction vertex of this track");
     tTable->addColumn<uint8_t>("isLeaf", isLeaf, "1 if no daughter SimTrack is stored (end point of the stored sim tree)");
     tTable->addColumn<float>("dauEnergyFrac", dauEnergyFrac, "energy of the stored daughters / energy of this track (~1: decay or conversion, ~0: delta ray or brem, the track continues)", 10);

@@ -81,6 +81,24 @@ The rule, applied top-down through the tree (`PicoCaloEntranceProducer`):
 * everything else is before the boundary: decayed, converted or absorbed in
   the tracker, replaced by its daughters or lost. Neutrinos are dropped.
 
+**Orphans.** Geant4 drops intermediate ancestors below its persistency
+threshold, and in CMSSW_15_0_X the production vertex of a stored descendant
+then has no parent (`SimTrack_isOrphan`: not a generator primary, no stored
+parent; CMSSW master reattaches it to the nearest stored ancestor with
+`TrackingAction.ReconnectDroppedAncestors`, see [TruthGraph.md](TruthGraph.md)).
+On DY (200 events of `run3_rawsim` v4) 1.2% of the non-primary SimTracks are
+orphans, most of them born in the calorimeter, and the orphan entrance
+particles carried 0.75% of the entrance energy. That energy is already counted
+in the momentum of their real, unknown ancestor. An orphan born outside the
+tracker volume therefore stays an entrance particle (its hits are counted
+once in `SimCalo`) but gets zero `entrancePt/E` and `facePt/E`, so that it does
+not enter `SimJet` or `SimBoundaryJet` a second time (on 50 GEN-SIM events:
+212 such particles, 0.82% of the entrance energy taken out). Orphans born in
+the tracker (about 8% of them) are judged like any other track. The ideal PF
+(`SimPFCand`) still takes the deposit of a calorimeter-born orphan, and so
+double-counts it when the dropped ancestor came from a charged particle that
+was tracked.
+
 Every calorimeter sim hit is thereby bookkept to exactly one entrance
 particle. Examples: a photon converting in the tracker is replaced by its two
 electrons, each with its own momentum at the face and its own deposit; a
