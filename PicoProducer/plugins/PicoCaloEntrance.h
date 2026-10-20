@@ -62,6 +62,17 @@
 // Nucleons and nuclei born at a hadronic interaction vertex (knocked out of
 // the tracker material: their rest mass was not part of the energy that
 // entered) are counted with their kinetic energy in both.
+//
+// Orphans: a stored SimTrack that is not a generator primary and has no stored
+// parent (g4SimHits drops low-energy intermediate ancestors and, before
+// TrackingAction.ReconnectDroppedAncestors, which is not in CMSSW_15_0_X,
+// leaves the production vertex with parentIndex -1). Its real stored ancestor
+// is unknown and already carries the orphan's energy in its own momentum. An
+// orphan born outside the tracker volume therefore keeps its hits (it stays
+// an entrance particle, so the deposits are counted once on the calorimeter
+// side) but gets zero momenta, so that it is not clustered a second time into
+// the jets of the entrance particles. Orphans born inside the tracker are
+// judged as any other track.
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -90,6 +101,7 @@ namespace pico {
     std::vector<uint8_t> bornInTracker; // per SimTrack: production vertex inside the tracker volume
     std::vector<int> entranceOf;        // per SimTrack: row of its entrance particle (itself or an ancestor), -1 none
     std::vector<int> parent;            // per SimTrack: row of the parent SimTrack, -1 none
+    std::vector<uint8_t> orphan;        // per SimTrack: no stored parent and not a generator primary
     std::vector<math::XYZTLorentzVectorD> production;  // per SimTrack: production momentum as an entrance particle
     std::vector<math::XYZTLorentzVectorD> boundary;    // per SimTrack: momentum at the face (see above)
   };
@@ -130,6 +142,7 @@ namespace pico {
     out.bornInTracker.assign(n, 1);
     out.entranceOf.assign(n, -1);
     out.parent.assign(n, -1);
+    out.orphan.assign(n, 0);
 
     std::unordered_map<uint64_t, int> rowOfTrackKey;
     rowOfTrackKey.reserve(n);
@@ -153,6 +166,8 @@ namespace pico {
           }
         }
       }
+      // no stored parent and not a generator primary
+      out.orphan[i] = (out.parent[i] < 0 && t.noGenpart()) ? 1 : 0;
     }
 
     // bottom-up: reaches the calorimeter (through daughters born outside the tracker only)
@@ -243,6 +258,11 @@ namespace pico {
         out.boundary[i] = kinetic[i] ? kineticOnly(b, t.momentum().M()) : b;
       } else {
         out.boundary[i] = out.production[i];
+      }
+      // an orphan born in the calorimeter: its energy is already with its unknown ancestor
+      if (out.orphan[i] && !out.bornInTracker[i]) {
+        out.production[i] = math::XYZTLorentzVectorD(0, 0, 0, 0);
+        out.boundary[i] = math::XYZTLorentzVectorD(0, 0, 0, 0);
       }
     }
     return out;

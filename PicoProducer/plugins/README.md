@@ -195,8 +195,10 @@ that. See "Sim jets and the SimJet to GenJet matching" in `../README.md`.
 Tables `SimTrack` (instance `tracks`) and `SimVertex` (instance `vertices`) from
 `g4SimHits`: kinematics at production, production vertex, `vertIdx`,
 `parentIdx`, `genPartIdx` (row of the pruned `GenPart` table, matched through
-the HepMC barcode), `isPrimary`, `nDaughters`, `isLeaf`, boundary-crossing and
-tracker-surface momenta, `simJetIdx` (row of the `SimJet` table the track was
+the HepMC barcode), `isPrimary`, `isOrphan` (not a primary and no stored
+parent: Geant4 dropped the ancestor), `nDaughters`, `isLeaf`, boundary-crossing and
+tracker-surface momenta (the tracker-surface ones are never filled by
+CMSSW_15_0_X and read 0), `simJetIdx` (row of the `SimJet` table the track was
 clustered into), the calorimeter-entrance flags `isEntrance`, `entranceIdx`,
 `ownsCaloHits` with `entrancePt/E` and `facePt/E` (from `caloEntrance`) and
 the Geant4 ids; vertices carry position, time, `parentIdx`,
