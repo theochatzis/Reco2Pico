@@ -2,6 +2,8 @@ import json
 
 import FWCore.ParameterSet.Config as cms
 
+from Reco2Pico.PicoProducer.tables.metadata_cff import picoMetadata
+
 
 DEFAULT_PILEUP_EDGES = [float(i) for i in range(101)]
 
@@ -74,18 +76,9 @@ def mcBookkeeping(process, pileup_edges=None, require_pileup=True):
 
     # NanoAODOutputModule has dedicated handling for UniqueString objects
     # produced under the module label "nanoMetadata".
-    process.nanoMetadata = cms.EDProducer(
-        "UniqueStringProducer",
-        strings=cms.PSet(
-            tag=cms.string("Reco2Pico"),
-            bookkeepingSchema=cms.string(
-                json.dumps(
-                    schema,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                )
-            ),
-        ),
+    picoMetadata(
+        process,
+        {"bookkeepingSchema": json.dumps(schema, sort_keys=True, separators=(",", ":"))},
     )
 
     process.picoMCBookkeepingTask = cms.Task(

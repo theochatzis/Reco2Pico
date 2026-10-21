@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigator</title>
+<style>
+:root {
+  --bg: #f7f7f5; --panel: #ffffff; --ink: #1d1f23; --muted: #686d76; --line: #dfe0e3;
+  --edge: #b3b7be; --edge-hi: #d9480f; --sel: #d9480f;
+  --local: #1f6feb; --local-bg: #e6efff; --cfg: #8250df; --cfg-bg: #f2ecff;
+  --rel: #6e7681; --rel-bg: #f1f2f4; --input-bg: #ffffff;
+  --code-bg: #f5f6f8; --mark: #fff1b8; --warn: #9a6700; --warn-bg: #fff8e1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a; --panel: #1c1f23; --ink: #e6e8eb; --muted: #9aa1ab; --line: #31353b;
+    --edge: #4c525b; --edge-hi: #ff8a4c; --sel: #ff8a4c;
+    --local: #6ea8ff; --local-bg: #1b2a44; --cfg: #b392f0; --cfg-bg: #2a2140;
+    --rel: #9aa1ab; --rel-bg: #24282d; --input-bg: #1c1f23;
+    --code-bg: #171a1d; --mark: #3d3410; --warn: #e3b341; --warn-bg: #2e2810;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a; --panel: #1c1f23; --ink: #e6e8eb; --muted: #9aa1ab; --line: #31353b;
+  --edge: #4c525b; --edge-hi: #ff8a4c; --sel: #ff8a4c;
+  --local: #6ea8ff; --local-bg: #1b2a44; --cfg: #b392f0; --cfg-bg: #2a2140;
+  --rel: #9aa1ab; --rel-bg: #24282d; --input-bg: #1c1f23;
+  --code-bg: #171a1d; --mark: #3d3410; --warn: #e3b341; --warn-bg: #2e2810;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  display: grid; grid-template-rows: auto 1fr; grid-template-columns: 270px 1fr 440px;
+  grid-template-areas: "head head head" "list graph detail"; overflow: hidden;
+}
+code, pre, .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 12px; }
+button, select, input { font: inherit; color: inherit; }
+button, select {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 3px 9px; cursor: pointer;
+}
+button:hover { border-color: var(--muted); }
+a { color: var(--local); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header {
+  grid-area: head; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+  padding: 8px 14px; border-bottom: 1px solid var(--line); background: var(--panel);
+}
+header h1 { font-size: 15px; margin: 0; letter-spacing: .2px; }
+header .meta { color: var(--muted); font-size: 12px; flex: 1; min-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+header .ctl { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+header label { display: flex; gap: 4px; align-items: center; }
+
+#list { grid-area: list; border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; background: var(--panel); }
+#search { margin: 10px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+#groups { overflow-y: auto; flex: 1; padding: 0 6px 10px; }
+#groups details { margin-bottom: 4px; }
+#groups summary { cursor: pointer; padding: 4px 6px; font-weight: 600; color: var(--muted); font-size: 12px; }
+.item { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 3px 8px 3px 14px; border-radius: 4px; }
+.item:hover { background: var(--rel-bg); }
+.item.on { background: var(--local-bg); }
+.item .t { display: block; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend { border-top: 1px solid var(--line); padding: 8px 12px; color: var(--muted); font-size: 11.5px; display: grid; gap: 3px; }
+.sw { display: inline-block; width: 12px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; border: 1.5px solid; }
+
+#graph { grid-area: graph; position: relative; min-width: 0; min-height: 0; }
+#graph svg { width: 100%; height: 100%; display: block; cursor: grab; user-select: none; }
+#graph svg.dragging { cursor: grabbing; }
+#hint { position: absolute; inset: 0; display: none; place-items: center; color: var(--muted); text-align: center; padding: 30px; }
+.node rect { stroke-width: 1.4; }
+.node { cursor: pointer; }
+.node text { font-size: 12px; fill: var(--ink); }
+.node text.ty { font-size: 10.5px; fill: var(--muted); }
+.o-local rect { fill: var(--local-bg); stroke: var(--local); }
+.o-localcfg rect { fill: var(--cfg-bg); stroke: var(--cfg); }
+.o-release rect { fill: var(--rel-bg); stroke: var(--rel); }
+.o-input rect { fill: var(--input-bg); stroke: var(--rel); stroke-dasharray: 4 3; }
+.node.unsched { opacity: .5; }
+.node.dropped rect { stroke-dasharray: 5 3; }
+.tabs { display: flex; gap: 4px; margin: 10px 10px 0; }
+.tabs button { flex: 1; }
+.tabs button.on { background: var(--local-bg); border-color: var(--local); color: var(--local); }
+.prod { padding: 2px 0; word-break: break-all; }
+.prod.gone { color: var(--muted); }
+.prod .badge { margin-left: 6px; }
+.node.focus rect { stroke-width: 3; }
+.node.sel rect { stroke: var(--sel); stroke-width: 3; }
+.node.dim { opacity: .25; }
+.edge { fill: none; stroke: var(--edge); stroke-width: 1.3; }
+.edge.hi { stroke: var(--edge-hi); stroke-width: 2.2; }
+.edge.dim { opacity: .2; }
+.elabel { font-size: 10.5px; fill: var(--edge-hi); paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
+#zoom { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; }
+
+#detail { grid-area: detail; border-left: 1px solid var(--line); overflow-y: auto; background: var(--panel); padding: 14px 16px 30px; }
+#detail h2 { font-size: 16px; margin: 0 0 2px; word-break: break-all; }
+#detail .type { color: var(--muted); word-break: break-all; }
+#detail h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 18px 0 6px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+.badges { margin: 8px 0; display: flex; gap: 5px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); }
+.badge.local { color: var(--local); border-color: var(--local); }
+.badge.localcfg { color: var(--cfg); border-color: var(--cfg); }
+.badge.warn { color: var(--warn); border-color: var(--warn); }
+.actions { display: flex; gap: 6px; margin: 8px 0; }
+details.ref { border: 1px solid var(--line); border-radius: 6px; margin: 5px 0; background: var(--panel); }
+details.ref > summary { cursor: pointer; padding: 5px 8px; list-style: none; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+details.ref > summary::-webkit-details-marker { display: none; }
+details.ref > summary::before { content: "▸"; color: var(--muted); font-size: 10px; }
+details.ref[open] > summary::before { content: "▾"; }
+.rt { font-weight: 600; }
+.path { color: var(--muted); word-break: break-all; flex: 1; min-width: 120px; }
+.mini { font-size: 11px; padding: 0 6px; }
+pre.code { margin: 0; background: var(--code-bg); border-top: 1px solid var(--line); overflow-x: auto; padding: 6px 0; border-radius: 0 0 6px 6px; }
+pre.code span { display: block; padding: 0 10px 0 0; white-space: pre; }
+pre.code span.hl { background: var(--mark); }
+pre.code i { display: inline-block; width: 44px; padding-right: 10px; text-align: right; color: var(--muted); font-style: normal; user-select: none; }
+.inp { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
+.inp .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline; }
+.inp .pn { font-weight: 600; }
+.inp .arrow { color: var(--muted); }
+.link { color: var(--local); cursor: pointer; border: 0; background: none; padding: 0; font: inherit; }
+.link:hover { text-decoration: underline; }
+.modified { background: var(--warn-bg); color: var(--warn); font-size: 11.5px; padding: 1px 6px; border-radius: 4px; }
+.muted { color: var(--muted); }
+pre.dump { background: var(--code-bg); padding: 8px; border-radius: 6px; overflow-x: auto; max-height: 420px; }
+.empty { color: var(--muted); padding: 30px 10px; }
+
+@media (max-width: 1100px) {
+  body { grid-template-columns: 230px 1fr; grid-template-rows: auto 1fr 45%; grid-template-areas: "head head" "list graph" "detail detail"; }
+  #detail { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 700px) {
+  body { grid-template-columns: 1fr; grid-template-rows: auto 30% 1fr 45%; grid-template-areas: "head" "list" "graph" "detail"; overflow: auto; }
+  #list { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Navigator</h1>
+  <div class="meta" id="meta"></div>
+  <div class="ctl">
+    <button id="back" title="Previous focus">←</button>
+    <label>upstream <select id="up"><option>1</option><option>2</option><option selected>3</option><option>5</option><option value="99">all</option></select></label>
+    <label>downstream <select id="down"><option>0</option><option selected>1</option><option>2</option><option value="99">all</option></select></label>
+    <label><input type="checkbox" id="inputs" checked> input-file collections</label>
+    <label title="Modules in no path or task never run; an InputTag pointing to one is a parameter the C++ does not use in this setup"><input type="checkbox" id="unsched"> unscheduled</label>
+    <button id="all">whole config</button>
+    <button id="theme" title="Toggle light/dark">◐</button>
+  </div>
+</header>
+
+<nav id="list">
+  <div id="tabs"></div>
+  <input id="search" type="search" placeholder="Search label or C++ type…" autocomplete="off">
+  <div id="groups"></div>
+  <div class="legend" id="legend"></div>
+</nav>
+
+<main id="graph">
+  <svg id="svg"><g id="world"><g id="edges"></g><g id="labels"></g><g id="nodes"></g></g></svg>
+  <div id="hint"></div>
+  <div id="zoom"><button id="zin">+</button><button id="zout">−</button><button id="fit">fit</button></div>
+</main>
+
+<aside id="detail"><div class="empty">Pick a module on the left or click a box in the graph.</div></aside>
+
+<script>
+const D = /*__NAVIGATOR_DATA__*/null;
+if (!D) {
+  document.getElementById("detail").innerHTML = `<div class="empty"><b>This is the empty template.</b><br><br>` +
+    `Generate a page from a configuration inside cmsenv and open that file instead:<br><br>` +
+    `<code>python3 navigator.py -o nav.html CFG.py [cfg args]</code></div>`;
+  throw new Error("navigator: template opened without data");
+}
+const N = D.nodes, S = D.snippets;
+const W = 210, H = 40, GX = 90, GY = 16;
+const ORIGIN = { local: "your C++ plugin", localcfg: "your config", release: "CMSSW", input: "input file" };
+
+const inE = {}, outE = {};
+for (const id in N) { inE[id] = []; outE[id] = []; }
+for (const e of D.edges) { outE[e.from].push(e); inE[e.to].push(e); }
+
+const EDM = D.meta.mode === "edm";
+const state = { focus: null, sel: null, up: 3, down: 1, inputs: true, unsched: false, history: [], tab: "modules" };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
+
+// ---------- header ----------
+const m = D.meta;
+$("meta").textContent = EDM
+  ? `${m.config}  ·  processes ${m.process}  ·  code from ${m.release}  ·  ${m.generated}`
+  : `${m.config} ${m.args.join(" ")}  ·  process ${m.process}  ·  ${m.release}  ·  ${m.generated}` +
+    (D.pico ? `  ·  Pico ${D.pico.file} (${D.pico.branches} branches, ${D.pico.entries} events${D.pico.provenance ? ", provenance stored" : ""})` : "");
+$("meta").title = $("meta").textContent;
+
+const sw = (bg, border, dash) => `<span class="sw" style="background:var(${bg});border-color:var(${border})${dash ? ";border-style:dashed" : ""}"></span>`;
+$("legend").innerHTML = EDM
+  ? `<div>${sw("--local-bg", "--local")}your C++ plugin</div><div>${sw("--rel-bg", "--rel")}CMSSW module</div>` +
+    `<div>${sw("--rel-bg", "--rel", 1)}all its products dropped from the file</div>` +
+    `<div class="muted">Edges are the products each module actually read (parentage stored in the file). Click a box for details, double-click to recentre.</div>`
+  : `<div>${sw("--local-bg", "--local")}your C++ plugin</div><div>${sw("--cfg-bg", "--cfg")}your config, CMSSW plugin</div>` +
+    `<div>${sw("--rel-bg", "--rel")}CMSSW module</div><div>${sw("--input-bg", "--rel", 1)}collection read from the input file</div>` +
+    `<div class="muted">faded = in no path or task (shown with "unscheduled"). Click a box for details, double-click to recentre.</div>`;
+if (EDM) {
+  // a full reconstruction fans out fast: start one step upstream
+  $("unsched").parentNode.style.display = "none";
+  $("inputs").parentNode.lastChild.textContent = " unrecorded producers";
+  $("all").textContent = "whole file";
+  state.up = 1; $("up").value = "1";
+}
+
+// ---------- sidebar ----------
+const TABLES = D.tables || [];
+if (TABLES.length) {
+  $("tabs").innerHTML = `<div class="tabs"><button data-tab="modules" class="on">Modules</button><button data-tab="branches">Branches</button></div>`;
+  $("tabs").addEventListener("click", ev => {
+    const b = ev.target.closest("[data-tab]");
+    if (!b) return;
+    state.tab = b.dataset.tab;
+    $("tabs").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+    $("search").placeholder = state.tab === "branches" ? "Search table or branch…" : "Search label or C++ type…";
+    renderList();
+  });
+}
+function renderList() {
+  const q = $("search").value.trim().toLowerCase();
+  if (state.tab === "branches") return renderTableList(q);
+  const groups = {};
+  for (const n of Object.values(N)) {
+    if (q && !n.label.toLowerCase().includes(q) && !n.type.toLowerCase().includes(q)) continue;
+    (groups[n.group] = groups[n.group] || []).push(n);
+  }
+  let html = "";
+  for (const [key, title] of D.groups) {
+    const items = (groups[key] || []).sort((a, b) => a.label.localeCompare(b.label));
+    if (!items.length) continue;
+    const open = q || key !== "input" ? "open" : "";
+    html += `<details ${open}><summary>${esc(title)} (${items.length})</summary>` +
+      items.map(n => `<button class="item${n.id === state.sel ? " on" : ""}" data-id="${esc(n.id)}">${esc(n.label)}<span class="t">${esc(n.type)}</span></button>`).join("") +
+      `</details>`;
+  }
+  $("groups").innerHTML = html || `<div class="empty">No match.</div>`;
+}
+function renderTableList(q) {
+  const items = TABLES.filter(t => !q || t.name.toLowerCase().includes(q) ||
+    t.columns.some(c => c.name.toLowerCase().includes(q)));
+  $("groups").innerHTML = items.map(t => {
+    const hits = q ? t.columns.filter(c => c.name.toLowerCase().includes(q)).length : t.columns.length;
+    return `<button class="item${t.name === state.table ? " on" : ""}" data-table="${esc(t.name)}">${esc(t.name)}` +
+      `<span class="t">${hits} branch${hits === 1 ? "" : "es"} · ${esc(t.modules.join(", ") || "writer not found")}</span></button>`;
+  }).join("") || `<div class="empty">No match.</div>`;
+}
+$("groups").addEventListener("click", ev => {
+  const b = ev.target.closest(".item");
+  if (b && b.dataset.table !== undefined) showTable(b.dataset.table);
+  else if (b) go(b.dataset.id);
+});
+$("search").addEventListener("input", renderList);
+
+// ---------- graph selection ----------
+function visibleIds() {
+  const keep = id => id === state.focus ||
+    ((state.inputs || N[id].kind !== "input") && (state.unsched || N[id].scheduled));
+  if (!state.focus) return Object.keys(N).filter(keep);
+  const vis = new Set([state.focus]);
+  const bfs = (adj, key, depth) => {
+    let frontier = [state.focus];
+    for (let d = 0; d < depth && frontier.length; d++) {
+      const next = [];
+      for (const id of frontier) for (const e of adj[id]) {
+        const n = e[key];
+        if (!vis.has(n) && keep(n)) { vis.add(n); next.push(n); }
+      }
+      frontier = next;
+    }
+  };
+  bfs(inE, "from", state.up);
+  bfs(outE, "to", state.down);
+  return [...vis];
+}
+
+function layout(ids) {
+  const set = new Set(ids), layer = {}, indeg = {};
+  for (const id of ids) { layer[id] = 0; indeg[id] = inE[id].filter(e => set.has(e.from)).length; }
+  const queue = ids.filter(id => !indeg[id]);
+  let done = 0;
+  while (queue.length) {
+    const id = queue.shift(); done++;
+    for (const e of outE[id]) if (set.has(e.to)) {
+      layer[e.to] = Math.max(layer[e.to], layer[id] + 1);
+      if (--indeg[e.to] === 0) queue.push(e.to);
+    }
+  }
+  // pull pure sources right next to their first consumer so input boxes do not pile up at x=0
+  for (const id of ids) {
+    const outs = outE[id].filter(e => set.has(e.to));
+    if (!inE[id].some(e => set.has(e.from)) && outs.length)
+      layer[id] = Math.max(0, Math.min(...outs.map(e => layer[e.to])) - 1);
+  }
+  const cols = [];
+  for (const id of ids) (cols[layer[id]] = cols[layer[id]] || []).push(id);
+  for (let i = 0; i < cols.length; i++) cols[i] = (cols[i] || []).sort((a, b) => N[a].label.localeCompare(N[b].label));
+  const pos = {};
+  const index = () => cols.forEach(c => c.forEach((id, i) => pos[id] = i));
+  index();
+  const bary = (id, adj, key) => {
+    const ps = adj[id].filter(e => set.has(e[key])).map(e => pos[e[key]]);
+    return ps.length ? ps.reduce((a, b) => a + b, 0) / ps.length : pos[id];
+  };
+  for (let sweep = 0; sweep < 8; sweep++) {
+    const down = sweep % 2 === 0;
+    const order = down ? cols.keys() : [...cols.keys()].reverse();
+    for (const i of order) {
+      const b = {};
+      for (const id of cols[i]) b[id] = down ? bary(id, inE, "from") : bary(id, outE, "to");
+      cols[i].sort((x, y) => b[x] - b[y]);
+      cols[i].forEach((id, k) => pos[id] = k);
+    }
+  }
+  const xy = {};
+  cols.forEach((col, i) => {
+    const top = -col.length * (H + GY) / 2;
+    col.forEach((id, k) => xy[id] = { x: i * (W + GX), y: top + k * (H + GY) });
+  });
+  return xy;
+}
+
+// ---------- rendering ----------
+const svgNS = "http://www.w3.org/2000/svg";
+let XY = {};
+function render(refit) {
+  const ids = visibleIds();
+  const hint = $("hint");
+  if (!state.focus && ids.length > 400) {
+    hint.style.display = "grid";
+    hint.innerHTML = `<div>${ids.length} modules in this configuration.<br>Search or pick one on the left to see what feeds it.</div>`;
+    $("nodes").innerHTML = $("edges").innerHTML = $("labels").innerHTML = "";
+    return;
+  }
+  hint.style.display = "none";
+  XY = layout(ids);
+  const set = new Set(ids);
+  let eh = "";
+  for (const e of D.edges) {
+    if (!set.has(e.from) || !set.has(e.to)) continue;
+    const a = XY[e.from], b = XY[e.to];
+    const x1 = a.x + W, y1 = a.y + H / 2, x2 = b.x, y2 = b.y + H / 2, dx = Math.max(40, (x2 - x1) / 2);
+    const title = e.params.map(p => `${p.param} = ${p.tag}`).join("\n");
+    eh += `<path class="edge" data-from="${esc(e.from)}" data-to="${esc(e.to)}" d="M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}"><title>${esc(N[e.from].label)} → ${esc(N[e.to].label)}\n${esc(title)}</title></path>`;
+  }
+  $("edges").innerHTML = eh;
+  let nh = "";
+  for (const id of ids) {
+    const n = N[id], p = XY[id];
+    const cls = ["node", "o-" + n.origin, n.scheduled ? "" : "unsched", n.dropped ? "dropped" : "",
+                 id === state.focus ? "focus" : "", id === state.sel ? "sel" : ""].join(" ");
+    const ty = n.kind === "input" ? n.type : n.type.split("|")[0] + (EDM ? "  · " + n.process : "");
+    nh += `<g class="${cls}" data-id="${esc(id)}" transform="translate(${p.x},${p.y})">` +
+      `<rect width="${W}" height="${H}" rx="6"></rect>` +
+      `<text x="10" y="17">${esc(trunc(n.label, 29))}</text>` +
+      `<text class="ty" x="10" y="31">${esc(trunc(ty, 33))}</text>` +
+      `<title>${esc(n.label)}\n${esc(n.type)}</title></g>`;
+  }
+  $("nodes").innerHTML = nh;
+  highlight(state.sel);
+  if (refit) fit();
+}
+
+function highlight(id) {
+  $("labels").innerHTML = "";
+  const edges = document.querySelectorAll(".edge");
+  if (!id || !XY[id]) { edges.forEach(e => e.classList.remove("hi", "dim")); return; }
+  let lh = "";
+  edges.forEach(el => {
+    const on = el.dataset.from === id || el.dataset.to === id;
+    el.classList.toggle("hi", on);
+    el.classList.toggle("dim", !on);
+    if (on) {
+      const e = D.edges.find(x => x.from === el.dataset.from && x.to === el.dataset.to);
+      const end = XY[e.to], start = XY[e.from];
+      const names = [...new Set(e.params.map(p => p.param))].join(", ");
+      // label at the far end of the edge, where boxes are distinct, so labels do not stack
+      const incoming = e.to === id;
+      const x = incoming ? start.x + W + 5 : end.x - 5, y = (incoming ? start.y : end.y) + H / 2 - 5;
+      lh += `<text class="elabel" x="${x}" y="${y}" text-anchor="${incoming ? "start" : "end"}">${esc(trunc(names, 30))}</text>`;
+    }
+  });
+  $("labels").innerHTML = lh;
+}
+
+// ---------- pan / zoom ----------
+const svg = $("svg"), world = $("world");
+let view = { k: 1, x: 0, y: 0 };
+const apply = () => world.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
+function fit() {
+  const pts = Object.values(XY);
+  if (!pts.length) return;
+  const r = svg.getBoundingClientRect();
+  const x0 = Math.min(...pts.map(p => p.x)), x1 = Math.max(...pts.map(p => p.x)) + W;
+  const y0 = Math.min(...pts.map(p => p.y)), y1 = Math.max(...pts.map(p => p.y)) + H;
+  const k = Math.min(1.15, (r.width - 40) / (x1 - x0), (r.height - 40) / (y1 - y0));
+  view = { k, x: (r.width - k * (x1 + x0)) / 2, y: (r.height - k * (y1 + y0)) / 2 };
+  apply();
+}
+function zoomAt(f, px, py) {
+  const k = Math.min(3, Math.max(0.08, view.k * f));
+  view.x = px - (px - view.x) * k / view.k;
+  view.y = py - (py - view.y) * k / view.k;
+  view.k = k; apply();
+}
+svg.addEventListener("wheel", ev => {
+  ev.preventDefault();
+  const r = svg.getBoundingClientRect();
+  zoomAt(Math.exp(-ev.deltaY * 0.0015), ev.clientX - r.left, ev.clientY - r.top);
+}, { passive: false });
+let drag = null, moved = false;
+svg.addEventListener("pointerdown", ev => { drag = { x: ev.clientX, y: ev.clientY, vx: view.x, vy: view.y }; moved = false; });
+window.addEventListener("pointermove", ev => {
+  if (!drag) return;
+  const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+  if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; svg.classList.add("dragging"); }
+  if (moved) { view.x = drag.vx + dx; view.y = drag.vy + dy; apply(); }
+});
+window.addEventListener("pointerup", () => { drag = null; svg.classList.remove("dragging"); });
+$("zin").onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(1.25, r.width / 2, r.height / 2); };
+$("zout").onclick = () => { const r = svg.getBoundingClientRect(); zoomAt(0.8, r.width / 2, r.height / 2); };
+$("fit").onclick = fit;
+
+svg.addEventListener("click", ev => {
+  if (moved) return;
+  const g = ev.target.closest(".node");
+  if (g) select(g.dataset.id);
+});
+svg.addEventListener("dblclick", ev => { const g = ev.target.closest(".node"); if (g) go(g.dataset.id); });
+svg.addEventListener("mouseover", ev => { const g = ev.target.closest(".node"); if (g) highlight(g.dataset.id); });
+svg.addEventListener("mouseout", ev => { if (ev.target.closest(".node")) highlight(state.sel); });
+
+// ---------- details ----------
+function code(s) {
+  return s.code.map((t, i) => {
+    const n = s.start + i;
+    return `<span${n === s.line ? ' class="hl"' : ""}><i>${n}</i>${esc(t)}</span>`;
+  }).join("");
+}
+function ref(key, title, open) {
+  const s = S[key];
+  if (!s) return "";
+  const gen = s.origin === "generated" ? ` <span class="badge">generated from fillDescriptions</span>` : "";
+  return `<details class="ref"${open ? " open" : ""}><summary><span class="rt">${esc(title)}</span>` +
+    `<code class="path">${esc(s.path)}:${s.line}</code>${gen}` +
+    `<button class="mini copy" data-copy="${esc(s.abs)}:${s.line}" title="Copy absolute path:line">copy</button>` +
+    (s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">open ↗</a>` : "") +
+    `</summary><pre class="code">${code(s)}</pre></details>`;
+}
+const nodeLink = id => `<button class="link" data-go="${esc(id)}">${esc(N[id].label)}</button>`;
+
+function renderDetail(id) {
+  const n = N[id];
+  let h = `<h2>${esc(n.label)}</h2><div class="type mono">${esc(n.type)}</div>`;
+  h += `<div class="badges"><span class="badge">${esc(n.kind)}</span><span class="badge ${n.origin}">${ORIGIN[n.origin]}</span>` +
+    (n.process ? `<span class="badge">process ${esc(n.process)} · ${esc(n.release)}</span>` : "") +
+    (n.scheduled ? "" : `<span class="badge warn">not in any path or task</span>`) +
+    (n.dropped ? `<span class="badge warn">all products dropped from the file</span>` : "") + `</div>`;
+  h += `<div class="actions"><button data-go="${esc(id)}">Centre graph here</button>` +
+    `<button class="copy" data-copy="${esc(n.label)}">Copy label</button></div>`;
+
+  if (n.kind === "input") {
+    h += EDM
+      ? `<p class="muted">A module read this product, but the file stores no provenance for whoever made it ` +
+        `(for example a source, or a step whose metadata was dropped).</p>`
+      : `<p class="muted">Not produced by this configuration: the product is read from the input file. ` +
+        `To see who made it, run the navigator with <code>--edm</code> on that input file.</p>`;
+  }
+  if (n.tables && n.tables.length) {
+    h += `<h3>Pico tables written</h3><div class="row">` +
+      n.tables.map(t => `<button class="link" data-table="${esc(t)}">${esc(t || "(event level)")}</button>`).join(" · ") + `</div>`;
+  }
+  if (n.products) {
+    const kept = n.products.filter(p => p.kept).length;
+    h += `<h3>Products (${kept} of ${n.products.length} kept in the file)</h3>`;
+    h += n.products.map(p => `<div class="prod mono${p.kept ? "" : " gone"}">${esc(p.name)}${p.kept ? "" : `<span class="badge">dropped</span>`}</div>`).join("");
+  }
+  if (n.py) {
+    h += `<h3>Python definition</h3>`;
+    h += n.py.ref ? ref(n.py.ref, n.py.clonedFrom.length ? "cloned at" : "defined at", true) : `<div class="muted">site not recorded</div>`;
+    n.py.clonedFrom.forEach((c, i) => {
+      const who = c.label && N[c.label] ? nodeLink(c.label) : (c.label ? esc(c.label) + " (not in this process)" : "a template not added to the process");
+      h += `<div class="muted" style="margin-top:6px">${i ? "which was cloned from" : "cloned from"} ${who} <span class="mono">${esc(c.type)}</span></div>`;
+      if (c.ref) h += ref(c.ref, "defined at", false);
+    });
+  }
+  if (n.cpp) {
+    h += `<h3>C++</h3>`;
+    if (n.release && n.release !== m.release)
+      h += `<div class="modified" style="margin-bottom:6px">This module ran in ${esc(n.release)}; the code below is from ${esc(m.release)}, so lines may differ.</div>`;
+    if (n.cpp.cls) h += ref(n.cpp.cls, "class", !n.cpp.template);
+    if (n.cpp.template) h += ref(n.cpp.template, "template", true);
+    h += ref(n.cpp.define, "plugin registered", false);
+    if (n.cpp.produces.length) {
+      h += `<div class="muted" style="margin-top:6px">produces:</div>`;
+      n.cpp.produces.forEach(k => h += ref(k, S[k] ? S[k].code[S[k].line - S[k].start].trim().slice(0, 70) : "", false));
+    }
+  } else if (n.kind !== "input" && n.kind !== "alias") {
+    h += `<h3>C++</h3><div class="muted">No DEFINE_FWK_MODULE found for this type in $CMSSW_BASE or the release.</div>`;
+  }
+
+  h += `<h3>${EDM ? "Products it read" : "Inputs"} (${n.inputs.length})</h3>`;
+  if (n.recorded) h += `<div class="muted" style="margin-bottom:4px">Checked against what it read in the job that made the Pico (picoProvenance).</div>`;
+  if (!n.inputs.length) h += `<div class="muted">${EDM ? "No recorded parents." : "No InputTag parameters."}</div>`;
+  for (const inp of n.inputs) {
+    h += `<div class="inp"><div class="row"><span class="pn mono">${esc(inp.param)}</span><span class="arrow">=</span>` +
+      `<code>${esc(inp.tag)}</code><span class="arrow">← from</span>${nodeLink(inp.from)}` +
+      (inp.read === false ? `<span class="badge warn" title="An InputTag parameter the module did not read in the Pico job: unused by the C++ in this setup, or read only in events not seen">not read in the job</span>` : "") + `</div>`;
+    if (inp.set) h += `<div style="margin-top:4px"><span class="modified">value changed after definition</span></div>` + ref(inp.set, "changed at", false);
+    const reads = n.cpp && n.cpp.params[inp.name];
+    if (reads && reads.length) reads.forEach(k => h += ref(k, "C++ reads it", false));
+    h += `</div>`;
+  }
+
+  const outs = outE[id];
+  h += `<h3>Consumed by (${outs.length})</h3>`;
+  if (!outs.length) h += `<div class="muted">Nothing in this ${EDM ? "file's history" : "configuration"} reads it${n.kind === "output" ? "" : " (it may still be written out)"}.</div>`;
+  for (const e of outs) {
+    h += `<div class="inp"><div class="row">${nodeLink(e.to)}<span class="arrow">via</span><span class="mono">${esc([...new Set(e.params.map(p => p.param))].join(", "))}</span></div></div>`;
+  }
+  if (n.dump) h += `<h3>Full parameters</h3><details><summary class="muted" style="cursor:pointer">show ${EDM ? "stored parameter set" : "dumpPython()"}</summary><pre class="dump">${esc(n.dump)}</pre></details>`;
+  $("detail").innerHTML = h;
+  $("detail").scrollTop = 0;
+}
+
+function showTable(name) {
+  const t = TABLES.find(x => x.name === name || (name === "" && x.name === "(event level)"));
+  if (!t) return;
+  state.table = t.name;
+  if (state.tab !== "branches") $("tabs").querySelector('[data-tab="branches"]').click();
+  if (t.modules.length && N[t.modules[0]]) {
+    if (state.focus && state.focus !== t.modules[0]) state.history.push(state.focus);
+    state.focus = state.sel = t.modules[0];
+    render(true);
+  }
+  let h = `<h2>${esc(t.name)}</h2><div class="type">Pico table · ${t.columns.length} branches` +
+    (t.counter ? ` · row count in <code>${esc(t.counter)}</code>` : "") + `</div>`;
+  h += `<h3>Written by</h3>` + (t.modules.length ? t.modules.map(nodeLink).join(" · ") : `<div class="muted">No module of this configuration writes it.</div>`) +
+    (t.recorded ? `<div class="muted" style="margin-top:4px">as recorded in the file (picoProvenance)</div>`
+      : D.pico.provenance ? "" : `<div class="muted" style="margin-top:4px">guessed from the table name: the file records no provenance</div>`);
+  h += `<h3>Branches</h3>`;
+  for (const c of t.columns) {
+    h += `<div class="inp"><div class="row"><span class="pn mono">${esc(c.name)}</span><span class="muted mono">${esc(c.ctype)}</span>` +
+      (c.module && N[c.module] && t.modules.length > 1 ? `<span class="arrow">by</span>${nodeLink(c.module)}` : "") + `</div>` +
+      (c.doc ? `<div class="muted">${esc(c.doc)}</div>` : "") +
+      (c.how && c.how !== "addColumn" ? `<div class="mono" style="margin-top:2px">${esc(c.how)}</div>` : "") +
+      (c.ref ? ref(c.ref, c.how === "addColumn" ? "filled in C++" : "defined at", false) : `<div class="muted">definition line not found</div>`) + `</div>`;
+  }
+  $("detail").innerHTML = h;
+  $("detail").scrollTop = 0;
+  renderList();
+}
+
+$("detail").addEventListener("click", ev => {
+  const c = ev.target.closest(".copy");
+  if (c) {
+    ev.preventDefault();
+    if (navigator.clipboard) navigator.clipboard.writeText(c.dataset.copy).then(() => { const t = c.textContent; c.textContent = "copied"; setTimeout(() => c.textContent = t, 900); });
+    return;
+  }
+  const t = ev.target.closest("[data-table]");
+  if (t) return showTable(t.dataset.table);
+  const g = ev.target.closest("[data-go]");
+  if (g) go(g.dataset.go);
+});
+
+// ---------- navigation ----------
+function select(id) {
+  state.sel = id;
+  document.querySelectorAll(".node").forEach(g => g.classList.toggle("sel", g.dataset.id === id));
+  highlight(id);
+  renderDetail(id);
+  renderList();
+}
+function go(id, noHistory) {
+  if (!N[id]) return;
+  if (state.focus && state.focus !== id && !noHistory) state.history.push(state.focus);
+  state.focus = id; state.sel = id;
+  try { history.replaceState(null, "", "#" + encodeURIComponent(id)); } catch (e) {}
+  render(true); renderDetail(id); renderList();
+}
+$("back").onclick = () => { const id = state.history.pop(); if (id) go(id, true); };
+$("all").onclick = () => { state.focus = null; render(true); };
+$("up").onchange = ev => { state.up = +ev.target.value; render(true); };
+$("down").onchange = ev => { state.down = +ev.target.value; render(true); };
+$("inputs").onchange = ev => { state.inputs = ev.target.checked; render(true); };
+$("unsched").onchange = ev => { state.unsched = ev.target.checked; render(true); };
+$("theme").onclick = () => {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
+  document.documentElement.dataset.theme = cur === "dark" ? "light" : "dark";
+};
+window.addEventListener("resize", () => fit());
+
+renderList();
+const start = decodeURIComponent(location.hash.slice(1)) || m.focus;
+if (start && N[start]) go(start);
+else render(true);
+</script>
+</body>
+</html>

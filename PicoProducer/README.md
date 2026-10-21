@@ -85,6 +85,34 @@ matching, mini-isolation, or electron VID.
   unchanged; AOD/RECO can use the same table builder with `includeIDs=False`
   because the minimal PAT layer does not run VID.
 
+## What a Pico records about itself
+
+Every workflow puts `picoMetadata(process)` (`python/tables/metadata_cff.py`)
+at the end of its Path. It makes the `nanoMetadata` module
+(`PicoMetadataProducer`), whose strings `NanoAODOutputModule` writes as
+`TObjString`s at the top of the file:
+
+| string | content |
+|---|---|
+| `tag` | `Reco2Pico` |
+| `picoCommand` | JSON: configuration path (relative to `$CMSSW_BASE/src`), SHA-1 of its contents, arguments, release |
+| `picoProvenance` | JSON: the module writing each table (and its extensions), and for each module behind the tables the products it read in the job |
+| `bookkeepingSchema` | only with the MC bookkeeping, see `tables/bookkeeping_cff.py` |
+
+```python
+import ROOT, json
+f = ROOT.TFile.Open("pico.root")
+prov = json.loads(str(f.Get("picoProvenance").GetString()))
+prov["tables"]["Jet"]      # [{"module": "picoJetMCTable", "extension": true, ...}, {"module": "picoJetTable", ...}]
+prov["modules"]["picoEBRecHitTable"]   # ["EcalRecHitsSorted_reducedEcalRecHitsEB__RECO"]
+```
+
+`navigator/navigator.py --pico pico.root` turns both strings into a page that
+traces every branch to its definition, with no other input (see
+`navigator/README.md`). The provenance is about 5 kB. It is frozen at the end
+of the job's first run, so tables first written after that run are not
+listed. `haddnano.py` keeps the strings of the first input file.
+
 ## Supported table groups
 
 | group | AOD | RECO | source / notes |
