@@ -305,6 +305,30 @@ Columns include `rawId`, subdetector, `ieta`, `iphi`, `depth`, `energy`, and
 
 AOD uses `reducedHcalRecHits:*`; RECO uses `hbhereco`, `hfreco`, and `horeco`.
 
+## `PicoMetadataProducer`
+
+The `nanoMetadata` module of every Pico job (made by
+`python/tables/metadata_cff.py::picoMetadata`). Like NanoAOD's
+`UniqueStringProducer`, it writes one run-level `nanoaod::UniqueString` per
+entry of `strings`, which `NanoAODOutputModule` stores as a `TObjString`.
+
+**Provenance.** It also consumes every `FlatTable` whose module label matches
+`tableLabels` (default `*Table`, as kept by the output module) and, from the
+event provenance, records the module writing each table and, following the
+parentage back to the input file, the products every module of the process
+on that chain read. At the end of the first run this becomes the JSON string
+`provenanceName` (default `picoProvenance`; empty switches it off):
+
+```json
+{"version": 1, "process": "PICO",
+ "tables":  {"Jet": [{"module": "picoJetTable", "instance": "", "extension": false}, ...]},
+ "modules": {"picoJetTable": ["patJets_picoPatJets__PICO"], ...}}
+```
+
+Module types and parameters are not repeated: the file's `ParameterSets` tree
+has them. `NanoAODOutputModule` refuses a string that changes between runs of
+one job, so later runs repeat the first run's string.
+
 ## Adding another producer
 
 A producer only needs to:

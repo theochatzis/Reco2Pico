@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
+from Reco2Pico.PicoProducer.tables.metadata_cff import picoMetadata
 from Configuration.AlCa.GlobalTag import GlobalTag
 
 opts = VarParsing("analysis")
@@ -208,9 +209,9 @@ process.picoSequence = buildPicoSequence(
 process.skimSequence = loadSkims(process, opts.skim, isMC)
 
 if opts.skim:
-    process.p = cms.Path(process.skimSequence * process.picoSequence)
+    process.p = cms.Path(process.skimSequence * process.picoSequence + picoMetadata(process))
 else:
-    process.p = cms.Path(process.picoSequence)
+    process.p = cms.Path(process.picoSequence + picoMetadata(process))
 
 process.out = cms.OutputModule(
     "NanoAODOutputModule",

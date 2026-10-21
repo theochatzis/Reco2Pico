@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
+from Reco2Pico.PicoProducer.tables.metadata_cff import picoMetadata
 from Configuration.AlCa.GlobalTag import GlobalTag
 
 
@@ -254,7 +255,7 @@ process.picoSequence = buildRecoPicoSequence(
     pileupTruth=options.pileupTruth,
 )
 
-process.p = cms.Path(process.picoSequence)
+process.p = cms.Path(process.picoSequence + picoMetadata(process))
 
 process.out = cms.OutputModule(
     "NanoAODOutputModule",
